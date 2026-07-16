@@ -13,6 +13,7 @@
     --maroon:#6c9a8b;
     --ease:cubic-bezier(.16,.84,.32,1);
     --ease-in:cubic-bezier(.7,0,.84,0);
+    --ease-io:cubic-bezier(.62,.03,.35,1); /* symmetric: bars cross the panels evenly */
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{height:100%;}
@@ -40,13 +41,16 @@
   .side .wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);
     font-family:var(--serif);font-size:88px;letter-spacing:2px;color:rgba(255,255,255,.10);white-space:nowrap;pointer-events:none;}
 
-  /* product bar layer (parallax + entrance separated) */
-  .prod{position:absolute;top:50%;left:50%;width:min(320px,26vw);
+  /* product bar layer (parallax + entrance separated).
+     .prod is a fixed-aspect box so multiple .inner layers can overlap (absolute)
+     and cross-slide during a transition without collapsing the box height. */
+  .prod{position:absolute;top:50%;left:50%;width:min(320px,26vw);aspect-ratio:.6;
     transform:translate(-50%,-50%) translate3d(var(--px,0px),var(--py,0px),0);
     will-change:transform;}
-  .prod .inner{will-change:transform,opacity;display:block;filter:drop-shadow(0 26px 34px rgba(0,0,0,.42));
+  .prod .inner{position:absolute;inset:0;will-change:transform,opacity;
+    filter:drop-shadow(0 26px 34px rgba(0,0,0,.42));
     transform:rotate(var(--rot,0deg));}
-  .prod svg,.prod img{width:100%;display:block;}
+  .prod svg,.prod img{width:100%;height:100%;object-fit:contain;display:block;}
 
   /* ===== center strip ===== */
   .center{background-color:var(--maroon);box-shadow:inset 0 0 130px rgba(0,0,0,.14);
@@ -111,13 +115,15 @@
   .entering .desc{animation:fadeIn .75s .30s var(--ease) both;}
   .entering .attrs{animation:fadeIn .75s .40s var(--ease) both;}
   .entering .btn{animation:popIn .6s .52s var(--ease) both;}
-  .entering .p-left  .inner{animation:barIn 1s .14s var(--ease) both;}
-  .entering .p-right .inner{animation:barIn 1s .24s var(--ease) both;}
+  /* bars are driven per-layer (JS toggles b-in / b-out) so the outgoing bar and the
+     incoming bar animate at the SAME time — you see the new bar arrive as the old
+     one leaves, while the colour is still sweeping. */
+  .prod .inner.b-in {animation:barIn 1s var(--ease-io) both;}
+  .prod .inner.b-out{animation:barOut 1s var(--ease-io) both;}
+  .p-right .inner.b-in,.p-right .inner.b-out{animation-delay:.06s;}
 
   .leaving .logo,.leaving .eyebrow span,.leaving .desc,.leaving .attrs,.leaving .btn{animation:fadeOut .45s var(--ease-in) both;}
   .leaving .title .line{animation:maskDown .5s var(--ease-in) both;}
-  .leaving .p-left  .inner,
-  .leaving .p-right .inner{animation:barOut .55s var(--ease-in) both;}
 
   /* ===== per-panel color blend: each panel dissolves to its new colour behind a soft diagonal edge ===== */
   .pv{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;
@@ -148,7 +154,7 @@
     <div class="panel side">
       <div class="pv"></div>
       <div class="wm">Veloura</div>
-      <div class="prod p-left" data-depth="26"><span class="inner" id="prodL"></span></div>
+      <div class="prod p-left" data-depth="26" id="prodL"></div>
     </div>
 
     <!-- CENTER STRIP -->
@@ -174,7 +180,7 @@
     <div class="panel side">
       <div class="pv"></div>
       <div class="wm">Veloura</div>
-      <div class="prod p-right" data-depth="26"><span class="inner" id="prodR"></span></div>
+      <div class="prod p-right" data-depth="26" id="prodR"></div>
     </div>
 
     <!-- nav arrows at frame level so the panel's overflow:hidden can't clip them -->
@@ -221,14 +227,36 @@
     d.onclick=()=>{if(k!==i){go(k>i?1:-1,k);}};dots.appendChild(d);});
   const dotEls=[...dots.children];
 
+  // ---- product bars: two overlapping layers per side so out+in run together ----
+  function bars(s){return [[$('prodL'),s.wrap,`Veloura ${s.l2} bar, wrapped`],
+                           [$('prodR'),s.open,`Veloura ${s.l2} bar, opened`]];}
+  function layer(src,alt,cls){const sp=document.createElement('span');
+    sp.className='inner'+(cls?' '+cls:'');
+    sp.innerHTML=`<img decoding="async" src="${src}" alt="${alt}">`;return sp;}
+  // once a bar finishes sliding in, drop b-in so it rests in the visible base state
+  // (don't rely on animation fill persisting)
+  function settle(el){const done=()=>el.classList.remove('b-in');
+    const t=setTimeout(done,1300);
+    el.addEventListener('animationend',()=>{clearTimeout(t);done();},{once:true});}
+  function addIncoming(host,src,alt){const inn=layer(src,alt,'b-in');host.appendChild(inn);settle(inn);}
+  function initBars(s){bars(s).forEach(([host,src,alt])=>{host.innerHTML='';addIncoming(host,src,alt);});}
+  // slide the current bar out and the next bar in at the same moment
+  function swapBars(s){bars(s).forEach(([host,src,alt])=>{
+    host.querySelectorAll('.inner.b-out').forEach(o=>o.remove()); // drop a stale leaver
+    host.querySelectorAll('.inner').forEach(o=>{                  // current -> outgoing
+      o.classList.remove('b-in'); o.classList.add('b-out');
+      const t=setTimeout(()=>o.remove(),1400);
+      o.addEventListener('animationend',()=>{clearTimeout(t);o.remove();},{once:true});
+    });
+    addIncoming(host,src,alt);                                    // next -> incoming
+  });}
+
   function paint(s){
     $('eyebrow').textContent=s.eyebrow;
     $('l1').textContent=s.l1; $('l2').textContent=s.l2;
     $('desc').textContent=s.desc;
     frame.style.setProperty('--mauve',s.mauve);
     frame.style.setProperty('--maroon',s.maroon);
-    $('prodL').innerHTML=`<img loading="lazy" decoding="async" src="${s.wrap}" alt="Veloura ${s.l2} bar, wrapped">`;
-    $('prodR').innerHTML=`<img loading="lazy" decoding="async" src="${s.open}" alt="Veloura ${s.l2} bar, opened">`;
     dotEls.forEach((d,k)=>{d.classList.toggle('on',k===i);
       if(k===i){const bar=d.querySelector('i');bar.style.animation='none';void bar.offsetWidth;bar.style.animation='';}});
   }
@@ -251,6 +279,7 @@
     frame.querySelector('.center .pv').style.background=slides[ni].maroon;
     frame.classList.remove('blending','next','prev'); void frame.offsetWidth;
     frame.classList.add('blending',dir>0?'next':'prev');
+    swapBars(slides[ni]);                       // bars cross-slide NOW, with the colour sweep
     setClass('entering',false); setClass('leaving',true);
     setTimeout(()=>{
       i=ni; paint(slides[i]); void frame.offsetWidth; enter(); busy=false;
@@ -278,7 +307,7 @@
   stage.addEventListener('mouseenter',()=>{clearTimeout(timer);});
   stage.addEventListener('mouseleave',()=>{if(!busy){clearTimeout(timer);timer=setTimeout(()=>go(1),5000);}});
 
-  paint(slides[0]); enter();
+  paint(slides[0]); initBars(slides[0]); enter();
 </script>
 </body>
 </html>
