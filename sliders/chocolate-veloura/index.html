@@ -44,7 +44,8 @@
   .prod{position:absolute;top:50%;left:50%;width:min(320px,26vw);
     transform:translate(-50%,-50%) translate3d(var(--px,0px),var(--py,0px),0);
     will-change:transform;}
-  .prod .inner{will-change:transform,opacity;display:block;filter:drop-shadow(0 26px 34px rgba(0,0,0,.42));}
+  .prod .inner{will-change:transform,opacity;display:block;filter:drop-shadow(0 26px 34px rgba(0,0,0,.42));
+    transform:rotate(var(--rot,0deg));}
   .prod svg,.prod img{width:100%;display:block;}
 
   /* ===== center strip ===== */
@@ -89,14 +90,17 @@
   @keyframes fadeIn   {from{opacity:0;transform:translateX(calc(var(--dir,1)*54px))}to{opacity:1;transform:translateX(0)}}
   @keyframes fadeOut  {from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(calc(var(--dir,1)*-44px))}}
   @keyframes popIn    {from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
-  @keyframes barIn    {from{opacity:0;transform:translateX(calc(var(--dir,1)*160px)) rotate(calc(var(--rot,0deg)*1.8))}
+  /* incoming bar slides in from the side (no fade); outgoing slides fully off-panel,
+     clipped by the panel's overflow:hidden — the right bar clips at the centre seam */
+  @keyframes barIn    {from{opacity:1;transform:translateX(calc(var(--dir,1)*170%)) rotate(var(--rot,0deg))}
                         to{opacity:1;transform:translateX(0) rotate(var(--rot,0deg))}}
   @keyframes barOut   {from{opacity:1;transform:translateX(0) rotate(var(--rot,0deg))}
-                        to{opacity:0;transform:translateX(calc(var(--dir,1)*-160px)) rotate(calc(var(--rot,0deg)*1.8))}}
+                        to{opacity:1;transform:translateX(calc(var(--dir,1)*-170%)) rotate(var(--rot,0deg))}}
 
   /* prepared state */
   .anim .prod .inner{opacity:0;}
-  .title .line{transform:translateY(115%);}
+  /* resting state is fully revealed; maskUp/maskDown handle the reveal/hide during transitions */
+  .title .line{transform:translateY(0);}
 
   .p-left{--rot:-4deg;} .p-right{--rot:5deg;}
 
