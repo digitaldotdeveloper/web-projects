@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Golden Sky Hotel | Luxury Mediterranean Hotel in Batroun, Lebanon</title>
+<meta name="description" content="Discover The Golden Sky Hotel, a five-star Mediterranean retreat on Batroun's Phoenician Coast with sea-view suites, infinity pools, private terraces, luxury dining, spa, and golden sunset views." />
+<meta name="theme-color" content="#1d1812" />
+
+<link rel="icon" href="./assets/logo.webp" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js" defer></script>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+
+<style>
+/* ================================================================
+   THE GOLDEN SKY HOTEL · animation-faithful build
+   Pinned bracketed chapter headers · horizontal italic-word scrub
+   Alternating dark/cream chapters · clip-path arch reveals
+   ================================================================ */
+:root{
+  --paper:      #f4ebd9;
+  --paper-2:    #ebdfc6;
+  --paper-3:    #dccbac;
+  --ink:        #1d1812;
+  --ink-2:      #2a221a;
+  --ink-3:      rgba(29,24,18,0.66);
+  --ink-4:      rgba(29,24,18,0.40);
+  --line:       rgba(29,24,18,0.14);
+  --line-2:     rgba(29,24,18,0.28);
+
+  --gold:       #c69a47;
+  --gold-2:     #d9b56a;
+  --gold-3:     #a9802f;
+  --bronze:     #8b5a2a;
+  --sea:        #1f4a5a;
+  --sea-2:      #2e6478;
+  --olive:      #6a6b3e;
+  --amber:      #d97942;
+  --sand:       #d8c7a5;
+
+  --ff-disp:    'Cinzel', 'Trajan Pro', 'Times New Roman', serif;
+  --ff-edit:    'Cormorant Garamond', 'Times New Roman', serif;
+  --ff-ui:      'Inter Tight', system-ui, -apple-system, sans-serif;
+
+  --maxw: 1480px;
+  --pad:  clamp(20px, 4vw, 64px);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html, body{ width:100%; }
+html{ -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+body{
+  font-family: var(--ff-ui);
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+  line-height: 1.45;
+  font-feature-settings: "ss01" on, "liga" on;
+}
+img, video, svg, canvas{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+::selection{ background: var(--gold); color: var(--ink); }
+
+/* paper bg */
+.paper-bg{
+  position:fixed; inset:-5%; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse at 18% 10%, rgba(255,255,255,0.55), transparent 45%),
+    radial-gradient(ellipse at 82% 88%, rgba(217,121,66,0.10), transparent 55%),
+    var(--paper);
+}
+.paper-bg::after{
+  content:''; position:absolute; inset:0; opacity:.24; mix-blend-mode: multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='1200'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.020' numOctaves='3' seed='6'/><feColorMatrix values='0 0 0 0 0.58  0 0 0 0 0.46  0 0 0 0 0.30  0 0 0 0.07 0'/></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
+  background-size: 1200px 1200px;
+}
+.grain{
+  position:fixed; inset:-50%; z-index:200; pointer-events:none; opacity:.08; mix-blend-mode: multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>");
+}
+
+/* ================================================================
+   LOADER
+   ================================================================ */
+.curtain{
+  position:fixed; inset:0; z-index:9999; background: var(--paper);
+  display:grid; place-items:center; transition: opacity .9s ease .15s, visibility .9s ease .15s;
+}
+.curtain.gone{ opacity:0; visibility:hidden; pointer-events:none; }
+.curtain .inner{ text-align:center; max-width: 92%; }
+.curtain img{ width: clamp(180px, 22vw, 320px); margin: 0 auto; opacity: .92; }
+.curtain .bar{ margin: 24px auto 0; width: 220px; height:1px; background: rgba(29,24,18,0.15); position:relative; overflow:hidden; }
+.curtain .bar::after{ content:''; position:absolute; inset:0; width: 28%; background: var(--gold); animation: gsLoad 1.8s ease-in-out infinite; }
+@keyframes gsLoad{ 0%{ transform: translateX(-100%);} 100%{ transform: translateX(360%);} }
+.curtain .meta{ margin-top:14px; font-size:10px; letter-spacing:.42em; color: var(--ink-3); }
+
+/* ================================================================
+   CURSOR
+   ================================================================ */
+.cursor{
+  position:fixed; top:0; left:0; width:8px; height:8px; border-radius:50%;
+  background: var(--ink); pointer-events:none; z-index:9998;
+  transform: translate(-50%,-50%); transition: width .25s ease, height .25s ease, background .2s ease, opacity .2s;
+}
+.cursor.lg{ width:54px; height:54px; background: var(--gold); opacity:.85; mix-blend-mode: multiply; }
+.dark-section .cursor{ background: var(--paper); }
+@media (hover:none){ .cursor{ display:none; } }
+
+/* ================================================================
+   TOPBAR + NAV PILL — both hidden, replaced by floating Reserve button
+   ================================================================ */
+.topbar{ display: none !important; }
+.navpill{ display: none !important; }
+
+/* floating Reserve button — always visible in top-right corner */
+.reserve-fab{
+  position: fixed; top: 22px; right: var(--pad); z-index: 140;
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 14px 26px; border-radius: 999px;
+  background: var(--gold); color: var(--ink);
+  font-family: var(--ff-ui); font-size: 11px; letter-spacing: .3em;
+  text-transform: uppercase; font-weight: 600;
+  box-shadow: 0 14px 32px rgba(29,24,18,0.30), 0 2px 6px rgba(29,24,18,0.15);
+  transition: background .3s ease, transform .3s ease, padding .3s ease;
+  cursor: pointer;
+}
+.reserve-fab:hover{ background: var(--gold-2); transform: translateY(-2px); }
+.reserve-fab svg{ width: 13px; height: 13px; flex-shrink: 0; }
+.reserve-fab .dot{
+  width: 7px; height: 7px; border-radius: 50%; background: var(--ink);
+  animation: fabPulse 2s ease-in-out infinite;
+}
+@keyframes fabPulse{
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(0.7); opacity: 0.5; }
+}
+@media (max-width: 600px){
+  .reserve-fab{ padding: 12px 18px; font-size: 10px; letter-spacing: .24em; top: 18px; right: 18px; }
+  .reserve-fab .label-long{ display: none; }
+}
+
+/* ================================================================
+   BRACKETED CHAPTER HEADER (pinned at top of each chapter)
+   "[LABEL] · THE GOLDEN SKY · [LABEL]" with chapter pill below
+   ================================================================ */
+.head-strip{
+  position: absolute; top: 0; left: 0; right: 0; z-index: 14;
+  padding: 22px var(--pad) 18px;
+  border-bottom: 1px solid currentColor;
+  border-color: rgba(29,24,18,0.18);
+  background: inherit;
+}
+.head-strip .row{
+  display:flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.head-strip .side{
+  font-family: var(--ff-ui); font-size: 11px; letter-spacing: .42em; text-transform: uppercase;
+  color: inherit; opacity:.75; flex:1; white-space: nowrap;
+}
+.head-strip .side.r{ text-align: right; }
+.head-strip .wm{
+  font-family: var(--ff-disp); font-weight: 600;
+  font-size: clamp(20px, 2.4vw, 38px); letter-spacing: .18em; text-indent: .18em;
+  text-align: center;
+}
+.head-strip .pill{
+  display:flex; align-items: center; gap: 12px; justify-content:center;
+  margin: 18px auto 0; width: max-content;
+  padding: 8px 18px; border-radius: 999px;
+  background: var(--ink); color: var(--paper);
+  font-family: var(--ff-disp); font-size: 10px; letter-spacing: .38em;
+}
+.head-strip .pill .dot{ width:5px; height:5px; border-radius:50%; background: var(--gold-2); }
+.dark-section .head-strip{ border-color: rgba(244,235,217,0.18); }
+.dark-section .head-strip .pill{ background: var(--paper); color: var(--ink); }
+.dark-section .head-strip .pill .dot{ background: var(--gold-3); }
+@media (max-width: 700px){
+  .head-strip .side{ display:none; }
+  .head-strip .wm{ font-size: 22px; letter-spacing: .14em; }
+}
+
+/* anchored bottom chapter pill */
+.foot-pill{
+  position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
+  z-index: 14;
+  display:inline-flex; align-items:center; gap: 14px;
+  background: var(--ink); color: var(--paper);
+  padding: 10px 22px; border-radius: 999px;
+  font-family: var(--ff-disp); font-size: 10px; letter-spacing: .38em;
+}
+.foot-pill .dot{ width:5px; height:5px; border-radius:50%; background: var(--gold-2); }
+.dark-section .foot-pill{ background: var(--paper); color: var(--ink); }
+.dark-section .foot-pill .dot{ background: var(--gold-3); }
+
+/* ================================================================
+   BIGWORD (giant italic word, horizontal scrub behind chapter)
+   ================================================================ */
+.bigword{
+  position: absolute; left: 0; right: 0; bottom: 70px;
+  pointer-events:none; z-index: 3; overflow: hidden; height: clamp(80px, 18vw, 280px);
+}
+.bigword .w{
+  display: inline-block; white-space: nowrap;
+  font-family: var(--ff-edit); font-style: italic; font-weight: 500;
+  font-size: clamp(120px, 26vw, 420px); line-height: 1; letter-spacing: -0.02em;
+  color: rgba(29,24,18,0.16);
+  will-change: transform;
+  padding-left: 8vw;
+}
+.dark-section .bigword .w{ color: rgba(244,235,217,0.14); }
+
+/* ================================================================
+   CHAPTER (positioning container)
+   ================================================================ */
+.chapter{
+  position: relative; z-index: 2;
+  min-height: 100vh;
+  padding: 130px var(--pad) 100px;
+}
+.chapter.dark-section{ background: var(--ink); color: var(--paper); }
+.chapter.sea-section{ background: var(--sea); color: var(--paper); }
+.chapter.cream-section{ background: var(--paper); }
+
+/* ================================================================
+   HERO
+   ================================================================ */
+.hero{
+  position: relative; z-index: 4;
+  padding: 90px var(--pad) 50px; min-height: 100vh;
+  display:flex; flex-direction: column;
+}
+.hero .head-strip{ position: relative; padding: 0 0 16px; margin-bottom: 30px; }
+.hero .head-strip .pill{ margin-top: 16px; }
+
+.hero .wm-mega{
+  position: relative; z-index: 6; text-align: center; margin: 14px auto 30px;
+}
+.hero h1.wm{
+  font-family: var(--ff-disp); font-weight: 700;
+  font-size: clamp(46px, 9.5vw, 168px);
+  letter-spacing: .08em; text-indent: .08em;
+  color: var(--ink); line-height: 1;
+}
+.hero h1.wm .char{ display:inline-block; transform: translateY(110%); }
+.hero h1.wm .small{
+  display:block; font-size: .28em; letter-spacing: .56em; margin-top: 16px;
+  color: var(--gold-3); font-weight: 500; text-indent: .56em;
+  display:flex; align-items:center; justify-content:center; gap: 18px;
+}
+.hero h1.wm .small::before, .hero h1.wm .small::after{
+  content:''; width: clamp(40px, 6vw, 96px); height: 1px; background: var(--gold-3);
+}
+
+.hero .tag-pill{
+  margin: 16px auto 32px; display:flex; align-items:center; justify-content:center; gap: 14px;
+  font-family: var(--ff-edit); font-style: italic; font-size: clamp(14px, 1.3vw, 17px); color: var(--ink);
+  padding: 10px 24px; border: 1px solid var(--ink); border-radius: 999px;
+  width: max-content; max-width: 92vw;
+  background: rgba(244,235,217,0.7); backdrop-filter: blur(4px);
+}
+.hero .tag-pill .ornm{ width: 12px; height: 12px; color: var(--gold); flex-shrink:0; }
+.hero .tag-pill .ornm svg{ width:100%; height:100%; fill: currentColor; }
+
+.hero .triptych{
+  position: relative; z-index: 4; display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr; gap: clamp(16px, 2vw, 32px);
+  flex: 1; align-items: stretch; min-height: 58vh;
+}
+.hero .arch{
+  position: relative; overflow: hidden;
+  border-top-left-radius: 50% 30%;
+  border-top-right-radius: 50% 30%;
+  background: var(--ink);
+  clip-path: inset(0 0 0 0);
+}
+.hero .arch.tall{ aspect-ratio: 3/5; }
+.hero .arch.taller{ aspect-ratio: 3/5.4; align-self: end; }
+.hero .arch .imgwrap{ position:absolute; inset:0; }
+.hero .arch .imgwrap img{
+  width:100%; height: 115%; object-fit: cover; transform: translateY(-5%);
+  will-change: transform;
+}
+.hero .arch::after{
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(29,24,18,0.0) 55%, rgba(29,24,18,0.65) 100%);
+}
+.hero .arch .lbl{
+  position:absolute; bottom: 22px; left: 0; right: 0; z-index: 2; text-align: center;
+  color: var(--paper); font-size: 10px; letter-spacing: .42em; text-transform: uppercase;
+}
+.hero .arch .lbl b{ display:block; font-family: var(--ff-edit); font-style: italic; font-weight: 500; font-size: clamp(18px, 1.7vw, 24px); letter-spacing: 0; text-transform: none; margin-top: 6px; }
+@media (max-width: 900px){
+  .hero .triptych{ grid-template-columns: 1fr; gap: 14px; min-height: auto; }
+  .hero .arch.tall, .hero .arch.taller{ aspect-ratio: 4/5; }
+}
+
+.hero .cta-row{
+  position: relative; z-index: 5; margin: 28px auto 0;
+  display:flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+}
+.hero .cta-row a{
+  padding: 12px 22px; font-size: 11px; letter-spacing: .28em; text-transform: uppercase;
+  border-radius: 999px; transition: background .3s, color .3s, transform .3s;
+  font-weight: 600;
+}
+.hero .cta-row .primary{ background: var(--gold); color: var(--ink); }
+.hero .cta-row .primary:hover{ background: var(--gold-2); transform: translateY(-1px); }
+.hero .cta-row .ghost{ background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+.hero .cta-row .ghost:hover{ background: var(--ink); color: var(--paper); }
+
+.hero .scroll-cue{
+  margin: 30px auto 0; display:flex; flex-direction: column; align-items: center; gap: 12px;
+  font-size: 10px; letter-spacing: .42em; text-transform: uppercase; color: var(--ink-3);
+}
+.hero .scroll-cue::after{
+  content:''; width:1px; height: 48px; background: var(--ink); opacity:.5; animation: cueLine 2.4s ease-in-out infinite;
+}
+@keyframes cueLine{ 0%,100%{ transform: scaleY(1);} 50%{ transform: scaleY(.4);} }
+
+/* ================================================================
+   DIVIDER
+   ================================================================ */
+.divider{
+  position: relative; padding: 22px var(--pad); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  background: rgba(29,24,18,0.03); overflow: hidden;
+}
+.divider .scroll{
+  display:inline-flex; gap: 60px; animation: gsMq 36s linear infinite; align-items:center;
+  font-family: var(--ff-disp); font-size: 14px; letter-spacing: .42em; color: var(--ink);
+  white-space: nowrap;
+}
+.divider .scroll .ornm{ color: var(--gold); }
+@keyframes gsMq{ to{ transform: translateX(-50%); } }
+
+/* ================================================================
+   GENERIC CHAPTER LAYOUT
+   ================================================================ */
+.chapter .container{ position: relative; z-index: 5; max-width: 1640px; margin: 0 auto; }
+
+/* character split helper — used by GSAP scroll text reveal */
+.tch{ display: inline-block; will-change: transform; }
+.tword{ display: inline-block; overflow: hidden; vertical-align: bottom; }
+
+/* triptych of arches inside a chapter */
+.chapter .triptych{
+  display:grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(16px, 2vw, 28px);
+}
+@media (max-width: 900px){ .chapter .triptych{ grid-template-columns: 1fr; } }
+.chapter .triptych.two{ grid-template-columns: 1fr 1fr; }
+@media (max-width: 900px){ .chapter .triptych.two{ grid-template-columns: 1fr; } }
+
+/* single arch card */
+.arch-card{
+  position:relative; aspect-ratio: 4/5.3; overflow:hidden;
+  border-top-left-radius: 50% 24%;
+  border-top-right-radius: 50% 24%;
+  background: var(--ink);
+  will-change: clip-path;
+}
+.arch-card.wide{ aspect-ratio: 5/4; }
+.arch-card .imgwrap{ position:absolute; inset:0; }
+.arch-card .imgwrap img{ width:100%; height: 116%; object-fit: cover; transform: translateY(-2%); will-change: transform; transition: transform 1.4s cubic-bezier(.22,.61,.36,1); }
+.arch-card:hover .imgwrap img{ transform: translateY(-4%) scale(1.04); }
+.arch-card::after{ content:''; position:absolute; inset:0; background: linear-gradient(180deg, transparent 50%, rgba(29,24,18,0.65)); }
+.arch-card .body{ position:absolute; left: 0; right: 0; bottom: 28px; padding: 0 28px; z-index:2; color: var(--paper); text-align: center; }
+.arch-card .ix{ font-family: var(--ff-disp); font-size: 11px; letter-spacing: .42em; color: var(--gold-2); }
+.arch-card h4{
+  margin-top: 10px; font-family: var(--ff-disp); font-weight: 500; font-size: clamp(20px, 1.9vw, 30px);
+  letter-spacing: .14em; text-indent: .14em;
+}
+.arch-card h4 .it{ display:block; font-family: var(--ff-edit); font-style: italic; font-weight: 400; font-size: .58em; color: var(--gold-2); letter-spacing: 0; text-indent: 0; margin-top: 4px; }
+.arch-card .meta{ margin-top: 14px; font-size: 10px; letter-spacing: .32em; color: rgba(244,235,217,0.72); text-transform: uppercase; display:flex; justify-content:center; gap: 16px; flex-wrap:wrap; }
+.arch-card .meta span:not(:first-child)::before{ content: '· '; color: var(--gold-2); margin-right: 4px; }
+.arch-card .price{ margin-top: 14px; font-family: var(--ff-edit); font-style: italic; font-size: 15px; color: var(--paper); }
+
+/* chapter title block (centered, under top strip, above content) */
+.chapter .title-block{
+  text-align: center; max-width: 900px; margin: 0 auto 60px;
+  position: relative; z-index: 5;
+}
+.chapter .title-block h2{
+  font-family: var(--ff-edit); font-style: italic; font-weight: 500;
+  font-size: clamp(34px, 4.6vw, 64px); line-height: 1.1;
+  color: inherit;
+}
+.chapter .title-block p{
+  font-family: var(--ff-edit); font-size: clamp(17px, 1.4vw, 21px); line-height: 1.7;
+  color: inherit; opacity:.78; margin: 22px auto 0; max-width: 720px;
+}
+.chapter .title-block .kicker{
+  font-size: 10px; letter-spacing: .42em; text-transform: uppercase;
+  color: var(--gold-3); margin-bottom: 18px;
+}
+.dark-section .title-block .kicker, .sea-section .title-block .kicker{ color: var(--gold-2); }
+.chapter .title-block .quote{ font-family: var(--ff-edit); font-style: italic; font-size: clamp(22px, 2.2vw, 32px); color: inherit; margin-top: 24px; }
+
+/* body grid (split layout when needed) */
+.chapter .split{
+  display: grid; grid-template-columns: 1.05fr .95fr; gap: 70px; align-items: center;
+  margin-top: 30px;
+}
+.chapter .split.reverse{ direction: rtl; }
+.chapter .split.reverse > *{ direction: ltr; }
+@media (max-width: 900px){ .chapter .split, .chapter .split.reverse{ grid-template-columns: 1fr; gap: 40px; direction: ltr; } }
+
+.chapter .split .body p{ font-family: var(--ff-edit); font-size: clamp(17px, 1.3vw, 19px); line-height: 1.75; opacity:.85; margin-top: 18px; }
+.chapter .split .body p.lead{ font-family: var(--ff-edit); font-style: italic; font-size: clamp(20px, 1.8vw, 28px); opacity: 1; }
+.chapter .split .body .kicker{ font-size: 11px; letter-spacing: .42em; text-transform: uppercase; color: var(--gold-3); margin-bottom: 10px; }
+.dark-section .split .body .kicker, .sea-section .split .body .kicker{ color: var(--gold-2); }
+.chapter .split .body ul{ list-style:none; display:grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; margin-top: 10px; }
+.chapter .split .body ul li{ font-family: var(--ff-edit); font-size: 17px; padding-left: 18px; position: relative; opacity:.85; }
+.chapter .split .body ul li::before{ content:'✦'; position:absolute; left: 0; color: var(--gold); font-size: .8em; top: 4px; }
+.chapter .split .body .meta{
+  display:flex; gap: 30px; padding-top: 22px; margin-top: 18px; border-top: 1px solid currentColor;
+  border-color: rgba(29,24,18,0.18); font-size: 10px; letter-spacing: .36em; opacity:.7; text-transform: uppercase;
+}
+.dark-section .split .body .meta, .sea-section .split .body .meta{ border-color: rgba(244,235,217,0.2); }
+.chapter .split .body .meta b{ display:block; font-family: var(--ff-edit); font-style: italic; font-size: 22px; font-weight: 500; letter-spacing: 0; text-transform:none; margin-top:6px; opacity:1; }
+
+/* full-bleed feature image */
+.feature-img{
+  position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: var(--ink);
+  margin-top: 40px;
+}
+.feature-img img{ width:100%; height: 110%; object-fit: cover; transform: translateY(-2%); will-change: transform; }
+.feature-img::after{
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(29,24,18,0.10) 0%, transparent 30%, transparent 60%, rgba(29,24,18,0.55) 100%);
+}
+.feature-img .cap{
+  position:absolute; left: 0; right: 0; bottom: 32px; text-align: center; color: var(--paper);
+  z-index: 2; padding: 0 var(--pad);
+}
+.feature-img .cap .ix{ font-family: var(--ff-disp); font-size: 11px; letter-spacing: .42em; color: var(--gold-2); }
+.feature-img .cap p{ margin-top: 10px; font-family: var(--ff-edit); font-style: italic; font-size: clamp(18px, 1.8vw, 26px); }
+
+/* ================================================================
+   STATS
+   ================================================================ */
+.stats{ background: var(--ink); color: var(--paper); padding: 70px var(--pad); position: relative; }
+.stats .row{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: var(--maxw); margin:0 auto; }
+@media (max-width: 900px){ .stats .row{ grid-template-columns: repeat(2, 1fr); } }
+.stats .stat .n{ font-family: var(--ff-disp); font-size: clamp(48px, 5.6vw, 84px); letter-spacing: .04em; }
+.stats .stat .n .u{ font-size: .35em; color: var(--gold-2); margin-left: 6px; }
+.stats .stat .lab{ margin-top: 14px; font-size: 11px; letter-spacing: .36em; color: rgba(244,235,217,0.6); text-transform: uppercase; }
+
+/* ================================================================
+   DINING MENU LIST
+   ================================================================ */
+.dining-menu{ margin-top: 36px; border-top: 1px solid currentColor; border-color: rgba(244,235,217,0.2); }
+.dining-menu .item{
+  padding: 18px 0; border-bottom: 1px solid rgba(244,235,217,0.12);
+  display:flex; justify-content: space-between; align-items: baseline; gap: 24px;
+}
+.dining-menu .item .ttl{ font-family: var(--ff-edit); font-style: italic; font-size: 22px; }
+.dining-menu .item .ttl small{ display:block; font-style: normal; font-family: var(--ff-ui); font-size: 11px; letter-spacing: .26em; opacity:.55; margin-top: 4px; text-transform: uppercase; }
+.dining-menu .item .px{ font-family: var(--ff-disp); font-size: 14px; color: var(--gold-2); letter-spacing: .12em; }
+.reserve-line{ margin-top: 30px; display:inline-flex; align-items: center; gap: 14px; padding: 14px 26px; background: var(--gold); color: var(--ink); border-radius: 999px; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; font-weight: 600; transition: background .3s, transform .3s; }
+.reserve-line:hover{ background: var(--gold-2); transform: translateY(-1px); }
+
+/* ================================================================
+   GUESTBOOK
+   ================================================================ */
+.guestbook{ padding: clamp(80px, 14vh, 160px) var(--pad); position: relative; z-index: 2; }
+.guestbook .quote{
+  margin: 0 auto; max-width: 1020px; text-align: center;
+  font-family: var(--ff-edit); font-style: italic; font-size: clamp(28px, 3.6vw, 48px);
+  line-height: 1.3; color: var(--ink);
+}
+.guestbook .quote .mark{ color: var(--gold); }
+.guestbook .by{ margin-top: 22px; text-align: center; font-size: 10px; letter-spacing: .42em; color: var(--ink-3); text-transform: uppercase; }
+.guestbook .by b{ display:block; color: var(--ink); font-family: var(--ff-edit); font-style: italic; font-size: 18px; letter-spacing: 0; text-transform:none; margin-bottom: 4px; }
+
+/* ================================================================
+   LOCATION
+   ================================================================ */
+.location{ background: var(--paper-2); padding: clamp(80px, 14vh, 160px) var(--pad); position: relative; z-index: 2; }
+.location .container{ max-width: var(--maxw); margin: 0 auto; }
+.location .grid{ display:grid; grid-template-columns: 1.1fr 1fr; gap: 80px; align-items: center; }
+@media (max-width: 900px){ .location .grid{ grid-template-columns: 1fr; gap: 50px; } }
+.location .map-wrap{ position:relative; padding: 40px; background: var(--paper); border: 1px solid var(--line); }
+.location .map-wrap::before, .location .map-wrap::after{ content:''; position:absolute; width: 30px; height: 30px; border: 1px solid var(--ink); }
+.location .map-wrap::before{ top:-1px; left:-1px; border-right: 0; border-bottom: 0; }
+.location .map-wrap::after{ bottom:-1px; right:-1px; border-left: 0; border-top: 0; }
+.location svg.map{ width: 100%; height: auto; }
+.location svg.map .water{ fill: rgba(31,74,90,0.16); }
+.location svg.map .land{ fill: rgba(29,24,18,0.06); stroke: rgba(29,24,18,0.35); stroke-width: 1; }
+.location svg.map .lab{ font-family: var(--ff-ui); font-size: 10px; fill: var(--ink-3); letter-spacing: .26em; text-transform: uppercase; }
+.location svg.map .city{ font-family: var(--ff-disp); font-size: 14px; fill: var(--ink); letter-spacing: .18em; }
+.location svg.map .city.acc{ fill: var(--gold-3); }
+.location svg.map .ring{ fill: none; stroke: var(--gold); transform-origin: center; animation: gsRing 2.2s ease-out infinite; }
+@keyframes gsRing{ 0%{ r: 6; opacity: .6; } 100%{ r: 36; opacity: 0; } }
+.location .info h3{ font-family: var(--ff-disp); font-weight: 600; font-size: clamp(32px, 4.4vw, 60px); letter-spacing: .08em; line-height: 1.05; color: var(--ink); text-indent: .08em; }
+.location .info h3 em{ font-style: italic; color: var(--gold-3); font-family: var(--ff-edit); font-weight: 400; letter-spacing: 0; text-indent: 0; }
+.location .info p{ margin-top: 24px; font-family: var(--ff-edit); font-size: 19px; line-height: 1.7; color: var(--ink-2); max-width: 480px; }
+.location .info .table{ margin-top: 36px; border-top: 1px solid var(--line); }
+.location .info .table .row{ display:flex; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.location .info .table .row .k{ font-size: 10px; letter-spacing: .36em; color: var(--ink-3); text-transform: uppercase; }
+.location .info .table .row .v{ font-family: var(--ff-edit); font-style: italic; font-size: 19px; color: var(--ink); }
+
+/* ================================================================
+   FINAL CTA
+   ================================================================ */
+.finalcta{
+  position: relative; padding: clamp(120px, 22vh, 240px) var(--pad);
+  text-align: center; color: var(--paper); overflow: hidden;
+}
+.finalcta .bg{ position:absolute; inset:0; z-index:0; }
+.finalcta .bg img{ width:100%; height:120%; object-fit:cover; will-change: transform; }
+.finalcta .bg::after{ content:''; position:absolute; inset:0; background: linear-gradient(180deg, rgba(29,24,18,0.55) 0%, rgba(29,24,18,0.35) 50%, rgba(29,24,18,0.85) 100%); }
+.finalcta .inner{ position:relative; z-index: 1; max-width: 980px; margin: 0 auto; }
+.finalcta .it{ font-family: var(--ff-edit); font-style: italic; color: var(--gold-2); font-size: clamp(16px, 1.7vw, 22px); margin-bottom: 22px; }
+.finalcta h2{
+  font-family: var(--ff-disp); font-weight: 600;
+  font-size: clamp(48px, 10vw, 180px); letter-spacing: .06em; text-indent: .06em;
+  line-height: .92;
+}
+.finalcta p.lead{ margin: 32px auto 0; max-width: 640px; font-family: var(--ff-edit); font-style: italic; font-size: clamp(18px, 1.7vw, 24px); line-height: 1.5; color: rgba(244,235,217,0.92); }
+.finalcta .cta-row{ margin-top: 48px; display:flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.finalcta .cta-row a{ padding: 14px 26px; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; border-radius: 999px; transition: background .3s, color .3s, transform .3s; font-weight: 600; }
+.finalcta .cta-row .primary{ background: var(--gold); color: var(--ink); }
+.finalcta .cta-row .primary:hover{ background: var(--gold-2); transform: translateY(-1px); }
+.finalcta .cta-row .ghost{ background: transparent; color: var(--paper); border: 1px solid rgba(244,235,217,0.6); }
+.finalcta .cta-row .ghost:hover{ background: var(--paper); color: var(--ink); }
+
+/* ================================================================
+   RESERVATION
+   ================================================================ */
+.reserve-sec{ position: relative; text-align: center; padding: clamp(80px, 14vh, 160px) var(--pad); z-index: 2; }
+.reserve-sec .it{ font-family: var(--ff-edit); font-style: italic; color: var(--gold-3); font-size: 22px; margin-bottom: 22px; }
+.reserve-sec h2{ font-family: var(--ff-disp); font-weight: 600; font-size: clamp(40px, 7vw, 120px); letter-spacing: .08em; text-indent: .08em; color: var(--ink); line-height: .95; }
+.reserve-sec .lead{ margin: 28px auto 0; max-width: 600px; font-family: var(--ff-edit); font-style: italic; font-size: 22px; line-height: 1.5; color: var(--ink-2); }
+.reserve-sec .form{ margin: 60px auto 0; max-width: 1080px; background: var(--paper); border: 1px solid var(--ink); border-radius: 999px; display: flex; align-items: stretch; padding: 8px; gap: 0; }
+.reserve-sec .form .field{ flex:1; padding: 12px 22px; text-align: left; border-right: 1px solid var(--line); }
+.reserve-sec .form .field:last-of-type{ border-right: 0; }
+.reserve-sec .form .field .k{ font-size: 10px; letter-spacing: .34em; text-transform: uppercase; color: var(--ink-3); }
+.reserve-sec .form .field input, .reserve-sec .form .field select{ width: 100%; background: transparent; border: 0; outline: none; font-family: var(--ff-edit); font-style: italic; font-size: 19px; color: var(--ink); margin-top: 6px; }
+.reserve-sec .form button{ background: var(--ink); color: var(--paper); padding: 0 36px; border-radius: 999px; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; font-weight: 600; transition: background .3s; }
+.reserve-sec .form button:hover{ background: var(--gold); color: var(--ink); }
+@media (max-width: 900px){
+  .reserve-sec .form{ flex-direction: column; border-radius: 28px; padding: 12px; }
+  .reserve-sec .form .field{ border-right: 0; border-bottom: 1px solid var(--line); }
+  .reserve-sec .form button{ padding: 18px; margin-top: 8px; border-radius: 999px; }
+}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+.foot{ background: var(--ink); color: var(--paper); padding: 100px var(--pad) 40px; position: relative; z-index: 2; }
+.foot .lockup{ text-align:center; margin-bottom: 70px; }
+.foot .lockup img{ height: 120px; width: auto; margin: 0 auto; opacity:.92; }
+.foot .lockup .it{ margin-top: 14px; font-family: var(--ff-edit); font-style: italic; font-size: 20px; color: rgba(244,235,217,0.65); }
+.foot .grid{ display:grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 60px; max-width: var(--maxw); margin: 0 auto; }
+@media (max-width: 900px){ .foot .grid{ grid-template-columns: 1fr 1fr; gap: 40px; } }
+.foot .col h5{ font-family: var(--ff-disp); font-size: 11px; letter-spacing: .42em; color: var(--gold-2); margin-bottom: 22px; font-weight: 500; }
+.foot .col a, .foot .col p{ display:block; padding: 6px 0; font-family: var(--ff-edit); font-size: 17px; color: rgba(244,235,217,0.76); }
+.foot .col a:hover{ color: var(--paper); }
+.foot .bot{ margin-top: 80px; padding-top: 32px; border-top: 1px solid rgba(244,235,217,0.16); max-width: var(--maxw); margin-left:auto; margin-right:auto; display:flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 10px; letter-spacing: .34em; color: rgba(244,235,217,0.5); text-transform: uppercase; }
+
+/* ================================================================
+   Reveal helpers (GSAP applies)
+   ================================================================ */
+/* ================================================================
+   HERO — slide-right carousel with 4 differently-laid-out slides
+   Every slide enters from the left and exits to the right (all moves
+   rightward). The "trick" — each slide has its own internal layout
+   (single / split / triptych / arch portal) and its own enter animation.
+   ================================================================ */
+.hero-bg{
+  position: absolute; inset: 0; z-index: 1; overflow: hidden; background: var(--ink);
+}
+.hero-bg .slide{
+  position: absolute; inset: 0;
+  transform: translateX(-100%);
+  transition: transform 1.6s cubic-bezier(.65,.05,.36,1);
+  will-change: transform;
+  overflow: hidden;
+}
+.hero-bg .slide.is-active{ transform: translateX(0); }
+.hero-bg .slide.is-leaving{ transform: translateX(100%); }
+
+/* shared: global ken-burns scale on active slide imagery */
+.hero-bg .slide img{ width:100%; height:100%; object-fit:cover; will-change: transform; }
+
+/* --- Layout 1 · FULL --- one fullscreen image, slow zoom */
+.hero-bg .slide.layout-full img{ transform: scale(1.06); }
+.hero-bg .slide.layout-full.is-active img{ animation: kbFull 12s linear forwards; }
+@keyframes kbFull{ 0%{ transform: scale(1.06); } 100%{ transform: scale(1.20) translate(-2%, 1.5%); } }
+
+/* --- Layout 2 · SPLIT --- two vertical halves; halves separate apart */
+.hero-bg .slide.layout-split{ display:flex; }
+.hero-bg .slide.layout-split .half{ position: relative; flex: 1; overflow: hidden; }
+.hero-bg .slide.layout-split .half .gap{
+  position: absolute; top:0; bottom:0; width:1px; background: var(--paper);
+  opacity:.4;
+}
+.hero-bg .slide.layout-split .half.left .gap{ right:0; }
+.hero-bg .slide.layout-split .half.right .gap{ left:0; }
+.hero-bg .slide.layout-split .half img{ transform: scale(1.10) translateX(0); }
+.hero-bg .slide.layout-split.is-active .half.left img{ animation: kbSplitL 12s linear forwards; }
+.hero-bg .slide.layout-split.is-active .half.right img{ animation: kbSplitR 12s linear forwards; }
+@keyframes kbSplitL{ 0%{ transform: scale(1.10) translateX(0); } 100%{ transform: scale(1.18) translateX(-3%); } }
+@keyframes kbSplitR{ 0%{ transform: scale(1.10) translateX(0); } 100%{ transform: scale(1.18) translateX(3%); } }
+
+/* --- Layout 3 · TRIPTYCH --- three vertical columns, stagger drop in */
+.hero-bg .slide.layout-triptych{ display:flex; gap: 4px; background: var(--ink); }
+.hero-bg .slide.layout-triptych .col{
+  flex: 1; position: relative; overflow: hidden;
+  transform: translateY(102%);
+  transition: transform 1.2s cubic-bezier(.22,.61,.36,1);
+}
+.hero-bg .slide.layout-triptych.is-active .col{ transform: translateY(0); }
+.hero-bg .slide.layout-triptych.is-active .col:nth-child(1){ transition-delay: 0.6s; }
+.hero-bg .slide.layout-triptych.is-active .col:nth-child(2){ transition-delay: 0.9s; }
+.hero-bg .slide.layout-triptych.is-active .col:nth-child(3){ transition-delay: 1.2s; }
+.hero-bg .slide.layout-triptych .col img{ transform: scale(1.08); }
+.hero-bg .slide.layout-triptych.is-active .col img{ animation: kbTri 12s linear forwards; }
+@keyframes kbTri{ 0%{ transform: scale(1.08); } 100%{ transform: scale(1.18) translateY(-1%); } }
+
+/* --- Layout 4 · ARCH PORTAL --- single arched image on dark frame */
+.hero-bg .slide.layout-arch{
+  display:flex; align-items: stretch; justify-content: center; background: var(--ink);
+  padding: 5vh 8vw 8vh;
+}
+.hero-bg .slide.layout-arch .arch-frame{
+  flex: 1; position: relative; overflow: hidden;
+  border-top-left-radius: 50% 24%;
+  border-top-right-radius: 50% 24%;
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1.4s cubic-bezier(.65,.05,.36,1) 0.7s;
+}
+.hero-bg .slide.layout-arch.is-active .arch-frame{ clip-path: inset(0% 0 0 0); }
+.hero-bg .slide.layout-arch .arch-frame img{ transform: scale(1.08); }
+.hero-bg .slide.layout-arch.is-active .arch-frame img{ animation: kbArch 12s linear forwards; }
+@keyframes kbArch{ 0%{ transform: scale(1.08); } 100%{ transform: scale(1.22) translate(-2%, -1%); } }
+
+/* shared dark gradient overlay so text stays readable */
+.hero-bg::after{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index: 5;
+  background:
+    linear-gradient(180deg, rgba(29,24,18,0.32) 0%, rgba(29,24,18,0.06) 35%, rgba(29,24,18,0.30) 70%, rgba(29,24,18,0.90) 100%);
+}
+
+/* per-slide text overlay (the "text on top of images that animates") */
+.hero-bg .slide .slide-overlay{
+  position: absolute; left: 0; right: 0; bottom: 26vh; z-index: 6;
+  text-align: center; padding: 0 var(--pad);
+  color: var(--paper); opacity: 0; transform: translateY(40px);
+  transition: opacity 1.2s cubic-bezier(.22,.61,.36,1) 0.6s, transform 1.2s cubic-bezier(.22,.61,.36,1) 0.6s;
+}
+.hero-bg .slide.is-active .slide-overlay{ opacity: 1; transform: translateY(0); }
+.hero-bg .slide .slide-overlay .ix{
+  font-family: var(--ff-disp); font-size: 11px; letter-spacing: .48em;
+  color: var(--gold-2); margin-bottom: 14px;
+}
+.hero-bg .slide .slide-overlay h2{
+  font-family: var(--ff-edit); font-style: italic; font-weight: 400;
+  font-size: clamp(40px, 6vw, 96px); line-height: 1.04; color: var(--paper); letter-spacing: -0.01em;
+}
+.hero-bg .slide .slide-overlay .sub{
+  margin-top: 14px; font-family: var(--ff-ui); font-size: 12px; letter-spacing: .42em;
+  text-transform: uppercase; color: rgba(244,235,217,0.78);
+}
+.hero.cinematic{
+  padding: 0; height: 100vh; min-height: 720px; display: flex; flex-direction: column;
+  justify-content: space-between; color: var(--paper);
+}
+.hero.cinematic .head-strip{
+  position: absolute; top: 0; left:0; right:0; z-index: 8;
+  background: transparent; border-bottom-color: rgba(244,235,217,0.18);
+  color: var(--paper);
+}
+.hero.cinematic .head-strip .wm{ color: var(--paper); }
+.hero.cinematic .head-strip .side{ color: rgba(244,235,217,0.78); }
+.hero.cinematic .head-strip .pill{ background: var(--paper); color: var(--ink); }
+.hero.cinematic .center-stack{
+  position: relative; z-index: 6; flex: 1;
+  display:flex; flex-direction: column; align-items:center; justify-content: center; gap: 24px;
+  padding: 200px var(--pad) 60px; text-align: center;
+}
+.hero.cinematic h1.wm{ color: var(--paper); }
+.hero.cinematic h1.wm .small{ color: var(--gold-2); }
+.hero.cinematic h1.wm .small::before, .hero.cinematic h1.wm .small::after{ background: var(--gold-2); }
+.hero.cinematic .tag-pill{
+  color: var(--paper); border-color: rgba(244,235,217,0.6); background: rgba(29,24,18,0.35);
+}
+.hero.cinematic .cta-row .ghost{ color: var(--paper); border-color: rgba(244,235,217,0.6); }
+.hero.cinematic .cta-row .ghost:hover{ background: var(--paper); color: var(--ink); }
+.hero.cinematic .scroll-cue{ color: rgba(244,235,217,0.7); padding-bottom: 30px; }
+.hero.cinematic .scroll-cue::after{ background: var(--paper); opacity:.6; }
+.hero.cinematic .slide-dots{
+  position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+  z-index: 7; display:flex; gap: 8px;
+}
+/* CTA row anchored to lower portion of hero, BELOW slide caption text */
+.hero.cinematic .cta-row.hero-cta{
+  position: absolute; left: 0; right: 0; bottom: 14vh;
+  z-index: 7; padding: 0 var(--pad); justify-content: center;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+@media (max-width: 700px){
+  .hero.cinematic .cta-row.hero-cta{ bottom: 11vh; }
+  .hero-bg .slide .slide-overlay{ bottom: 32vh !important; }
+}
+
+/* ================================================================
+   WILD ANIMATIONS — cursor trail, 3D tilt, magnetic buttons, scramble
+   ================================================================ */
+.cursor-trail{
+  position: fixed; top: 0; left: 0; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--gold); pointer-events: none; z-index: 9997;
+  mix-blend-mode: difference; will-change: transform, opacity;
+}
+
+/* 3D tilt for cards — perspective container around each */
+.arch-card, .hscroll-section .hs-card, .hero-bg .slide.layout-arch .arch-frame{
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.chapter[data-chapter] .container, .chapter .triptych, .chapter .split, .chapter .more-row, .chapter .triptych.two{
+  perspective: 1400px;
+}
+
+/* magnetic button base — actual offset applied via JS */
+.cta-row a, .reserve-fab, .reserve-line, .nav-cta-floating{
+  will-change: transform;
+}
+
+/* glitch/shimmer ornament — drifts across chapter headers */
+.chapter .head-strip{ position: relative; overflow: hidden; }
+.chapter .head-strip::before{
+  content:''; position: absolute; top:0; bottom:0; width: 30%;
+  background: linear-gradient(90deg, transparent, rgba(201,154,71,0.18), transparent);
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+.chapter.is-armed .head-strip::before{ animation: gsShimmer 3.5s ease-in-out infinite; }
+@keyframes gsShimmer{
+  0%, 100% { transform: translateX(-100%); }
+  50%      { transform: translateX(380%); }
+}
+
+/* sticky scroll progress bar — top of viewport */
+.scroll-progress{
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--amber) 100%);
+  z-index: 200; box-shadow: 0 0 18px rgba(201,154,71,0.6);
+  pointer-events: none;
+  transition: width 0.15s linear;
+}
+.hero.cinematic .slide-dots button{
+  width: 26px; height: 1px; background: rgba(244,235,217,0.4); transition: background .3s;
+  cursor: pointer;
+}
+.hero.cinematic .slide-dots button.is-active{ background: var(--gold-2); }
+
+/* ================================================================
+   HORIZONTAL-SCROLL SUITES (Chapter III variant)
+   ================================================================ */
+.hscroll-section{
+  position: relative; height: 100vh; overflow: hidden; padding: 0;
+}
+.hscroll-section .hs-track{
+  display: flex; align-items: center; height: 100%;
+  padding: 130px var(--pad) 100px; gap: clamp(20px, 2.4vw, 36px);
+  will-change: transform;
+}
+.hscroll-section .hs-intro{
+  flex: 0 0 clamp(320px, 38vw, 520px); text-align: left; align-self: center;
+  padding-right: clamp(20px, 2vw, 40px);
+}
+.hscroll-section .hs-intro .kicker{ font-size: 11px; letter-spacing: .42em; text-transform: uppercase; color: var(--gold-3); margin-bottom: 14px; }
+.hscroll-section .hs-intro h2{ font-family: var(--ff-edit); font-style: italic; font-weight: 500; font-size: clamp(34px, 4.4vw, 58px); line-height: 1.08; color: var(--ink); }
+.hscroll-section .hs-intro p{ margin-top: 22px; font-family: var(--ff-edit); font-size: clamp(17px, 1.3vw, 19px); line-height: 1.7; color: var(--ink-2); }
+.hscroll-section .hs-intro .scroll-hint{
+  margin-top: 30px; font-size: 10px; letter-spacing: .42em; text-transform: uppercase; color: var(--ink-3);
+  display:flex; align-items: center; gap: 14px;
+}
+.hscroll-section .hs-intro .scroll-hint::after{ content:''; width: 40px; height: 1px; background: var(--ink); opacity:.4; }
+.hscroll-section .hs-card{
+  flex: 0 0 clamp(280px, 28vw, 400px);
+  height: clamp(420px, 70vh, 620px);
+  position: relative; overflow: hidden;
+  border-top-left-radius: 50% 26%;
+  border-top-right-radius: 50% 26%;
+  background: var(--ink);
+}
+.hscroll-section .hs-card .imgwrap{ position:absolute; inset:0; }
+.hscroll-section .hs-card img{ width:100%; height: 108%; object-fit: cover; transform: translateY(-2%); will-change: transform; }
+.hscroll-section .hs-card::after{ content:''; position:absolute; inset:0; background: linear-gradient(180deg, transparent 45%, rgba(29,24,18,0.78)); }
+.hscroll-section .hs-card .body{ position:absolute; left:0; right:0; bottom: 28px; padding: 0 28px; z-index: 2; color: var(--paper); text-align: center; }
+.hscroll-section .hs-card .ix{ font-family: var(--ff-disp); font-size: 11px; letter-spacing: .42em; color: var(--gold-2); }
+.hscroll-section .hs-card h4{ margin-top: 10px; font-family: var(--ff-disp); font-weight: 500; font-size: clamp(20px, 1.9vw, 28px); letter-spacing: .14em; text-indent: .14em; }
+.hscroll-section .hs-card h4 .it{ display:block; font-family: var(--ff-edit); font-style: italic; font-weight: 400; font-size: .58em; color: var(--gold-2); letter-spacing: 0; text-indent: 0; margin-top: 4px; }
+.hscroll-section .hs-card .meta{ margin-top: 14px; font-size: 10px; letter-spacing: .32em; color: rgba(244,235,217,0.72); text-transform: uppercase; display:flex; justify-content:center; gap: 16px; flex-wrap:wrap; }
+.hscroll-section .hs-card .meta span:not(:first-child)::before{ content: '· '; color: var(--gold-2); margin-right: 4px; }
+.hscroll-section .hs-card .price{ margin-top: 12px; font-family: var(--ff-edit); font-style: italic; font-size: 15px; color: var(--paper); }
+.hscroll-section .hs-progress{
+  position: absolute; bottom: 70px; left: 0; right: 0; z-index: 9;
+  padding: 0 var(--pad); display: flex; align-items: center; gap: 16px;
+  font-family: var(--ff-disp); font-size: 10px; letter-spacing: .42em; color: var(--ink-3);
+}
+.hscroll-section .hs-progress .bar{ flex: 1; height: 1px; background: var(--line-2); position: relative; max-width: 360px; }
+.hscroll-section .hs-progress .bar i{ position: absolute; inset: 0 auto 0 0; width: 8%; background: var(--gold); transition: width .15s linear; }
+
+/* ================================================================
+   CURTAIN TRANSITION — wipes between chapters
+   sticky positioning so curtain covers the viewport as chapter enters,
+   then clip-path wipes it away to reveal the chapter content.
+   ================================================================ */
+.chapter-curtain{
+  position: sticky; top: 0; left: 0; right: 0;
+  width: 100%; height: 100vh; z-index: 18;
+  margin-bottom: -100vh; /* zero out flow so chapter content sits where it would */
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  will-change: clip-path;
+  clip-path: inset(0% 0 0 0);
+}
+.chapter-curtain .label{
+  text-align: center; color: var(--paper);
+  font-family: var(--ff-disp); font-weight: 600;
+  font-size: clamp(36px, 8vw, 140px); letter-spacing: .14em; text-indent: .14em;
+  padding: 0 var(--pad); line-height: 1;
+}
+.chapter-curtain .label .ix{
+  display:block; font-family: var(--ff-disp); font-weight: 400; font-size: clamp(12px, 1vw, 14px); letter-spacing: .42em; color: var(--gold-2); margin-bottom: 18px; text-indent: 0;
+}
+.chapter-curtain .label .sub{
+  display:block; font-family: var(--ff-edit); font-style: italic; font-weight: 400; font-size: clamp(16px, 1.4vw, 20px); color: rgba(244,235,217,0.7); letter-spacing: 0; text-indent: 0; margin-top: 18px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="paper-bg" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- LOADER -->
+<div class="curtain" id="curtain">
+  <div class="inner">
+    <img decoding="async" src="./assets/logo.webp" alt="The Golden Sky Hotel">
+    <div class="bar"></div>
+    <div class="meta">Batroun · Phoenician Coast · Lebanon</div>
+  </div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<!-- FLOATING RESERVE BUTTON (always visible) -->
+<a href="#reserve" class="reserve-fab" aria-label="Reserve your stay">
+  <span class="dot" aria-hidden="true"></span>
+  <span class="label-long">Reserve Your Stay</span>
+  <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</a>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="side l">
+    <a href="#chapter-1">Coast</a>
+    <a href="#chapter-3">Suites</a>
+    <a href="#chapter-6">Dining</a>
+  </div>
+  <div class="center">
+    <a href="#top"><img decoding="async" src="./assets/logo.webp" alt="The Golden Sky Hotel" class="logo"/></a>
+  </div>
+  <div class="side r">
+    <a href="#chapter-5">Wellness</a>
+    <a href="#location">Batroun</a>
+    <a href="#reserve">Reserve</a>
+  </div>
+</div>
+
+<!-- STICKY NAV PILL -->
+<div class="navpill" id="navpill">
+  <img decoding="async" src="./assets/logo.webp" alt="" class="logo">
+  <a href="#chapter-1">I · Coast</a>
+  <span class="sep"></span>
+  <a href="#chapter-3">III · Suites</a>
+  <span class="sep"></span>
+  <a href="#chapter-4">IV · Water</a>
+  <span class="sep"></span>
+  <a href="#chapter-6">VI · Dining</a>
+  <span class="sep"></span>
+  <a href="#reserve" class="cta">Reserve Your Stay</a>
+</div>
+
+<!-- HERO — cinematic background (Ken Burns slideshow) -->
+<header class="hero cinematic" id="top">
+
+  <!-- background slideshow — 4 differently-laid-out slides, all slide right -->
+  <div class="hero-bg" id="heroBg">
+    <!-- Slide 1 · FULL -->
+    <div class="slide layout-full is-active" data-i="0">
+      <img fetchpriority="high" decoding="async" src="./assets/hero-1.webp" alt=""/>
+      <div class="slide-overlay">
+        <div class="ix">№ I — ABOVE THE MEDITERRANEAN</div>
+        <h2>Where golden sunsets meet the sea.</h2>
+        <div class="sub">Phoenician Coast · Batroun</div>
+      </div>
+    </div>
+    <!-- Slide 2 · SPLIT halves -->
+    <div class="slide layout-split" data-i="1">
+      <div class="half left"><img loading="lazy" decoding="async" src="./assets/hero-2.webp" alt=""/><div class="gap"></div></div>
+      <div class="half right"><img loading="lazy" decoding="async" src="./assets/arrival.webp" alt=""/></div>
+      <div class="slide-overlay">
+        <div class="ix">№ II — THE ARRIVAL</div>
+        <h2>A grand entrance into quiet luxury.</h2>
+        <div class="sub">Stone · Shadow · Light</div>
+      </div>
+    </div>
+    <!-- Slide 3 · TRIPTYCH columns -->
+    <div class="slide layout-triptych" data-i="2">
+      <div class="col"><img loading="lazy" decoding="async" src="./assets/suite-1.webp" alt=""/></div>
+      <div class="col"><img loading="lazy" decoding="async" src="./assets/suite-2.webp" alt=""/></div>
+      <div class="col"><img loading="lazy" decoding="async" src="./assets/suite-3.webp" alt=""/></div>
+      <div class="slide-overlay">
+        <div class="ix">№ III — THE SUITES</div>
+        <h2>Fourteen rooms, each opening to the sea.</h2>
+        <div class="sub">Deluxe · Terrace · Presidential</div>
+      </div>
+    </div>
+    <!-- Slide 4 · ARCH portal -->
+    <div class="slide layout-arch" data-i="3">
+      <div class="arch-frame"><img loading="lazy" decoding="async" src="./assets/hero-3.webp" alt=""/></div>
+      <div class="slide-overlay">
+        <div class="ix">№ IV — THE GOLDEN HOUR</div>
+        <h2>The chapter, every evening.</h2>
+        <div class="sub">Cabanas · Cocktails · Sunset</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l"></div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">Lebanon · Est. MMXXVI</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER · 0 — THE OVERTURE</span><span class="dot"></span></div>
+  </div>
+
+  <div class="cta-row hero-cta">
+    <a href="#chapter-1" class="primary">Enter the Experience</a>
+    <a href="#chapter-3" class="ghost">Explore the Hotel</a>
+    <a href="#reserve" class="ghost">Reserve Your Stay</a>
+  </div>
+
+  <div class="slide-dots" id="slideDots" aria-hidden="true">
+    <button class="is-active" data-i="0"></button>
+    <button data-i="1"></button>
+    <button data-i="2"></button>
+    <button data-i="3"></button>
+  </div>
+
+  <div class="scroll-cue">Scroll to discover</div>
+</header>
+
+<!-- DIVIDER -->
+<div class="divider" aria-hidden="true">
+  <div class="scroll">
+    <span>Where golden sunsets meet the Mediterranean Sea</span><span class="ornm">✦</span>
+    <span>A five-star retreat on the Phoenician Coast</span><span class="ornm">✦</span>
+    <span>Batroun · Lebanon · Since MMXXVI</span><span class="ornm">✦</span>
+    <span>Where golden sunsets meet the Mediterranean Sea</span><span class="ornm">✦</span>
+    <span>A five-star retreat on the Phoenician Coast</span><span class="ornm">✦</span>
+    <span>Batroun · Lebanon · Since MMXXVI</span><span class="ornm">✦</span>
+  </div>
+</div>
+
+<!-- CHAPTER I · THE COAST -->
+<section class="chapter cream-section" id="chapter-1" data-chapter data-bigword="coast" data-label="The Coast" data-pill="CHAPTER I · THE COAST">
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l">The Coast</div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">The Coast</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER I · THE COAST</span><span class="dot"></span></div>
+  </div>
+
+  <div class="bigword" aria-hidden="true"><div class="w">the coast — the coast — the coast —</div></div>
+
+  <div class="container">
+    <div class="title-block">
+      <div class="kicker">Where Batroun meets the sea</div>
+      <h2>Where the land does not end, but opens.</h2>
+      <p>The Golden Sky Hotel was imagined from the meeting point of stone and sea, heritage and modernity, stillness and light. Built above the Phoenician coast, the hotel follows the natural rhythm of the cliffs — terraces step toward the water, arches frame the horizon, pools reflect the sky. Every view returns to the Mediterranean.</p>
+    </div>
+
+    <div class="triptych">
+      <figure class="arch-card" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/hero-1.webp" alt="Mediterranean cliffside"/></div>
+        <div class="body"><div class="ix">№ I</div><h4>THE CLIFFS <span class="it">— Phoenician stone</span></h4></div>
+      </figure>
+      <figure class="arch-card" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/coast.webp" alt="Hotel coast aerial"/></div>
+        <div class="body"><div class="ix">№ II</div><h4>THE HORIZON <span class="it">— framed by arches</span></h4></div>
+      </figure>
+      <figure class="arch-card" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/water-1.webp" alt="Golden sunset coast"/></div>
+        <div class="body"><div class="ix">№ III</div><h4>THE GOLDEN HOUR <span class="it">— every evening</span></h4></div>
+      </figure>
+    </div>
+  </div>
+
+  <div class="foot-pill"><span class="dot"></span><span>CHAPTER I · THE COAST</span><span class="dot"></span></div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="row">
+    <div class="stat"><div class="n" data-count="5"><span class="n-val">0</span><span class="u">★</span></div><div class="lab">Five-star Mediterranean retreat</div></div>
+    <div class="stat"><div class="n" data-count="62"><span class="n-val">0</span><span class="u">suites</span></div><div class="lab">Each with a sea view</div></div>
+    <div class="stat"><div class="n" data-count="3"><span class="n-val">0</span><span class="u">pools</span></div><div class="lab">Infinity, above the Mediterranean</div></div>
+    <div class="stat"><div class="n" data-count="8"><span class="n-val">0</span><span class="u">chapters</span></div><div class="lab">Of slow Mediterranean living</div></div>
+  </div>
+</section>
+
+<!-- CHAPTER II · THE ARRIVAL -->
+<section class="chapter dark-section" id="chapter-2" data-chapter data-bigword="arrival" data-label="The Arrival" data-pill="CHAPTER II · THE ARRIVAL">
+  <div class="chapter-curtain" aria-hidden="true"><div class="label"><span class="ix">CHAPTER II</span>THE ARRIVAL<span class="sub">A grand entrance into quiet luxury</span></div></div>
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l">The Arrival</div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">The Arrival</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER II · THE ARRIVAL</span><span class="dot"></span></div>
+  </div>
+
+  <div class="bigword" aria-hidden="true"><div class="w">the arrival — the arrival — the arrival —</div></div>
+
+  <div class="container">
+    <div class="title-block">
+      <div class="kicker">Stone, shadow, and light</div>
+      <h2>A grand entrance into quiet luxury.</h2>
+      <p>The arrival begins with stone, shadow, and light. A private drive leads through landscaped gardens toward the hotel's monumental entrance, where arches, lanterns, and the golden wordmark welcome guests into a world of calm Mediterranean elegance. Luxury begins before the door opens.</p>
+    </div>
+
+    <div class="split">
+      <figure class="arch-card wide" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/arrival.webp" alt="Grand lobby with The Golden Sky wordmark"/></div>
+      </figure>
+      <div class="body">
+        <div class="kicker">A five-star arrival</div>
+        <p class="lead">Composed, never loud — the warm stone, the valet court, the scent of the sea, the soft movement of palms, the glow of sunset on the façade.</p>
+        <p>Every detail of the arrival is designed to feel deliberate. The drive curves to soften your approach. The colonnade frames the horizon. The first concierge greets you by name.</p>
+        <div class="meta">
+          <span>Entrance<b>Monumental Arches</b></span>
+          <span>Concierge<b>24 hours</b></span>
+          <span>Drive<b>Private</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-pill"><span class="dot"></span><span>CHAPTER II · THE ARRIVAL</span><span class="dot"></span></div>
+</section>
+
+<!-- CHAPTER III · THE SUITES — horizontal scroll -->
+<section class="chapter cream-section hscroll-section" id="chapter-3" data-chapter data-bigword="suites" data-hscroll>
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l">The Suites</div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">The Suites</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER III · THE SUITES</span><span class="dot"></span></div>
+  </div>
+
+  <div class="bigword" aria-hidden="true"><div class="w">the suites — the suites — the suites —</div></div>
+
+  <div class="hs-track" id="hsTrack">
+    <div class="hs-intro">
+      <div class="kicker">Rooms that open to the sea</div>
+      <h2>Each suite, a private retreat above the Mediterranean.</h2>
+      <p>Warm stone walls, soft linen, oak details, polished marble, and arched openings — every room is an exercise in calm Mediterranean refinement. Balconies open toward the sea. Some suites include outdoor jacuzzis where guests can watch the sunset from above the coast.</p>
+      <div class="scroll-hint">Drag · or scroll</div>
+    </div>
+
+    <figure class="hs-card">
+      <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/suite-1.webp" alt="Deluxe Sea View Room"/></div>
+      <div class="body">
+        <div class="ix">№ I</div>
+        <h4>DELUXE <span class="it">— sea view room</span></h4>
+        <div class="meta"><span>52 m²</span><span>King</span><span>Balcony</span></div>
+        <div class="price">from $640 / night</div>
+      </div>
+    </figure>
+    <figure class="hs-card">
+      <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/suite-2.webp" alt="Terrace Suite"/></div>
+      <div class="body">
+        <div class="ix">№ II</div>
+        <h4>TERRACE <span class="it">— suite</span></h4>
+        <div class="meta"><span>88 m²</span><span>King</span><span>Terrace</span></div>
+        <div class="price">from $980 / night</div>
+      </div>
+    </figure>
+    <figure class="hs-card">
+      <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/suite-3.webp" alt="Golden Sky Presidential Suite"/></div>
+      <div class="body">
+        <div class="ix">№ III</div>
+        <h4>GOLDEN SKY <span class="it">— presidential</span></h4>
+        <div class="meta"><span>184 m²</span><span>2 bedrooms</span><span>Sunset</span></div>
+        <div class="price">from $2,400 / night</div>
+      </div>
+    </figure>
+    <figure class="hs-card">
+      <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/suite-4.webp" alt="Private Jacuzzi Suite"/></div>
+      <div class="body">
+        <div class="ix">№ IV</div>
+        <h4>PRIVATE JACUZZI <span class="it">— suite</span></h4>
+        <div class="meta"><span>110 m²</span><span>Outdoor jacuzzi</span></div>
+        <div class="price">from $1,460 / night</div>
+      </div>
+    </figure>
+    <figure class="hs-card">
+      <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/dining-2.webp" alt="In-room hospitality"/></div>
+      <div class="body">
+        <div class="ix">№ V</div>
+        <h4>IN-ROOM <span class="it">— hospitality</span></h4>
+        <div class="meta"><span>Welcome ritual</span><span>Concierge</span></div>
+        <div class="price">included</div>
+      </div>
+    </figure>
+    <figure class="hs-card">
+      <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/celebrations.webp" alt="Private residence"/></div>
+      <div class="body">
+        <div class="ix">№ VI</div>
+        <h4>THE RESIDENCE <span class="it">— by enquiry</span></h4>
+        <div class="meta"><span>Entire wing</span><span>Sea-view</span></div>
+        <div class="price">on request</div>
+      </div>
+    </figure>
+  </div>
+
+  <div class="hs-progress">
+    <span id="hsIx">01 / 06</span>
+    <div class="bar"><i id="hsBar"></i></div>
+    <span>The Suites</span>
+  </div>
+
+  <div class="foot-pill"><span class="dot"></span><span>CHAPTER III · THE SUITES</span><span class="dot"></span></div>
+</section>
+
+<!-- CHAPTER IV · THE WATER -->
+<section class="chapter dark-section" id="chapter-4" data-chapter data-bigword="water" data-label="The Water" data-pill="CHAPTER IV · THE WATER">
+  <div class="chapter-curtain" aria-hidden="true"><div class="label"><span class="ix">CHAPTER IV</span>THE WATER<span class="sub">Pools, cabanas, and golden-hour stillness</span></div></div>
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l">The Water</div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">The Water</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER IV · THE WATER</span><span class="dot"></span></div>
+  </div>
+
+  <div class="bigword" aria-hidden="true"><div class="w">the water — the water — the water —</div></div>
+
+  <div class="container">
+    <div class="title-block">
+      <div class="kicker">Pools, cabanas, and golden-hour stillness</div>
+      <h2>Time becomes softer here.</h2>
+      <p>At the heart of the hotel, infinity pools stretch toward the horizon. The water reflects the sky, the stone, and the shifting colors of the Mediterranean day. Around the pool terraces, modern cabanas, soft loungers, and landscaped gardens create shaded spaces for slow afternoons before sunset.</p>
+    </div>
+
+    <div class="feature-img" data-arch>
+      <img loading="lazy" decoding="async" src="./assets/water-1.webp" alt="Aerial sunset view of The Golden Sky infinity pools" id="water-img"/>
+      <div class="cap">
+        <div class="ix">№ IV — The Water</div>
+        <p>Morning swims, quiet reading, golden reflections, and the gentle sound of water meeting stone.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-pill"><span class="dot"></span><span>CHAPTER IV · THE WATER</span><span class="dot"></span></div>
+</section>
+
+<!-- CHAPTER V · THE SPA -->
+<section class="chapter sea-section" id="chapter-5" data-chapter data-bigword="the spa" data-label="The Spa" data-pill="CHAPTER V · THE SPA">
+  <div class="chapter-curtain" aria-hidden="true" style="background: var(--sea);"><div class="label"><span class="ix">CHAPTER V</span>THE SPA<span class="sub">A sanctuary of stone and water</span></div></div>
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l">The Spa</div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">The Spa</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER V · THE SPA</span><span class="dot"></span></div>
+  </div>
+
+  <div class="bigword" aria-hidden="true"><div class="w">the spa — the spa — the spa —</div></div>
+
+  <div class="container">
+    <div class="title-block">
+      <div class="kicker">A sanctuary of stone and water</div>
+      <h2>Here, wellness is not performance. It is stillness.</h2>
+      <p>The spa is inspired by Mediterranean bathing rituals, Lebanese stone, and the quiet power of water. Warm arches, soft lighting, indoor pools, private treatment spaces, and calm textures create a place for restoration.</p>
+    </div>
+
+    <div class="split reverse">
+      <figure class="arch-card wide" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/spa-1.webp" alt="The Spa at The Golden Sky Hotel"/></div>
+      </figure>
+      <div class="body">
+        <div class="kicker">Stillness, not performance</div>
+        <p class="lead">Every detail is designed to slow the body and clear the mind.</p>
+        <ul>
+          <li>Indoor relaxation pool</li>
+          <li>Private treatment rooms</li>
+          <li>Couples' rituals</li>
+          <li>Sea-inspired therapies</li>
+          <li>Quiet lounge areas</li>
+          <li>Jacuzzi terraces</li>
+          <li>Meditation spaces</li>
+          <li>Hammam &amp; saunas</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-pill"><span class="dot"></span><span>CHAPTER V · THE SPA</span><span class="dot"></span></div>
+</section>
+
+<!-- CHAPTER VI · DINING -->
+<section class="chapter dark-section" id="chapter-6" data-chapter data-bigword="dining" data-label="Dining" data-pill="CHAPTER VI · DINING">
+  <div class="chapter-curtain" aria-hidden="true"><div class="label"><span class="ix">CHAPTER VI</span>DINING<span class="sub">Mediterranean under the Golden Sky</span></div></div>
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l">Dining</div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">Dining</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER VI · DINING</span><span class="dot"></span></div>
+  </div>
+
+  <div class="bigword" aria-hidden="true"><div class="w">dining — dining — dining —</div></div>
+
+  <div class="container">
+    <div class="title-block">
+      <div class="kicker">Mediterranean under the Golden Sky</div>
+      <h2>Breakfast begins with light over the water. Evenings unfold beneath limestone arches.</h2>
+      <p>Dining at The Golden Sky Hotel celebrates the flavors and rituals of the Lebanese coast. Fresh seafood, olive oil, herbs, seasonal produce, warm bread, mezze, and Mediterranean simplicity, served in refined sea-facing settings.</p>
+    </div>
+
+    <div class="split">
+      <figure class="arch-card wide" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/dining-1.webp" alt="Sunset terrace dining"/></div>
+      </figure>
+      <div class="body">
+        <div class="kicker">Four kitchens, one coastline</div>
+        <p class="lead">The cuisine is elegant, generous, and connected to the place it comes from.</p>
+
+        <div class="dining-menu">
+          <div class="item">
+            <div class="ttl">The Sea Terrace<small>Breakfast · Lunch · Dinner — open to the Mediterranean</small></div>
+            <div class="px">I</div>
+          </div>
+          <div class="item">
+            <div class="ttl">The Golden Table<small>Chef's tasting · Lebanese coast · 18 seats</small></div>
+            <div class="px">II</div>
+          </div>
+          <div class="item">
+            <div class="ttl">Sunset Lounge<small>Aperitivo · Lebanese wines · sunset hour</small></div>
+            <div class="px">III</div>
+          </div>
+          <div class="item">
+            <div class="ttl">Private Coastal Dining<small>For two · arranged on the cliff edge</small></div>
+            <div class="px">IV</div>
+          </div>
+        </div>
+
+        <a href="#reserve" class="reserve-line">Reserve a Table
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-pill"><span class="dot"></span><span>CHAPTER VI · DINING</span><span class="dot"></span></div>
+</section>
+
+<!-- CHAPTER VII · BATROUN -->
+<section class="chapter cream-section" id="chapter-7" data-chapter data-bigword="batroun" data-label="Batroun" data-pill="CHAPTER VII · BATROUN">
+  <div class="chapter-curtain" aria-hidden="true" style="background: var(--bronze);"><div class="label"><span class="ix">CHAPTER VII</span>BATROUN<span class="sub">Discover the Phoenician Coast</span></div></div>
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l">Batroun</div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">Batroun</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER VII · BATROUN</span><span class="dot"></span></div>
+  </div>
+
+  <div class="bigword" aria-hidden="true"><div class="w">batroun — batroun — batroun —</div></div>
+
+  <div class="container">
+    <div class="title-block">
+      <div class="kicker">Discover the Phoenician Coast</div>
+      <h2>One of Lebanon's most beautiful coastal stories.</h2>
+      <p>Old stone streets, the old souk, the historic Phoenician sea wall, sunset boat moments, local seafood, and the rhythm of a town shaped by sea and heritage. The Golden Sky Hotel is a private gateway to Batroun.</p>
+    </div>
+
+    <div class="triptych">
+      <figure class="arch-card" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/batroun-1.webp" alt="Phoenician sea wall"/></div>
+        <div class="body">
+          <div class="ix">№ I · Heritage</div>
+          <h4>THE SEA WALL <span class="it">— Phoenician stone</span></h4>
+          <div class="meta"><span>2,500 yrs</span><span>5 min walk</span></div>
+        </div>
+      </figure>
+      <figure class="arch-card" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/batroun-2.webp" alt="Old souk"/></div>
+        <div class="body">
+          <div class="ix">№ II · The Town</div>
+          <h4>OLD SOUK <span class="it">— stone streets</span></h4>
+          <div class="meta"><span>Souk walks</span><span>Seafood</span></div>
+        </div>
+      </figure>
+      <figure class="arch-card" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/batroun-3.webp" alt="Sunset boat moments"/></div>
+        <div class="body">
+          <div class="ix">№ III · On Water</div>
+          <h4>SUNSET BOATS <span class="it">— private moments</span></h4>
+          <div class="meta"><span>Charter</span><span>Wine tasting</span></div>
+        </div>
+      </figure>
+    </div>
+  </div>
+
+  <div class="foot-pill"><span class="dot"></span><span>CHAPTER VII · BATROUN</span><span class="dot"></span></div>
+</section>
+
+<!-- CHAPTER VIII · CELEBRATIONS -->
+<section class="chapter dark-section" id="chapter-8" data-chapter data-bigword="celebrations" data-label="Celebrations" data-pill="CHAPTER VIII · CELEBRATIONS">
+  <div class="chapter-curtain" aria-hidden="true"><div class="label"><span class="ix">CHAPTER VIII</span>CELEBRATIONS<span class="sub">Events above the Mediterranean</span></div></div>
+  <div class="head-strip">
+    <div class="row">
+      <div class="side l">Celebrations</div>
+      <div class="wm">THE&nbsp;GOLDEN&nbsp;SKY</div>
+      <div class="side r">Celebrations</div>
+    </div>
+    <div class="pill"><span class="dot"></span><span>CHAPTER VIII · CELEBRATIONS</span><span class="dot"></span></div>
+  </div>
+
+  <div class="bigword" aria-hidden="true"><div class="w">celebrations — celebrations —</div></div>
+
+  <div class="container">
+    <div class="title-block">
+      <div class="kicker">Events above the Mediterranean</div>
+      <h2>Weddings, retreats, and intimate gatherings — shaped by the sea, the arches, the light.</h2>
+      <p>With sea-facing terraces, grand stone architecture, golden sunset views, and refined interiors, The Golden Sky Hotel creates a dramatic setting for unforgettable celebrations.</p>
+    </div>
+
+    <div class="split reverse">
+      <figure class="arch-card wide" data-arch>
+        <div class="imgwrap"><img loading="lazy" decoding="async" src="./assets/celebrations.webp" alt="Grand hall for celebrations"/></div>
+      </figure>
+      <div class="body">
+        <div class="kicker">A dramatic Mediterranean setting</div>
+        <p class="lead">Every event is shaped by atmosphere — the sea, the arches, the light, and the feeling of arriving somewhere unforgettable.</p>
+        <ul>
+          <li>Sunset wedding terrace</li>
+          <li>Private dining courtyard</li>
+          <li>Grand reception hall</li>
+          <li>Rooftop cocktail terrace</li>
+          <li>Sea-view ceremony deck</li>
+          <li>Executive retreat spaces</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-pill"><span class="dot"></span><span>CHAPTER VIII · CELEBRATIONS</span><span class="dot"></span></div>
+</section>
+
+<!-- GUESTBOOK -->
+<section class="guestbook">
+  <div class="container" style="max-width:1080px;margin:0 auto;">
+    <p class="quote"><span class="mark">"</span>A house that looks the sea in the eye and never blinks. The Golden Sky is not a hotel. It is a feeling, written in stone.<span class="mark">"</span></p>
+    <div class="by">
+      <b>Maya Doueihi</b>
+      Travel + Leisure · Mediterranean Edition, 2026
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="location" id="location">
+  <div class="container">
+    <div class="title-block" style="margin-bottom:50px;">
+      <div class="kicker">The Mountain meets the Sea</div>
+      <h2 style="font-family: var(--ff-disp); font-weight: 600; font-size: clamp(34px, 5vw, 72px); letter-spacing:.08em; text-indent:.08em;">BATROUN</h2>
+      <p>Forty-five minutes from Beirut. The Mediterranean, at the door.</p>
+    </div>
+
+    <div class="grid">
+      <div class="map-wrap">
+        <svg viewBox="0 0 520 520" class="map" aria-label="Lebanon coast">
+          <rect class="water" x="0" y="0" width="200" height="520"/>
+          <path class="land" d="M200 30 L240 60 L260 110 L275 170 L285 220 L290 270 L285 320 L275 370 L260 420 L240 470 L210 490 L210 490 L200 520 L520 520 L520 0 L200 0 Z"/>
+          <g>
+            <circle cx="220" cy="120" r="3" fill="#1d1812"/><text x="232" y="124" class="lab">Tripoli</text>
+            <circle cx="240" cy="430" r="3" fill="#1d1812"/><text x="252" y="434" class="lab">Beirut</text>
+            <circle cx="260" cy="370" r="3" fill="#1d1812"/><text x="272" y="374" class="lab">Byblos</text>
+            <circle cx="225" cy="490" r="3" fill="#1d1812"/><text x="237" y="494" class="lab">Sidon</text>
+          </g>
+          <g>
+            <circle cx="225" cy="220" class="ring"/>
+            <circle cx="225" cy="220" class="ring" style="animation-delay:-1.1s"/>
+            <circle cx="225" cy="220" r="8" fill="#c69a47"/>
+            <circle cx="225" cy="220" r="3.5" fill="#f4ebd9"/>
+            <text x="240" y="216" class="city acc">BATROUN</text>
+            <text x="240" y="234" class="lab">The Golden Sky Hotel</text>
+          </g>
+          <path d="M310 80 Q 360 140, 340 220 T 380 360 Q 410 420, 380 500" fill="none" stroke="rgba(106,107,62,0.45)" stroke-width="1" stroke-dasharray="2 4"/>
+          <text x="395" y="270" class="lab" transform="rotate(90 395 270)">Mount Lebanon Ridge</text>
+          <g transform="translate(485 60)">
+            <circle r="18" fill="none" stroke="#1d1812" stroke-width=".5" opacity=".6"/>
+            <path d="M0 -18 L3 0 L0 18 L-3 0 Z" fill="#c69a47"/>
+            <text y="-24" text-anchor="middle" class="lab" fill="#1d1812">N</text>
+          </g>
+          <text x="80" y="260" class="lab" style="font-size:11px; letter-spacing:.5em;" transform="rotate(-90 80 260)">Mediterranean Sea</text>
+        </svg>
+      </div>
+
+      <div class="info">
+        <h3>ON THE PHOENICIAN COAST <em>— between Beirut and the sea.</em></h3>
+        <p>The Golden Sky Hotel sits above Batroun's historic stone coastline, forty-five minutes north of Beirut, fifteen south of Tripoli, and ten minutes' walk from the old souk and the 2,500-year-old Phoenician sea wall.</p>
+        <div class="table">
+          <div class="row"><span class="k">From Beirut (BEY)</span><span class="v">45 min · private car</span></div>
+          <div class="row"><span class="k">From Byblos</span><span class="v">20 min · drive</span></div>
+          <div class="row"><span class="k">Old Souk &amp; Sea Wall</span><span class="v">10 min · walk</span></div>
+          <div class="row"><span class="k">From Tripoli</span><span class="v">25 min · drive</span></div>
+          <div class="row"><span class="k">Cedars of God</span><span class="v">1 h 30 · mountain road</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="finalcta">
+  <div class="bg"><img loading="lazy" decoding="async" src="./assets/cta-bg.webp" alt="" id="cta-bg-img"/></div>
+  <div class="inner">
+    <p class="it">Above the sea, beneath the golden sky</p>
+    <h2>BEGIN YOUR<br/>GOLDEN ESCAPE</h2>
+    <p class="lead">A new Mediterranean experience awaits in Batroun. Fourteen golden hours a day. One private coastline.</p>
+    <div class="cta-row">
+      <a href="#reserve" class="primary">Reserve Your Stay</a>
+      <a href="#chapter-3" class="ghost">Explore Rooms &amp; Suites</a>
+      <a href="#chapter-8" class="ghost">Plan Your Celebration</a>
+    </div>
+  </div>
+</section>
+
+<!-- RESERVATION -->
+<section class="reserve-sec" id="reserve">
+  <div class="container">
+    <p class="it">a five-star Mediterranean retreat — please be our guest</p>
+    <h2>RESERVE YOUR STAY</h2>
+    <p class="lead">Reach the Golden Sky concierge directly — usually within the hour, always within the day.</p>
+
+    <form class="form" onsubmit="event.preventDefault(); alert('Thank you — the concierge will write to you shortly.');">
+      <div class="field"><div class="k">Arrival</div><input type="text" placeholder="Thu · 18 Sept 2026"/></div>
+      <div class="field"><div class="k">Departure</div><input type="text" placeholder="Sun · 21 Sept 2026"/></div>
+      <div class="field"><div class="k">Guests</div>
+        <select><option>2 Adults</option><option>2 Adults · 1 Child</option><option>4 Adults</option></select>
+      </div>
+      <div class="field"><div class="k">Suite</div>
+        <select><option>Any Suite</option><option>Deluxe Sea View Room</option><option>Terrace Suite</option><option>Private Jacuzzi Suite</option><option>Golden Sky Presidential Suite</option></select>
+      </div>
+      <button type="submit">Enquire</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="lockup">
+    <img decoding="async" src="./assets/logo.webp" alt="The Golden Sky Hotel">
+    <div class="it">Where golden sunsets meet the Mediterranean Sea.</div>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <h5>The Hotel</h5>
+      <p>Phoenician Coast<br/>Batroun · Lebanon</p>
+      <p>34° 15′ N · 35° 39′ E</p>
+      <p>A five-star Mediterranean retreat.</p>
+    </div>
+    <div class="col">
+      <h5>The Chapters</h5>
+      <a href="#chapter-1">I · The Coast</a>
+      <a href="#chapter-2">II · The Arrival</a>
+      <a href="#chapter-3">III · The Suites</a>
+      <a href="#chapter-4">IV · The Water</a>
+      <a href="#chapter-5">V · The Spa</a>
+      <a href="#chapter-6">VI · Dining</a>
+      <a href="#chapter-7">VII · Batroun</a>
+      <a href="#chapter-8">VIII · Celebrations</a>
+    </div>
+    <div class="col">
+      <h5>Contact</h5>
+      <a href="mailto:concierge@thegoldenskyhotel.com">concierge@thegoldenskyhotel.com</a>
+      <a href="tel:+961600000">+961 6 000 000</a>
+      <p>Concierge · 24 hours</p>
+    </div>
+    <div class="col">
+      <h5>Follow</h5>
+      <a href="#">Instagram · @thegoldenskyhotel</a>
+      <a href="#">Journal · The Golden Hour</a>
+      <a href="#">Press · 2026 Dossier</a>
+    </div>
+  </div>
+  <div class="bot">
+    <span>© The Golden Sky Hotel · Batroun · MMXXVI</span>
+    <span>Where golden sunsets meet the Mediterranean Sea.</span>
+  </div>
+</footer>
+
+<!-- ============================================================ -->
+<!-- SCRIPTS -->
+<!-- ============================================================ -->
+<script type="module">
+import * as THREE from 'three';
+
+const $  = (s, p=document) => p.querySelector(s);
+const $$ = (s, p=document) => Array.from(p.querySelectorAll(s));
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- LOADER ---------- */
+function dismissCurtain(){ const c = $('#curtain'); if (c) c.classList.add('gone'); }
+window.addEventListener('load', () => setTimeout(dismissCurtain, 900));
+setTimeout(dismissCurtain, 3200);
+
+/* ---------- CURSOR ---------- */
+(function(){
+  const c = $('#cursor');
+  if (!c) return;
+  let x = innerWidth/2, y = innerHeight/2, tx = x, ty = y;
+  window.addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; }, {passive:true});
+  function raf(){
+    x += (tx - x) * 0.22; y += (ty - y) * 0.22;
+    c.style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%)`;
+    requestAnimationFrame(raf);
+  }
+  raf();
+  $$('a, button, .arch-card, .arch, .feature-img').forEach(el => {
+    el.addEventListener('pointerenter', () => c.classList.add('lg'));
+    el.addEventListener('pointerleave', () => c.classList.remove('lg'));
+  });
+})();
+
+/* ---------- LENIS smooth scroll ---------- */
+let lenis = null;
+function initLenis(){
+  if (!window.Lenis || prefersReduced) return;
+  lenis = new Lenis({ duration: 1.25, easing: t => Math.min(1, 1.001 - Math.pow(2, -10*t)), smoothWheel: true });
+  window.lenis = lenis; // expose for auto-scroll recorder script
+  (function raf(time){ lenis.raf(time); requestAnimationFrame(raf); })();
+  if (window.gsap && window.ScrollTrigger){
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(t => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+  $$('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id && id.length > 1){
+        const tgt = document.querySelector(id);
+        if (tgt){ e.preventDefault(); lenis.scrollTo(tgt, { offset: -20 }); }
+      }
+    });
+  });
+}
+
+/* ---------- GSAP — pin headers, scrub bigwords, reveal arches, parallax ---------- */
+function initGSAP(){
+  if (!window.gsap || !window.ScrollTrigger) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  // hero wordmark char reveal
+  gsap.set('#hero-wm .char', { y: '110%' });
+  gsap.to('#hero-wm .char', { y: '0%', duration: 1.2, ease: 'expo.out', stagger: 0.045, delay: 0.9 });
+  gsap.from('#hero-wm .small', { opacity: 0, y: 20, duration: 1, delay: 1.5, ease: 'expo.out' });
+  gsap.from('.hero .tag-pill', { opacity: 0, y: 20, duration: 1, delay: 1.3, ease: 'expo.out' });
+  gsap.from('.hero .cta-row', { opacity: 0, y: 20, duration: 1, delay: 1.6, ease: 'expo.out' });
+  gsap.from('.hero .scroll-cue', { opacity: 0, duration: 1, delay: 2.0, ease: 'sine.out' });
+  gsap.from('.hero .head-strip', { opacity: 0, y: -10, duration: 1, delay: 0.7, ease: 'expo.out' });
+
+  // hero triptych arches reveal
+  gsap.set('.hero .arch', { clipPath: 'inset(100% 0% 0% 0%)' });
+  gsap.to('.hero .arch', { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.6, ease: 'expo.out', stagger: 0.12, delay: 1.0 });
+  $$('.hero .arch .imgwrap img').forEach((img, i) => {
+    gsap.to(img, { yPercent: -8 - i*2, ease: 'none',
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+    });
+  });
+
+  // ====== per-chapter behaviors ======
+  $$('[data-chapter]').forEach(ch => {
+    if (ch.hasAttribute('data-hscroll')) return; // hscroll chapter handled below
+    const head = ch.querySelector('.head-strip');
+    const foot = ch.querySelector('.foot-pill');
+    const word = ch.querySelector('.bigword .w');
+
+    // 1) Pin head-strip across the chapter
+    if (head){
+      ScrollTrigger.create({
+        trigger: ch,
+        start: 'top top',
+        end: 'bottom top',
+        pin: head,
+        pinSpacing: false
+      });
+    }
+
+    // 2) Pin foot-pill across the chapter (anchored to bottom)
+    if (foot){
+      ScrollTrigger.create({
+        trigger: ch,
+        start: 'top bottom',
+        end: 'bottom bottom',
+        pin: foot,
+        pinSpacing: false
+      });
+    }
+
+    // 3) Bigword horizontal scrub — moves across the section as you scroll through it
+    if (word){
+      // compute travel distance from word width
+      const measure = () => {
+        const w = word.scrollWidth;
+        const vw = window.innerWidth;
+        return Math.max(w - vw + 200, 200);
+      };
+      const distance = measure();
+      gsap.fromTo(word,
+        { x: window.innerWidth * 0.2 },
+        {
+          x: -distance, ease: 'none',
+          scrollTrigger: {
+            trigger: ch,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 0.6,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+    }
+  });
+
+  // 4) Every .arch-card / .feature-img: clip-path reveal + image parallax
+  $$('[data-arch]').forEach(el => {
+    if (el.closest('.hero')) return; // hero handled above
+    gsap.set(el, { clipPath: 'inset(100% 0% 0% 0%)' });
+    gsap.to(el, {
+      clipPath: 'inset(0% 0% 0% 0%)',
+      ease: 'expo.out', duration: 1.4,
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+    });
+    const img = el.querySelector('.imgwrap img, img');
+    if (img){
+      gsap.fromTo(img,
+        { yPercent: 6 },
+        { yPercent: -6, ease: 'none',
+          scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true }
+        });
+    }
+  });
+
+  // 5) reveal animations for title blocks / body blocks
+  $$('.title-block, .split .body, .stats .stat').forEach(el => {
+    gsap.fromTo(el, { y: 40, opacity: 0 }, {
+      y: 0, opacity: 1, duration: 1, ease: 'expo.out',
+      scrollTrigger: { trigger: el, start: 'top 88%' }
+    });
+  });
+
+  // 6) count-ups
+  $$('.stat .n').forEach(el => {
+    const target = parseInt(el.dataset.count, 10) || 0;
+    const valEl = el.querySelector('.n-val');
+    const obj = { v: 0 };
+    gsap.to(obj, {
+      v: target, duration: 1.8, ease: 'expo.out',
+      onUpdate: () => { valEl.textContent = Math.floor(obj.v).toLocaleString(); },
+      scrollTrigger: { trigger: el, start: 'top 85%' }
+    });
+  });
+
+  // 7) sticky pill nav after hero
+  const np = $('#navpill');
+  ScrollTrigger.create({
+    trigger: '.hero', start: 'bottom top',
+    onEnter: () => np.classList.add('show'),
+    onLeaveBack: () => np.classList.remove('show')
+  });
+
+  // 8) hero wordmark expand as scroll out
+  gsap.to('#hero-wm', { letterSpacing: '0.20em', ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }});
+
+  // 9) final CTA background parallax
+  gsap.to('#cta-bg-img', { yPercent: -12, ease: 'none', scrollTrigger: { trigger: '.finalcta', start: 'top bottom', end: 'bottom top', scrub: true }});
+
+  // 10) HORIZONTAL-SCROLL chapters (Suites)
+  $$('[data-hscroll]').forEach(ch => {
+    const track = ch.querySelector('.hs-track');
+    if (!track) return;
+    const cards = track.querySelectorAll('.hs-card');
+    const ixEl = document.getElementById('hsIx');
+    const barEl = document.getElementById('hsBar');
+    const total = cards.length;
+
+    const getDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+
+    gsap.to(track, {
+      x: () => -getDistance(),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: ch,
+        start: 'top top',
+        end: () => '+=' + getDistance(),
+        pin: true,
+        scrub: 0.6,
+        invalidateOnRefresh: true,
+        anticipatePin: 1,
+        onUpdate: self => {
+          const p = self.progress;
+          const ix = Math.min(total, Math.max(1, Math.round(1 + p * (total - 1))));
+          if (ixEl) ixEl.textContent = String(ix).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+          if (barEl) barEl.style.width = (Math.max(8, p * 100)) + '%';
+        }
+      }
+    });
+
+    // pin head-strip + foot-pill within the hscroll (they're already inside the pinned section,
+    // so they stick naturally — no extra pin needed)
+  });
+
+  // 10.5) BIG IMAGE ZOOM — images inside arches/cards start at 1.5 scale and settle to 1.0 as they enter view (more dramatic)
+  $$('[data-arch] img, .hscroll-section .hs-card img, .feature-img img').forEach(img => {
+    if (img.dataset.zoomed) return;
+    img.dataset.zoomed = '1';
+    gsap.fromTo(img,
+      { scale: 1.50, rotateZ: 1.5 },
+      { scale: 1.0, rotateZ: 0, ease: 'expo.out', duration: 2.0,
+        scrollTrigger: { trigger: img, start: 'top 95%', once: true }
+      }
+    );
+  });
+
+  // 10.6) TEXT ON TOP OF IMAGES slides up + fades as the card enters view
+  $$('.arch-card .body, .hscroll-section .hs-card .body, .feature-img .cap, .hero-bg .slide-overlay').forEach(b => {
+    if (b.closest('.hero-bg')) return; // hero slides handle their own overlay
+    gsap.from(b, {
+      y: 36, opacity: 0, duration: 1.2, ease: 'expo.out', delay: 0.35,
+      scrollTrigger: { trigger: b.closest('.arch-card, .hs-card, .feature-img'), start: 'top 88%', once: true }
+    });
+  });
+
+  // 10.7) CHARACTER-SPLIT REVEAL on every major headline
+  const splitTargets = $$('.chapter .title-block h2, .chapter .title-block .quote, .guestbook .quote, .hscroll-section .hs-intro h2, .location .info h3, .finalcta h2, .reserve-sec h2');
+  splitTargets.forEach(h => {
+    if (h.dataset.split) return;
+    h.dataset.split = '1';
+    const text = h.textContent;
+    const words = text.split(/(\s+)/);
+    h.innerHTML = '';
+    words.forEach(word => {
+      if (/^\s+$/.test(word)){
+        h.appendChild(document.createTextNode(word));
+        return;
+      }
+      const wEl = document.createElement('span');
+      wEl.className = 'tword';
+      Array.from(word).forEach(ch => {
+        const cEl = document.createElement('span');
+        cEl.className = 'tch';
+        cEl.textContent = ch;
+        wEl.appendChild(cEl);
+      });
+      h.appendChild(wEl);
+    });
+    gsap.set(h.querySelectorAll('.tch'), { yPercent: 110, opacity: 0 });
+    gsap.to(h.querySelectorAll('.tch'), {
+      yPercent: 0, opacity: 1, duration: 1.1, ease: 'expo.out', stagger: 0.018,
+      scrollTrigger: { trigger: h, start: 'top 88%' }
+    });
+  });
+
+  // 11) CURTAIN wipes between chapters
+  $$('.chapter-curtain').forEach(c => {
+    const ch = c.parentElement;
+    gsap.fromTo(c,
+      { clipPath: 'inset(0% 0 0 0)' },
+      { clipPath: 'inset(100% 0 0 0)', ease: 'power2.inOut',
+        scrollTrigger: {
+          trigger: ch,
+          start: 'top 90%',
+          end: 'top 10%',
+          scrub: 0.5
+        }
+      }
+    );
+  });
+
+  // 12) recompute on resize
+  window.addEventListener('resize', () => ScrollTrigger.refresh());
+}
+
+/* ---------- HERO SLIDESHOW (slide-right carousel with 4 layouts) ---------- */
+function initHeroSlideshow(){
+  const bg = document.getElementById('heroBg');
+  if (!bg) return;
+  const slides = Array.from(bg.querySelectorAll('.slide'));
+  const dots   = Array.from(document.querySelectorAll('#slideDots button'));
+  let i = 0;
+  const INTERVAL = 7000;
+
+  function go(n){
+    const target = ((n % slides.length) + slides.length) % slides.length;
+    if (target === i) return;
+    const cur = slides[i];
+    const next = slides[target];
+
+    // cur exits to the right (was at 0, goes to 100%)
+    cur.classList.remove('is-active');
+    cur.classList.add('is-leaving');
+
+    // next enters from the left (was at -100%, goes to 0)
+    next.classList.remove('is-leaving');
+    // brief reflow so the transition starts from -100%
+    void next.offsetWidth;
+    next.classList.add('is-active');
+
+    // restart each layout's image keyframe animations
+    next.querySelectorAll('img').forEach(img => {
+      img.style.animation = 'none'; void img.offsetWidth; img.style.animation = '';
+    });
+
+    // dots
+    dots.forEach(d => d.classList.remove('is-active'));
+    if (dots[target]) dots[target].classList.add('is-active');
+
+    // clear the leaving class after the transition so it can re-enter later
+    setTimeout(() => cur.classList.remove('is-leaving'), 1700);
+
+    i = target;
+  }
+
+  let timer = setInterval(() => go(i + 1), INTERVAL);
+  dots.forEach(d => d.addEventListener('click', () => {
+    clearInterval(timer);
+    go(parseInt(d.dataset.i, 10));
+    timer = setInterval(() => go(i + 1), INTERVAL);
+  }));
+}
+
+/* ---------- THREE — drifting golden dust ---------- */
+function initThree(){
+  const canvas = document.createElement('canvas');
+  canvas.id = 'dust';
+  canvas.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.45;mix-blend-mode:multiply;';
+  document.body.insertBefore(canvas, document.body.firstChild);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 100);
+  camera.position.set(0, 0, 6);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+  renderer.setSize(innerWidth, innerHeight, false);
+  renderer.setClearColor(0x000000, 0);
+
+  const COUNT = prefersReduced ? 120 : 600;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(COUNT * 3);
+  const off = new Float32Array(COUNT);
+  for (let i=0;i<COUNT;i++){
+    pos[i*3+0] = (Math.random()-0.5) * 50;
+    pos[i*3+1] = (Math.random()-0.5) * 30;
+    pos[i*3+2] = -Math.random() * 25;
+    off[i] = Math.random() * 1000;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('off', new THREE.BufferAttribute(off, 1));
+  const mat = new THREE.ShaderMaterial({
+    transparent:true, depthWrite:false,
+    uniforms: { uT: { value: 0 }, uC: { value: new THREE.Color(0xa9802f) } },
+    vertexShader: `
+      uniform float uT; attribute float off; varying float vA;
+      void main(){
+        vec3 p = position;
+        p.y += sin(uT*0.3 + off) * 0.4 - mod(uT*0.35 + off, 24.0) + 10.0;
+        p.x += sin(uT*0.18 + off*0.6) * 0.7;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = (26.0 / -mv.z) * (0.6 + 0.5 * sin(off));
+        vA = 0.25 + 0.55 * (0.5 + 0.5 * sin(uT + off));
+      }`,
+    fragmentShader: `
+      uniform vec3 uC; varying float vA;
+      void main(){
+        vec2 c = gl_PointCoord - 0.5; float d = length(c);
+        float a = smoothstep(0.5, 0.0, d) * vA * 0.5;
+        gl_FragColor = vec4(uC, a);
+      }`
+  });
+  scene.add(new THREE.Points(geo, mat));
+
+  const mouse = { x:0, y:0, tx:0, ty:0 };
+  window.addEventListener('pointermove', e => {
+    mouse.tx = (e.clientX/innerWidth - 0.5);
+    mouse.ty = (e.clientY/innerHeight - 0.5);
+  }, { passive:true });
+
+  const clock = new THREE.Clock();
+  function loop(){
+    const t = clock.getElapsedTime();
+    mat.uniforms.uT.value = t;
+    mouse.x += (mouse.tx - mouse.x) * 0.06;
+    mouse.y += (mouse.ty - mouse.y) * 0.06;
+    camera.position.x = mouse.x * 0.7;
+    camera.position.y = mouse.y * 0.4;
+    camera.lookAt(0,0,0);
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight, false);
+  });
+}
+
+/* ================================================================
+   WILD ANIMATIONS — additional layer
+   ================================================================ */
+
+/* ---------- CURSOR TRAIL (12 fading dots that chase the pointer) ---------- */
+function initCursorTrail(){
+  if (window.matchMedia('(hover: none)').matches) return;
+  const N = 14;
+  const dots = [];
+  const last = [];
+  for (let i=0; i<N; i++){
+    const d = document.createElement('div');
+    d.className = 'cursor-trail';
+    d.style.width = (10 - i*0.4) + 'px';
+    d.style.height = (10 - i*0.4) + 'px';
+    document.body.appendChild(d);
+    dots.push(d);
+    last.push({ x: innerWidth/2, y: innerHeight/2 });
+  }
+  let mx = innerWidth/2, my = innerHeight/2;
+  window.addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; }, { passive:true });
+  function raf(){
+    let px = mx, py = my;
+    for (let i=0;i<N;i++){
+      last[i].x += (px - last[i].x) * 0.30;
+      last[i].y += (py - last[i].y) * 0.30;
+      const a = (1 - i/N) * 0.55;
+      dots[i].style.transform = `translate(${last[i].x}px, ${last[i].y}px) translate(-50%,-50%)`;
+      dots[i].style.opacity = a;
+      px = last[i].x; py = last[i].y;
+    }
+    requestAnimationFrame(raf);
+  }
+  raf();
+}
+
+/* ---------- 3D CARD TILT — cards tilt toward the cursor on hover ---------- */
+function init3DTilt(){
+  if (window.matchMedia('(hover: none)').matches) return;
+  const cards = document.querySelectorAll('.arch-card, .hscroll-section .hs-card');
+  cards.forEach(card => {
+    let rect = null;
+    function updateRect(){ rect = card.getBoundingClientRect(); }
+    card.addEventListener('pointerenter', updateRect);
+    card.addEventListener('pointermove', e => {
+      if (!rect) updateRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      gsap.to(card, {
+        rotateY: x * 14,
+        rotateX: -y * 14,
+        z: 30,
+        duration: 0.6, ease: 'power2.out',
+        transformPerspective: 1200,
+        transformOrigin: 'center'
+      });
+    });
+    card.addEventListener('pointerleave', () => {
+      gsap.to(card, {
+        rotateY: 0, rotateX: 0, z: 0,
+        duration: 0.9, ease: 'elastic.out(1, 0.5)'
+      });
+    });
+  });
+}
+
+/* ---------- MAGNETIC BUTTONS — CTAs follow the cursor by ~30% ---------- */
+function initMagneticButtons(){
+  if (window.matchMedia('(hover: none)').matches) return;
+  const targets = document.querySelectorAll('.cta-row a, .reserve-fab, .reserve-line, .prenota .form button, .reserve-sec .form button');
+  targets.forEach(btn => {
+    let rect = null;
+    function updateRect(){ rect = btn.getBoundingClientRect(); }
+    btn.addEventListener('pointerenter', updateRect);
+    btn.addEventListener('pointermove', e => {
+      if (!rect) updateRect();
+      const x = e.clientX - rect.left - rect.width/2;
+      const y = e.clientY - rect.top - rect.height/2;
+      gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.4, ease: 'power2.out' });
+    });
+    btn.addEventListener('pointerleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' });
+    });
+  });
+}
+
+/* ---------- TEXT SCRAMBLE — pills/labels scramble through glyphs before settling ---------- */
+function scrambleEl(el, finalText, duration = 1.1){
+  const glyphs = '!<>-_\\/[]{}—=+*^?#░▒▓◆◇○●';
+  const len = finalText.length;
+  const totalFrames = Math.floor(duration * 60);
+  let f = 0;
+  const start = performance.now();
+  function step(now){
+    const elapsed = (now - start) / 1000;
+    const progress = Math.min(1, elapsed / duration);
+    const out = new Array(len);
+    for (let i=0;i<len;i++){
+      const cp = Math.min(1, Math.max(0, (progress - i/(len*1.3)) * 2.4));
+      if (cp >= 1) out[i] = finalText[i];
+      else if (finalText[i] === ' ') out[i] = ' ';
+      else out[i] = glyphs[Math.floor(Math.random() * glyphs.length)];
+    }
+    el.textContent = out.join('');
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = finalText;
+  }
+  requestAnimationFrame(step);
+}
+function initTextScramble(){
+  if (!window.ScrollTrigger) return;
+  const targets = document.querySelectorAll('.chapter .head-strip .pill span:nth-child(2), .chapter .foot-pill span:nth-child(2), .chapter-curtain .label .ix');
+  targets.forEach(el => {
+    const finalText = el.textContent.trim();
+    el.dataset.scrambleTarget = finalText;
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 92%',
+      once: true,
+      onEnter: () => scrambleEl(el, finalText, 0.9)
+    });
+  });
+}
+
+/* ---------- SCROLL PROGRESS BAR ---------- */
+function initScrollProgress(){
+  const bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+  const update = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const p = max > 0 ? (window.scrollY / max) * 100 : 0;
+    bar.style.width = p + '%';
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+}
+
+/* ---------- BIG WORDS RANDOM BURST (extra wildness on chapter entry) ---------- */
+function initChapterBurst(){
+  if (!window.ScrollTrigger) return;
+  document.querySelectorAll('[data-chapter]').forEach(ch => {
+    ScrollTrigger.create({
+      trigger: ch, start: 'top 60%', once: true,
+      onEnter: () => ch.classList.add('is-armed')
+    });
+  });
+}
+
+/* ---------- BOOT ---------- */
+function boot(){
+  initLenis();
+  initHeroSlideshow();
+  initGSAP();
+  initCursorTrail();
+  init3DTilt();
+  initMagneticButtons();
+  initTextScramble();
+  initScrollProgress();
+  initChapterBurst();
+  try { initThree(); } catch(err){ console.warn('three skipped:', err); }
+}
+function whenReady(cb){
+  if (window.gsap && window.ScrollTrigger) return cb();
+  let tries = 0;
+  const id = setInterval(() => {
+    tries++;
+    if (window.gsap && window.ScrollTrigger){ clearInterval(id); cb(); }
+    else if (tries > 80){ clearInterval(id); cb(); }
+  }, 75);
+}
+whenReady(boot);
+</script>
+
+</body>
+</html>

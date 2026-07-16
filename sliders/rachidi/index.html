@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rachidi Home — Living Room Slider</title>
+<style>
+  :root{
+    --serif:"Playfair Display","Cormorant Garamond",Georgia,serif;
+    --sans:"Poppins","Segoe UI",system-ui,-apple-system,sans-serif;
+    --ease:cubic-bezier(.16,.84,.32,1);
+    --ease-in:cubic-bezier(.7,0,.84,0);
+    --back:cubic-bezier(.34,1.5,.64,1);
+    --dur:6500ms;                 /* autoplay dwell */
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{font-family:var(--sans);overflow:hidden;background:#0a0a0c;color:#fff;display:flex;flex-direction:column;height:100vh;}
+  img{display:block;max-width:100%;pointer-events:none;-webkit-user-drag:none;}
+
+  .stage{position:relative;width:100vw;flex:1;min-height:0;overflow:hidden;user-select:none;cursor:grab;
+    /* chrome colour set (flips per active slide via data-chrome) */
+    --chrome:#fff;--chrome-dim:rgba(255,255,255,.62);--chrome-line:rgba(255,255,255,.3);--chrome-bg:rgba(255,255,255,.06);--chrome-bg-i:#0d1a19;}
+  .stage[data-chrome="light"]{--chrome:#16302d;--chrome-dim:rgba(22,48,45,.6);--chrome-line:rgba(22,48,45,.28);--chrome-bg:rgba(22,48,45,.05);--chrome-bg-i:#eef7f5;}
+  .stage.drag{cursor:grabbing;}
+
+  /* ======================= SLIDES ======================= */
+  .slide{position:absolute;inset:0;opacity:0;visibility:hidden;z-index:1;}
+  .slide.is-active{opacity:1;visibility:visible;z-index:2;}
+  .slide.is-entering{z-index:3;}
+  .slide.is-leaving{z-index:2;}
+
+  .bg{position:absolute;inset:0;background-size:cover;background-position:center;
+      transform:scale(1.06);will-change:transform,clip-path;}
+  .slide.is-active .bg{animation:kenburns 10s ease-out both;}
+  @keyframes kenburns{from{transform:scale(1.15) translate(2%,-1%)}to{transform:scale(1.02) translate(-1.5%,1%)}}
+
+  .tint{position:absolute;inset:0;z-index:2;}
+  .grain{position:absolute;inset:0;z-index:3;pointer-events:none;mix-blend-mode:multiply;opacity:.4;
+    background:radial-gradient(130% 120% at 28% 45%,transparent 48%,rgba(0,0,0,.5) 100%);}
+  .noise{position:absolute;inset:0;z-index:14;pointer-events:none;opacity:.045;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  .ghostnum{position:absolute;z-index:2;left:2.5%;top:47%;transform:translateY(-50%);
+    font-family:var(--serif);font-weight:900;font-size:min(56vh,560px);line-height:.8;
+    color:transparent;-webkit-text-stroke:2px var(--stroke,rgba(255,255,255,.10));
+    letter-spacing:-.04em;pointer-events:none;will-change:transform,opacity;}
+
+  .deco{position:absolute;z-index:4;pointer-events:none;will-change:transform,opacity;}
+  .ring{border:1px solid var(--accent);border-radius:50%;opacity:.26;}
+  .ring.r1{width:min(62vh,640px);height:min(62vh,640px);right:-9vh;top:-14vh;}
+  .ring.r2{width:min(34vh,340px);height:min(34vh,340px);right:15%;bottom:-11vh;opacity:.16;}
+  .vline{width:1px;height:32vh;background:linear-gradient(var(--accent),transparent);left:52%;top:0;opacity:.35;}
+
+  /* ---- content column ---- */
+  .content{position:absolute;z-index:10;top:49%;left:7vw;width:min(700px,52vw);transform:translateY(-50%);}
+  .kicker{overflow:hidden;margin-bottom:22px;}
+  .kicker b{display:inline-flex;align-items:center;gap:14px;font-size:13px;letter-spacing:6px;font-weight:600;
+    text-transform:uppercase;color:var(--accent);will-change:transform;}
+  .kicker b i{width:44px;height:1px;background:var(--accent);display:inline-block;}
+  .title{font-family:var(--serif);font-weight:800;line-height:.94;letter-spacing:-.01em;}
+  .title .line{overflow:hidden;display:block;}
+  .title .line span{display:block;font-size:clamp(44px,6.1vw,96px);white-space:nowrap;will-change:transform;color:var(--fg,#fff);}
+  .title .accent span{color:var(--accent);font-style:italic;}
+  .desc{margin-top:26px;font-size:clamp(15px,1.25vw,19px);line-height:1.7;max-width:460px;color:var(--muted,rgba(255,255,255,.82));
+    overflow:hidden;}
+  .desc p{will-change:transform,opacity;}
+
+  .row{display:flex;align-items:center;gap:32px;margin-top:40px;}
+  .price{overflow:hidden;}
+  .price b{display:block;font-family:var(--serif);font-weight:800;font-size:clamp(30px,3.4vw,52px);color:var(--fg,#fff);
+    will-change:transform;line-height:1;}
+  .price s{display:block;text-decoration:none;font-size:12px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--accent);margin-bottom:6px;}
+  .btn{position:relative;overflow:hidden;border:1px solid var(--accent);background:transparent;cursor:pointer;
+    padding:18px 40px;letter-spacing:3px;font-size:12.5px;font-weight:600;font-family:var(--sans);
+    color:var(--fg,#fff);text-transform:uppercase;will-change:transform,opacity;}
+  .btn span{position:relative;z-index:1;transition:color .35s;}
+  .btn::before{content:"";position:absolute;inset:0;background:var(--accent);transform:translateY(101%);
+    transition:transform .4s var(--ease);}
+  .btn:hover::before{transform:translateY(0);}
+  .btn:hover span{color:var(--btnhover,#fff);}
+
+  .tag{position:absolute;z-index:9;padding:10px 20px;border-radius:100px;font-size:11px;letter-spacing:2px;
+    font-weight:600;text-transform:uppercase;color:var(--tagfg,#fff);background:var(--tagbg,rgba(0,0,0,.32));
+    border:1px solid var(--tagline,rgba(255,255,255,.25));backdrop-filter:blur(6px);will-change:transform,opacity;}
+
+  /* ======================= SITE HEADER (cloned from rachidihome.com) ======================= */
+  .topbar{flex:none;background:#1b7b7e;color:#fff;text-align:center;font-size:12.5px;letter-spacing:.2px;
+    padding:9px 16px;font-weight:500;line-height:1;}
+  .topbar .sep{margin:0 14px;opacity:.55;}
+  .siteheader{flex:none;background:#fff;display:flex;align-items:center;gap:26px;padding:15px 42px;
+    box-shadow:0 1px 0 rgba(0,0,0,.07);position:relative;z-index:50;}
+  .rh-logo{height:40px;flex:none;display:block;}
+  .rh-logo img{height:100%;width:auto;}
+  .rh-nav{flex:1;display:flex;justify-content:center;gap:26px;}
+  .rh-nav a{display:flex;align-items:center;gap:6px;color:#1a1a1a;text-decoration:none;font-size:12.5px;
+    font-weight:600;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;transition:color .2s;}
+  .rh-nav a:hover{color:#1b7b7e;}
+  .rh-nav a .cv{width:9px;height:6px;opacity:.65;}
+  .rh-actions{flex:none;display:flex;align-items:center;gap:17px;}
+  .rh-offers{background:#1b7b7e;color:#fff;border:none;border-radius:100px;padding:10px 22px;font-size:12.5px;
+    font-weight:700;letter-spacing:.4px;cursor:pointer;text-decoration:none;line-height:1;transition:background .2s;}
+  .rh-offers:hover{background:#0f5a5c;}
+  .rh-ico{width:22px;height:22px;color:#1a1a1a;cursor:pointer;flex:none;}
+  .rh-burger{display:none;}
+  @media (max-width:1200px){ .rh-nav{gap:16px;} .rh-nav a{font-size:11px;letter-spacing:.2px;} .siteheader{padding:15px 24px;} }
+  @media (max-width:940px){ .rh-nav,.rh-offers{display:none;} .rh-burger{display:block;} }
+
+  /* ======================= IN-STAGE CONTROLS ======================= */
+  .pager{position:absolute;left:7vw;bottom:46px;z-index:40;display:flex;gap:18px;align-items:center;}
+  .dot{display:flex;flex-direction:column;gap:8px;cursor:pointer;background:none;border:none;padding:0;text-align:left;}
+  .dot .no{font-size:11px;letter-spacing:2px;color:var(--chrome-dim);font-weight:600;transition:color .3s;}
+  .dot .bar{width:70px;height:2px;background:var(--chrome-line);position:relative;overflow:hidden;}
+  .dot .bar i{position:absolute;inset:0;width:100%;background:var(--chrome);transform:scaleX(0);transform-origin:left;}
+  .dot.on .no{color:var(--chrome);}
+  .dot.on .bar i{animation:grow var(--dur) linear forwards;}
+  .stage.paused .dot.on .bar i{animation-play-state:paused;}
+  @keyframes grow{to{transform:scaleX(1)}}
+
+  .arrows{position:absolute;right:7vw;bottom:44px;z-index:40;display:flex;gap:14px;}
+  .arrows button{width:56px;height:56px;border-radius:50%;border:1px solid var(--chrome-line);
+    background:var(--chrome-bg);color:var(--chrome);cursor:pointer;display:grid;place-items:center;
+    transition:.25s;backdrop-filter:blur(4px);}
+  .arrows button:hover{background:var(--chrome);color:var(--chrome-bg-i,#0d1a19);transform:translateY(-2px);}
+  .arrows svg{width:18px;height:18px;}
+
+  .counter{position:absolute;right:7vw;top:50%;transform:translateY(-50%);z-index:39;
+    writing-mode:vertical-rl;font-size:12px;letter-spacing:5px;color:var(--chrome-dim);font-weight:600;pointer-events:none;}
+  .counter b{color:var(--chrome);}
+
+  .hint{position:absolute;left:7vw;bottom:22px;z-index:39;font-size:10.5px;letter-spacing:2px;
+    color:var(--chrome-dim);pointer-events:none;}
+
+  /* ======================= TRANSITION OVERLAY ======================= */
+  .curtain{position:absolute;inset:0;z-index:30;pointer-events:none;display:flex;}
+  .curtain .panel{flex:1;background:var(--sweep,#02807f);transform:translateY(101%);will-change:transform;}
+  .curtain.horz{flex-direction:column;}
+  .curtain.horz .panel{transform:translateX(-101%);}
+  .flash{position:absolute;inset:0;z-index:31;background:radial-gradient(circle at 50% 50%,#fff,transparent 60%);
+    opacity:0;pointer-events:none;mix-blend-mode:screen;}
+
+  /* ======================= CHOREOGRAPHY ======================= */
+  .slide.prep .title .line span,
+  .slide.prep .kicker b,
+  .slide.prep .price b{transform:translateY(120%);}
+  .slide.prep .desc p,.slide.prep .btn,.slide.prep .tag{opacity:0;transform:translateY(24px);}
+  .slide.prep .ghostnum{opacity:0;transform:translateY(-50%) scale(1.3);}
+  .slide.prep .deco{opacity:0;}
+
+  @keyframes maskUp{from{transform:translateY(120%)}to{transform:translateY(0)}}
+  @keyframes maskDown{from{transform:translateY(0)}to{transform:translateY(-120%)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeDown{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-18px)}}
+  @keyframes numIn{from{opacity:0;transform:translateY(-50%) scale(1.3)}to{opacity:1;transform:translateY(-50%) scale(1)}}
+  @keyframes numOut{from{opacity:1;transform:translateY(-50%) scale(1)}to{opacity:0;transform:translateY(-50%) scale(.82)}}
+  @keyframes decoIn{from{opacity:0;transform:scale(.7) rotate(-14deg)}to{opacity:var(--o,.26);transform:scale(1) rotate(0)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .slide.enter .kicker b{animation:maskUp .8s .30s var(--ease) both;}
+  .slide.enter .title .line:nth-child(1) span{animation:maskUp 1s .38s var(--ease) both;}
+  .slide.enter .title .line:nth-child(2) span{animation:maskUp 1s .50s var(--ease) both;}
+  .slide.enter .desc p{animation:fadeUp .9s .66s var(--ease) both;}
+  .slide.enter .price b{animation:maskUp .9s .74s var(--ease) both;}
+  .slide.enter .btn{animation:fadeUp .9s .82s var(--ease) both;}
+  .slide.enter .tag{animation:fadeUp .9s .9s var(--back) both;}
+  .slide.enter .ghostnum{animation:numIn 1.4s .1s var(--ease) both;}
+  .slide.enter .deco{animation:decoIn 1.2s .2s var(--ease) both;}
+
+  .slide.is-active .ring{animation:decoIn 1.2s .2s var(--ease) both, spin 70s 1.5s linear infinite;}
+
+  .slide.leave .kicker b,.slide.leave .title .line span,.slide.leave .price b{animation:maskDown .5s var(--ease-in) both;}
+  .slide.leave .desc p,.slide.leave .btn,.slide.leave .tag{animation:fadeDown .45s var(--ease-in) both;}
+  .slide.leave .ghostnum{animation:numOut .55s var(--ease-in) both;}
+  .slide.leave .deco{animation:fadeDown .5s var(--ease-in) both;}
+  .slide.leave .bg{animation:none;transform:scale(1.05);transition:transform .8s var(--ease-in);}
+
+  .rev-wipe  .slide.enter .bg{clip-path:inset(0 0 0 0);animation:bgWipe 1.1s var(--ease) both;}
+  .rev-zoom  .slide.enter .bg{animation:bgZoom 1.3s var(--ease) both;}
+  .rev-split .slide.enter .bg{clip-path:inset(0 0 0 0);animation:bgSplit 1.15s var(--ease) both;}
+  @keyframes bgWipe{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+  @keyframes bgZoom{from{opacity:.2;transform:scale(1.4)}to{opacity:1;transform:scale(1.06)}}
+  @keyframes bgSplit{from{clip-path:inset(0 50% 0 50%)}to{clip-path:inset(0 0 0 0)}}
+
+  @media (max-width:760px){
+    .navlinks,.cta-mini,.counter{display:none;}
+    .content{left:7vw;right:7vw;width:auto;}
+    .ghostnum{font-size:36vh;}
+    .title .line span{font-size:15vw;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms!important;transition-duration:.001ms!important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== announcement bar ===== -->
+<div class="topbar">
+  🚚 Cash on Delivery across Lebanon <span class="sep">·</span> 🎁 Free delivery on orders over $500
+</div>
+
+<!-- ===== site header (cloned from rachidihome.com) ===== -->
+<header class="siteheader">
+  <a class="rh-logo" href="https://rachidihome.com/"><img decoding="async" src="./images/rh-logo.webp" alt="Rachidi Home — Furniture &amp; Appliances"></a>
+  <nav class="rh-nav">
+    <a href="https://rachidihome.com/shop">Shop</a>
+    <a href="https://rachidihome.com/product-category/rh-accessories-home-decor/">Accessories &amp; Home Decor <svg class="cv" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg></a>
+    <a href="https://rachidihome.com/product-category/rh-electronics/">Electronics <svg class="cv" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg></a>
+    <a href="https://rachidihome.com/product-category/rh-furniture/">Furniture <svg class="cv" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg></a>
+    <a href="https://rachidihome.com/product-category/rh-kitchenware-dining/">Kitchenware &amp; Dining <svg class="cv" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg></a>
+    <a href="https://rachidihome.com/product-category/rh-large-appliances/">Large Appliances <svg class="cv" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg></a>
+    <a href="https://rachidihome.com/product-category/rh-small-appliances/">Small Appliances <svg class="cv" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg></a>
+  </nav>
+  <div class="rh-actions">
+    <a class="rh-offers" href="https://rachidihome.com/shop/?on_sale=1">Offers</a>
+    <svg class="rh-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
+    <svg class="rh-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4.2 3.8-6.5 7.5-6.5s7.5 2.3 7.5 6.5"/></svg>
+    <svg class="rh-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6.5 8h11l-1 12H7.5z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>
+    <svg class="rh-ico rh-burger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </div>
+</header>
+
+<div class="stage prep" id="stage" data-chrome="light">
+
+  <!-- ===== SLIDE 01 · BAMBINO (light / cream) ===== -->
+  <section class="slide" data-accent="#02807f" data-fg="#16302d" data-muted="rgba(101,97,125,.95)"
+           data-btnhover="#fff" data-chrome="light"
+           data-rev="wipe" data-sweep="curtain vert" data-sweepcol="#cfe8e7"
+           data-tagfg="#16302d" data-tagbg="rgba(255,255,255,.55)" data-tagline="rgba(22,48,45,.18)">
+    <div class="bg" style="background-image:url('./images/bambino-hd.webp');background-position:52% 42%"></div>
+    <div class="tint" style="background:linear-gradient(90deg,rgba(232,244,243,.95) 0%,rgba(232,244,243,.6) 34%,rgba(232,244,243,.12) 60%,transparent 78%)"></div>
+    <div class="ghostnum" style="--stroke:rgba(2,128,127,.15)">01</div>
+    <div class="deco ring r1" style="--o:.22;border-color:#02807f"></div>
+    <div class="deco vline"></div>
+    <div class="tag" style="right:8vw;top:25%">2 Sofas · 2 Bergères</div>
+    <div class="content">
+      <div class="kicker"><b><i></i>Living Room · Bouclé</b></div>
+      <h1 class="title">
+        <span class="line"><span>Bambino</span></span>
+        <span class="line accent"><span>Bouclé Set</span></span>
+      </h1>
+      <div class="desc"><p>Sculptural curves in soft cream bouclé — two sofas and two bergères that turn any room into a retreat.</p></div>
+      <div class="row">
+        <div class="price"><s>Full set from</s><b>$2,100</b></div>
+        <button class="btn"><span>Shop the set</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SLIDE 02 · DIMASHK (moody / walnut olive) ===== -->
+  <section class="slide" data-accent="#2fd4c9" data-fg="#eef7f5" data-muted="rgba(233,244,241,.8)"
+           data-btnhover="#0d1a17" data-chrome="dark"
+           data-rev="split" data-sweep="curtain horz" data-sweepcol="#02807f"
+           data-tagfg="#eef7f5" data-tagbg="rgba(10,20,16,.4)" data-tagline="rgba(255,255,255,.22)">
+    <div class="bg" style="background-image:url('./images/dimashk-hd.webp');background-position:56% 40%"></div>
+    <div class="tint" style="background:linear-gradient(90deg,rgba(14,26,22,.9) 0%,rgba(16,30,25,.5) 40%,rgba(16,30,25,.12) 66%,transparent 82%)"></div>
+    <div class="ghostnum" style="--stroke:rgba(47,212,201,.18)">02</div>
+    <div class="deco ring r1" style="--o:.26;border-color:#2fd4c9"></div>
+    <div class="deco ring r2" style="--o:.16;border-color:#2fd4c9"></div>
+    <div class="tag" style="right:8vw;top:25%">Walnut · Earthy Bouclé</div>
+    <div class="content">
+      <div class="kicker"><b><i></i>Living Room · Signature</b></div>
+      <h1 class="title">
+        <span class="line"><span>Dimashk</span></span>
+        <span class="line accent"><span>Walnut Living</span></span>
+      </h1>
+      <div class="desc"><p>Hand-framed walnut wrapped in earthy bouclé — a grounded, tactile collection built for slow evenings in.</p></div>
+      <div class="row">
+        <div class="price"><s>Full set from</s><b>$1,925</b></div>
+        <button class="btn"><span>Discover Dimashk</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== transition overlay ===== -->
+  <div class="curtain vert" id="curtain">
+    <span class="panel"></span><span class="panel"></span><span class="panel"></span>
+    <span class="panel"></span><span class="panel"></span><span class="panel"></span><span class="panel"></span>
+  </div>
+  <div class="flash" id="flash"></div>
+  <div class="noise"></div>
+
+  <div class="counter"><b id="cnow">01</b> / <span id="ctot">02</span></div>
+  <div class="pager" id="pager"></div>
+
+  <div class="arrows">
+    <button id="prev" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button id="next" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+
+  <div class="hint">Drag · scroll · ← → arrows to explore</div>
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const stage=$('#stage'), curtain=$('#curtain'), flash=$('#flash');
+  const slides=$$('.slide');
+  const N=slides.length;
+  let idx=0, busy=false, timer=null, settled=false;
+  const DWELL=6500, T_HALF=560, T_FULL=1200;
+
+  // apply each slide's theme vars to its own element
+  slides.forEach(s=>{
+    ['accent','fg','muted','btnhover','tagfg','tagbg','tagline'].forEach(k=>{
+      if(s.dataset[k]) s.style.setProperty('--'+k, s.dataset[k]);
+    });
+  });
+
+  // pager
+  const pager=$('#pager');
+  slides.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='dot'+(i===0?' on':'');
+    b.innerHTML='<span class="no">0'+(i+1)+'</span><span class="bar"><i></i></span>';
+    b.onclick=()=>go(i);
+    pager.appendChild(b);
+  });
+  const dots=$$('.dot');
+  $('#ctot').textContent='0'+N;
+
+  function setChrome(i){
+    dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+    $('#cnow').textContent='0'+(i+1);
+    stage.setAttribute('data-chrome', slides[i].dataset.chrome||'dark');
+    const bar=dots[i].querySelector('.bar i');
+    bar.style.animation='none'; void bar.offsetWidth; bar.style.animation='';
+  }
+
+  function armCurtain(next){
+    const mode=next.dataset.sweep;
+    curtain.className='curtain'+(mode.includes('horz')?' horz':' vert');
+    curtain.style.setProperty('--sweep', next.dataset.sweepcol||'#02807f');
+    return {panels:[...curtain.children], horz:mode.includes('horz'), useFlash:mode.includes('flash')};
+  }
+  function sweepCover({panels,horz,useFlash}){
+    if(useFlash){ flash.style.transition='opacity .28s ease-out'; flash.style.opacity='.9'; return; }
+    const from = horz ? 'translateX(-101%)' : 'translateY(101%)';
+    panels.forEach((p,i)=>{
+      p.style.transition='none'; p.style.transform=from; void p.offsetWidth;
+      p.style.transition='transform .5s cubic-bezier(.7,0,.3,1) '+(i*45)+'ms';
+      p.style.transform='translate(0,0)';
+    });
+  }
+  function sweepReveal({panels,horz,useFlash}){
+    if(useFlash){ flash.style.transition='opacity .5s ease-in'; flash.style.opacity='0'; return; }
+    const to = horz ? 'translateX(101%)' : 'translateY(-101%)';
+    panels.forEach((p,i)=>{
+      p.style.transition='transform .55s cubic-bezier(.7,0,.3,1) '+(i*45)+'ms';
+      p.style.transform=to;
+    });
+  }
+
+  function go(to,dir){
+    if(busy || to===idx) return;
+    busy=true; settled=false; clearTimeout(timer);
+    const cur=slides[idx], nxt=slides[to];
+    stage.className='stage rev-'+nxt.dataset.rev+(stage.classList.contains('drag')?' drag':'');
+    const cfg=armCurtain(nxt);
+    cur.classList.add('leave');
+    sweepCover(cfg);
+    setTimeout(()=>{
+      cur.classList.remove('is-active','leave');
+      nxt.classList.add('prep','is-active','is-entering');
+      void nxt.offsetWidth;
+      nxt.classList.remove('prep');
+      nxt.classList.add('enter');
+      setChrome(to);
+      idx=to;
+      sweepReveal(cfg);
+    }, T_HALF);
+    setTimeout(()=>{
+      nxt.classList.remove('is-entering','enter');
+      busy=false; settled=true; kick();
+      schedule();
+    }, T_HALF + T_FULL + 120);
+  }
+
+  const next=()=>go((idx+1)%N,1);
+  const prev=()=>go((idx-1+N)%N,-1);
+  $('#next').onclick=next; $('#prev').onclick=prev;
+
+  function schedule(){ clearTimeout(timer); timer=setTimeout(next,DWELL); }
+  function pause(){ clearTimeout(timer); stage.classList.add('paused'); }
+  function resume(){ stage.classList.remove('paused'); schedule(); }
+  stage.addEventListener('mouseenter',pause);
+  stage.addEventListener('mouseleave',resume);
+
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' ') next();
+    if(e.key==='ArrowLeft') prev();
+  });
+
+  let wheelLock=false;
+  stage.addEventListener('wheel',e=>{
+    if(wheelLock||Math.abs(e.deltaY)<12) return;
+    wheelLock=true; e.deltaY>0?next():prev();
+    setTimeout(()=>wheelLock=false,900);
+  },{passive:true});
+
+  let dx0=0,dragging=false;
+  const down=x=>{dragging=true;dx0=x;stage.classList.add('drag');pause();};
+  const up=x=>{ if(!dragging)return; dragging=false; stage.classList.remove('drag');
+    const d=x-dx0; if(Math.abs(d)>70){ d<0?next():prev(); } else resume(); };
+  stage.addEventListener('mousedown',e=>down(e.clientX));
+  addEventListener('mouseup',e=>up(e.clientX));
+  stage.addEventListener('touchstart',e=>down(e.touches[0].clientX),{passive:true});
+  stage.addEventListener('touchend',e=>up(e.changedTouches[0].clientX));
+
+  // ---- mouse parallax (self-stopping; never runs during an entrance) ----
+  const depthMap=[['.ghostnum',18],['.ring',22],['.content',-8],['.tag',-40]];
+  let tx=0,ty=0,cx=0,cy=0,rafOn=false;
+  function loop(){
+    if(!settled){ rafOn=false; return; }
+    cx+=(tx-cx)*.08; cy+=(ty-cy)*.08;
+    const a=slides[idx];
+    if(a) depthMap.forEach(([sel,d])=>{
+      a.querySelectorAll(sel).forEach(el=>{
+        el.style.translate=(cx*d).toFixed(1)+'px '+(cy*d*.6).toFixed(1)+'px';
+      });
+    });
+    if(Math.abs(tx-cx)<0.001 && Math.abs(ty-cy)<0.001){ rafOn=false; return; }
+    requestAnimationFrame(loop);
+  }
+  function kick(){ if(settled && !rafOn){ rafOn=true; requestAnimationFrame(loop); } }
+  stage.addEventListener('mousemove',e=>{
+    const r=stage.getBoundingClientRect();
+    tx=(e.clientX-r.left)/r.width-.5; ty=(e.clientY-r.top)/r.height-.5; kick();
+  });
+  stage.addEventListener('mouseleave',()=>{tx=0;ty=0;kick();});
+
+  // ---- intro (supports #s2 deep-link) ----
+  window.addEventListener('load',()=>{
+    const m=(location.hash||'').match(/\d+/);
+    const start=m?Math.min(N-1,Math.max(0,(+m[0])-1)):0;
+    idx=start;
+    const first=slides[start];
+    first.classList.add('is-active','is-entering','prep');
+    void first.offsetWidth;
+    first.classList.remove('prep'); first.classList.add('enter');
+    setChrome(start);
+    setTimeout(()=>{ first.classList.remove('is-entering','enter'); settled=true; kick(); schedule(); }, T_FULL+300);
+  });
+})();
+</script>
+</body>
+</html>

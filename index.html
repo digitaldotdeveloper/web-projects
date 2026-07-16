@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Projects — Digital Dot</title>
+<meta name="description" content="Selected sliders and website concepts built by Digital Dot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e1a; --bg2:#0d1526; --card:#111a2e; --line:#20304d;
+    --ink:#eef2fa; --mut:#8b97ad; --lime:#c3f53c; --lime-d:#a8dd1f; --blue:#5db4ff;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:radial-gradient(1200px 600px at 80% -10%,#13203a 0%,transparent 60%),var(--bg);
+    color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.5;
+    -webkit-font-smoothing:antialiased;min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* header */
+  header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);
+    background:rgba(10,14,26,.72);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:700;font-size:19px;letter-spacing:-.02em}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--lime);box-shadow:0 0 16px var(--lime)}
+  .brand small{color:var(--mut);font-weight:500;font-family:'Inter';font-size:13px}
+  .site{color:var(--mut);font-size:13px}
+  .site b{color:var(--lime)}
+
+  /* hero */
+  .hero{padding:64px 0 34px}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--lime);font-weight:600;margin-bottom:16px}
+  .hero h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(34px,6vw,58px);
+    line-height:1.02;letter-spacing:-.03em;max-width:16ch}
+  .hero h1 em{font-style:normal;color:var(--lime)}
+  .hero p{color:var(--mut);font-size:17px;margin-top:18px;max-width:56ch}
+
+  /* filters */
+  .filters{display:flex;gap:10px;flex-wrap:wrap;padding:8px 0 30px}
+  .filters button{
+    font:inherit;font-size:14px;font-weight:500;cursor:pointer;color:var(--mut);
+    background:transparent;border:1px solid var(--line);padding:9px 18px;border-radius:999px;
+    transition:.18s}
+  .filters button:hover{color:var(--ink);border-color:#33456a}
+  .filters button.active{color:#0a0e1a;background:var(--lime);border-color:var(--lime);font-weight:600}
+  .filters .count{color:var(--mut);font-size:13px;margin-left:auto;align-self:center}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;padding-bottom:70px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    display:flex;flex-direction:column;transition:transform .2s,border-color .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-5px);border-color:var(--lime-d);
+    box-shadow:0 18px 40px -20px rgba(0,0,0,.8),0 0 0 1px rgba(195,245,60,.15)}
+  .thumb{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--bg2)}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+  .card:hover .thumb img{transform:scale(1.05)}
+  .chip{position:absolute;top:12px;left:12px;font-size:11px;font-weight:600;letter-spacing:.05em;
+    text-transform:uppercase;padding:5px 11px;border-radius:999px;backdrop-filter:blur(6px)}
+  .chip.slider{background:rgba(195,245,60,.16);color:var(--lime);border:1px solid rgba(195,245,60,.3)}
+  .chip.website{background:rgba(93,180,255,.15);color:var(--blue);border:1px solid rgba(93,180,255,.3)}
+  .body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1}
+  .body h3{font-family:'Space Grotesk';font-weight:600;font-size:19px;letter-spacing:-.01em}
+  .body p{color:var(--mut);font-size:14px;margin-top:7px;flex:1}
+  .go{margin-top:16px;display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:14px;color:var(--lime)}
+  .go svg{transition:transform .2s}
+  .card:hover .go svg{transform:translateX(4px)}
+
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-size:13px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer a{color:var(--lime)}
+  .hide{display:none!important}
+  @media(max-width:520px){.hero{padding:44px 0 24px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="brand"><span class="dot"></span>Digital&nbsp;Dot <small>&nbsp;/ Web Projects</small></div>
+    <div class="site"><b>digitaldotdeveloper</b>.com</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="kicker">Selected Work</span>
+    <h1>Sliders &amp; websites, built to <em>stop the scroll.</em></h1>
+    <p>A live showcase of front-end concepts — hand-built HTML sliders and full website designs. Click any project to open the real, interactive build.</p>
+  </section>
+
+  <div class="filters">
+    <button class="active" data-filter="all">All</button>
+    <button data-filter="slider">Sliders</button>
+    <button data-filter="website">Websites</button>
+    <span class="count" id="count"></span>
+  </div>
+
+  <section class="grid" id="grid">
+
+    <a class="card" data-cat="slider" href="sliders/resto-cedar-flame/" target="_blank" rel="noopener">
+      <div class="thumb"><span class="chip slider">Slider</span>
+        <img loading="lazy" src="sliders/resto-cedar-flame/platter.webp" alt="Cedar Flame resto slider"></div>
+      <div class="body"><h3>Cedar Flame — Resto Slider</h3>
+        <p>Appetite-driven restaurant hero slider with real food photography and a warm, cinematic feel.</p>
+        <span class="go">View live <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="card" data-cat="slider" href="sliders/chocolate-veloura/" target="_blank" rel="noopener">
+      <div class="thumb"><span class="chip slider">Slider</span>
+        <img loading="lazy" src="sliders/chocolate-veloura/ChatGPT%20Image%20Jul%2010%2C%202026%2C%2003_22_47%20PM.webp" alt="Veloura chocolate slider"></div>
+      <div class="body"><h3>Veloura — Chocolate Brand</h3>
+        <p>Luxury chocolate brand slider — a real-photo rebrand with rich, indulgent product styling.</p>
+        <span class="go">View live <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="card" data-cat="slider" href="sliders/rachidi/" target="_blank" rel="noopener">
+      <div class="thumb"><span class="chip slider">Slider</span>
+        <img loading="lazy" src="sliders/rachidi/images/dimashk.webp" alt="Rachidi Home slider"></div>
+      <div class="body"><h3>Rachidi Home — Live Slider</h3>
+        <p>Multi-slide product slider designed to feature live catalogue data for rachidihome.com.</p>
+        <span class="go">View live <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="card" data-cat="website" href="sites/fleetremarket/" target="_blank" rel="noopener">
+      <div class="thumb"><span class="chip website">Website</span>
+        <img loading="lazy" src="sites/fleetremarket/assets/slider_1.webp" alt="FleetRemarket concept 1"></div>
+      <div class="body"><h3>FleetRemarket — Concept 1</h3>
+        <p>Marketing site for a fleet-remarketing platform. Bold lime concept with a conversion-first layout.</p>
+        <span class="go">View live <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="card" data-cat="website" href="sites/fleetremarket/concept-2/" target="_blank" rel="noopener">
+      <div class="thumb"><span class="chip website">Website</span>
+        <img loading="lazy" src="sites/fleetremarket/concept-2/slider/ChatGPT%20Image%20Jul%2015%2C%202026%2C%2002_39_49%20PM%20(3).webp" alt="FleetRemarket concept 2"></div>
+      <div class="body"><h3>FleetRemarket — Concept 2</h3>
+        <p>Alternative direction: an ACV-inspired blue redesign with a full-bleed image slider.</p>
+        <span class="go">View live <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="card" data-cat="website" href="sites/batroun-golden-sky-hotel/" target="_blank" rel="noopener">
+      <div class="thumb"><span class="chip website">Website</span>
+        <img loading="lazy" src="sites/batroun-golden-sky-hotel/assets/hero-1.webp" alt="Batroun Golden Sky Hotel"></div>
+      <div class="body"><h3>Batroun Golden Sky Hotel</h3>
+        <p>Elegant seaside-hotel landing site — luxury suites, dining and spa in a coastal palette.</p>
+        <span class="go">View live <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+    <a class="card" data-cat="website" href="sites/ember-noir/" target="_blank" rel="noopener">
+      <div class="thumb"><span class="chip website">Website</span>
+        <img loading="lazy" src="sites/ember-noir/img/cigar-ember.webp" alt="Ember Noir brand site"></div>
+      <div class="body"><h3>Ember Noir</h3>
+        <p>Dark, cinematic brand concept for premium cigars &amp; accessories — moody, high-contrast styling.</p>
+        <span class="go">View live <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    </a>
+
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>© 2026 Digital Dot — selected web work.</span>
+  <span><a href="https://digitaldotdeveloper.com" target="_blank" rel="noopener">digitaldotdeveloper.com</a></span>
+</footer>
+
+<script>
+  const grid=document.getElementById('grid'),cards=[...grid.children],count=document.getElementById('count');
+  function apply(f){
+    let n=0;
+    cards.forEach(c=>{const show=f==='all'||c.dataset.cat===f;c.classList.toggle('hide',!show);if(show)n++;});
+    count.textContent=n+(n===1?' project':' projects');
+  }
+  document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelector('.filters button.active').classList.remove('active');
+    b.classList.add('active');apply(b.dataset.filter);
+  }));
+  apply('all');
+</script>
+</body>
+</html>

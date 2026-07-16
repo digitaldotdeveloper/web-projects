@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veloura — Chocolate Brand Slider</title>
+<style>
+  :root{
+    --script:"Segoe Script","Brush Script MT",cursive;
+    --serif:"Didot","Bodoni MT","Playfair Display",Georgia,"Times New Roman",serif;
+    --sans:"Poppins","Segoe UI",system-ui,-apple-system,sans-serif;
+    --mauve:#eed2cc;
+    --maroon:#6c9a8b;
+    --ease:cubic-bezier(.16,.84,.32,1);
+    --ease-in:cubic-bezier(.7,0,.84,0);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{font-family:var(--sans);overflow:hidden;background:#140b07;color:#fff;}
+
+  /* dark blurred cocoa background */
+  .stage{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;
+    background:#cdb4ab;}
+  .stage::after{content:"";position:absolute;inset:0;opacity:.4;pointer-events:none;
+    background:
+      radial-gradient(3px 3px at 20% 80%,rgba(161,104,58,.14) 40%,transparent 41%),
+      radial-gradient(2px 2px at 60% 88%,rgba(232,153,141,.14) 40%,transparent 41%),
+      radial-gradient(4px 4px at 80% 76%,rgba(108,154,139,.12) 40%,transparent 41%),
+      radial-gradient(2px 2px at 35% 70%,rgba(161,104,58,.10) 40%,transparent 41%);
+    filter:blur(.4px);}
+
+  /* ===== slider frame ===== */
+  .frame{position:relative;width:100vw;height:100vh;
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;z-index:2;overflow:hidden;}
+
+  .panel{position:relative;overflow:hidden;}
+  .side{background-color:var(--mauve);box-shadow:inset 0 0 130px rgba(0,0,0,.12);
+    transition:background-color .9s var(--ease);}
+  /* faint brand watermark */
+  .side .wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);
+    font-family:var(--serif);font-size:88px;letter-spacing:2px;color:rgba(255,255,255,.10);white-space:nowrap;pointer-events:none;}
+
+  /* product bar layer (parallax + entrance separated) */
+  .prod{position:absolute;top:50%;left:50%;width:min(320px,26vw);
+    transform:translate(-50%,-50%) translate3d(var(--px,0px),var(--py,0px),0);
+    will-change:transform;}
+  .prod .inner{will-change:transform,opacity;display:block;filter:drop-shadow(0 26px 34px rgba(0,0,0,.42));}
+  .prod svg,.prod img{width:100%;display:block;}
+
+  /* ===== center strip ===== */
+  .center{background-color:var(--maroon);box-shadow:inset 0 0 130px rgba(0,0,0,.14);
+    transition:background-color .9s var(--ease);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:40px 46px;text-align:center;}
+  .logo{font-family:var(--serif);font-size:32px;color:#fff;margin-bottom:auto;padding-top:6px;letter-spacing:4px;text-transform:uppercase;}
+  .core{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;}
+  .eyebrow{overflow:hidden;}
+  .eyebrow span{display:block;font-size:12px;letter-spacing:3px;color:#fbf7f4;margin-bottom:16px;font-weight:300;}
+  .title{font-weight:800;font-size:33px;line-height:1.12;color:#fff;max-width:340px;}
+  .title .maskrow{overflow:hidden;display:block;}
+  .title .line{display:block;}
+  .desc{margin-top:16px;font-size:13.5px;line-height:1.7;color:rgba(251,247,244,.85);max-width:320px;font-weight:300;}
+  .attrs{margin-top:26px;width:100%;max-width:330px;border-top:1px solid rgba(255,255,255,.28);
+    display:flex;padding-top:14px;}
+  .attrs .a{flex:1;font-size:11px;color:#fbf7f4;letter-spacing:.5px;position:relative;}
+  .attrs .a+.a::before{content:"";position:absolute;left:0;top:-2px;height:16px;width:1px;background:rgba(255,255,255,.28);}
+  .btn{margin-top:26px;display:inline-block;background:#fbf7f4;color:#a1683a;font-weight:600;font-size:12px;
+    letter-spacing:1px;padding:14px 34px;border-radius:40px;text-decoration:none;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(0,0,0,.3);}
+  .dots{margin-top:auto;padding-top:20px;display:flex;gap:9px;align-items:center;}
+  .dot{width:8px;height:8px;border-radius:20px;background:rgba(255,255,255,.35);cursor:pointer;overflow:hidden;
+    transition:width .4s var(--ease),background .4s;}
+  .dot.on{width:28px;background:rgba(255,255,255,.35);}
+  .dot i{display:block;height:100%;width:0;background:#fff;}
+  .dot.on i{animation:fill 5s linear forwards;}
+  @keyframes fill{from{width:0}to{width:100%}}
+
+  /* ===== nav arrows straddling the seams ===== */
+  .arrow{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;
+    background:rgba(255,255,255,.16);backdrop-filter:blur(2px);border:none;color:#fff;font-size:22px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;z-index:8;transition:background .2s,transform .2s;}
+  .arrow:hover{background:rgba(255,255,255,.32);}
+  .arrow:active{transform:translateY(-50%) scale(.92);}
+  .arrow.prev{left:calc(33.333% - 26px);} .arrow.next{right:calc(33.333% - 26px);}
+
+  /* ============ TRANSITIONS ============ */
+  @keyframes maskUp   {from{transform:translateY(115%)}to{transform:translateY(0)}}
+  @keyframes maskDown {from{transform:translateY(0)}to{transform:translateY(-115%)}}
+  @keyframes fadeIn   {from{opacity:0;transform:translateX(calc(var(--dir,1)*54px))}to{opacity:1;transform:translateX(0)}}
+  @keyframes fadeOut  {from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(calc(var(--dir,1)*-44px))}}
+  @keyframes popIn    {from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+  @keyframes barIn    {from{opacity:0;transform:translateX(calc(var(--dir,1)*160px)) rotate(calc(var(--rot,0deg)*1.8))}
+                        to{opacity:1;transform:translateX(0) rotate(var(--rot,0deg))}}
+  @keyframes barOut   {from{opacity:1;transform:translateX(0) rotate(var(--rot,0deg))}
+                        to{opacity:0;transform:translateX(calc(var(--dir,1)*-160px)) rotate(calc(var(--rot,0deg)*1.8))}}
+
+  /* prepared state */
+  .anim .prod .inner{opacity:0;}
+  .title .line{transform:translateY(115%);}
+
+  .p-left{--rot:-4deg;} .p-right{--rot:5deg;}
+
+  .entering .logo{animation:fadeIn .7s var(--ease) both;}
+  .entering .eyebrow span{animation:fadeIn .7s .12s var(--ease) both;}
+  .entering .title .line{animation:maskUp .8s .06s var(--ease) both;}
+  .entering .title .maskrow:nth-child(2) .line{animation-delay:.15s;}
+  .entering .desc{animation:fadeIn .75s .30s var(--ease) both;}
+  .entering .attrs{animation:fadeIn .75s .40s var(--ease) both;}
+  .entering .btn{animation:popIn .6s .52s var(--ease) both;}
+  .entering .p-left  .inner{animation:barIn 1s .14s var(--ease) both;}
+  .entering .p-right .inner{animation:barIn 1s .24s var(--ease) both;}
+
+  .leaving .logo,.leaving .eyebrow span,.leaving .desc,.leaving .attrs,.leaving .btn{animation:fadeOut .45s var(--ease-in) both;}
+  .leaving .title .line{animation:maskDown .5s var(--ease-in) both;}
+  .leaving .p-left  .inner,
+  .leaving .p-right .inner{animation:barOut .55s var(--ease-in) both;}
+
+  /* ===== per-panel color blend: each panel dissolves to its new colour behind a soft diagonal edge ===== */
+  .pv{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;
+    -webkit-mask-image:linear-gradient(105deg,#000 0 16%,transparent 60%);
+    mask-image:linear-gradient(105deg,#000 0 16%,transparent 60%);
+    -webkit-mask-size:250% 100%;mask-size:250% 100%;
+    -webkit-mask-position:132% 0;mask-position:132% 0;}
+  /* keep products + text above the colour overlay */
+  .prod{z-index:2;}
+  .center .logo,.center .core,.center .dots{position:relative;z-index:2;}
+
+  .blending .pv{animation:pvIn .9s var(--ease) both;}
+  .blending.prev .pv{animation:pvInP .9s var(--ease) both;}
+  .blending .panel:nth-child(2) .pv{animation-delay:.08s;}
+  .blending .panel:nth-child(3) .pv{animation-delay:.15s;}
+  @keyframes pvIn {from{opacity:1;-webkit-mask-position:132% 0;mask-position:132% 0}
+                   to  {opacity:1;-webkit-mask-position:-80% 0;mask-position:-80% 0}}
+  @keyframes pvInP{from{opacity:1;-webkit-mask-position:-80% 0;mask-position:-80% 0}
+                   to  {opacity:1;-webkit-mask-position:132% 0;mask-position:132% 0}}
+
+  .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;color:#b89a86;z-index:9;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="frame" id="frame">
+    <!-- LEFT PANEL -->
+    <div class="panel side">
+      <div class="pv"></div>
+      <div class="wm">Veloura</div>
+      <div class="prod p-left" data-depth="26"><span class="inner" id="prodL"></span></div>
+    </div>
+
+    <!-- CENTER STRIP -->
+    <div class="panel center" id="center">
+      <div class="pv"></div>
+      <div class="logo">Veloura</div>
+      <div class="core">
+        <div class="eyebrow"><span id="eyebrow">Taste the Magic</span></div>
+        <h2 class="title">
+          <span class="maskrow"><span class="line" id="l1">Immerse Yourself in</span></span>
+          <span class="maskrow"><span class="line" id="l2">Chocolate Heaven!</span></span>
+        </h2>
+        <p class="desc" id="desc"></p>
+        <div class="attrs">
+          <div class="a">All - natural</div><div class="a">No additives</div><div class="a">Made with Love</div>
+        </div>
+        <a class="btn" id="btn">Learn More</a>
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="panel side">
+      <div class="pv"></div>
+      <div class="wm">Veloura</div>
+      <div class="prod p-right" data-depth="26"><span class="inner" id="prodR"></span></div>
+    </div>
+
+    <!-- nav arrows at frame level so the panel's overflow:hidden can't clip them -->
+    <button class="arrow prev" id="prev">&#8249;</button>
+    <button class="arrow next" id="next">&#8250;</button>
+  </div>
+  <div class="hint">move mouse for parallax · ‹ / › · dots · arrow keys</div>
+</div>
+
+<script>
+  // ---- product photography (wrapped + opened) per flavour ----
+  const slides=[
+    {eyebrow:"Taste the Magic", l1:"A Swirl of", l2:"Strawberry Rose",
+     desc:"Dark chocolate laced with wild strawberries and rose petals — a delicate floral bloom in every velvety square.",
+     wrap:"ChatGPT Image Jul 10, 2026, 03_22_11 PM.webp",
+     open:"ChatGPT Image Jul 10, 2026, 03_22_39 PM.webp",
+     mauve:"#e7c4c6", maroon:"#8a4c57"},
+    {eyebrow:"Taste the Magic", l1:"Fall for the", l2:"Salted Caramel",
+     desc:"Slow-melted caramel and a whisper of sea salt swirled through 70% dark chocolate for a rich, buttery finish.",
+     wrap:"ChatGPT Image Jul 10, 2026, 03_22_22 PM.webp",
+     open:"ChatGPT Image Jul 10, 2026, 03_22_47 PM.webp",
+     mauve:"#d8b78f", maroon:"#6e4327"},
+    {eyebrow:"Taste the Magic", l1:"Crisp & Cool", l2:"Mint Crisp",
+     desc:"Cool peppermint and crunchy cocoa nibs run through deep dark chocolate — refreshing, bittersweet, unforgettable.",
+     wrap:"ChatGPT Image Jul 10, 2026, 03_22_03 PM.webp",
+     open:"ChatGPT Image Jul 10, 2026, 03_22_50 PM.webp",
+     mauve:"#a9c4b4", maroon:"#40604f"},
+    {eyebrow:"Taste the Magic", l1:"Soft & Sweet", l2:"Vanilla Coconut",
+     desc:"Madagascan vanilla bean and toasted coconut fold into smooth dark chocolate for a warm, tropical calm.",
+     wrap:"ChatGPT Image Jul 10, 2026, 03_22_16 PM.webp",
+     open:"ChatGPT Image Jul 10, 2026, 03_22_44 PM.webp",
+     mauve:"#e6d0c5", maroon:"#7c5a4c"}
+  ];
+
+  // preload so bars are ready before the entrance animation runs
+  slides.forEach(s=>[s.wrap,s.open].forEach(src=>{const im=new Image();im.src=src;}));
+
+  const $=id=>document.getElementById(id);
+  const stage=$('stage'),frame=$('frame'),center=$('center'),dots=$('dots');
+  let i=0,busy=false,timer=null;
+
+  // build dots
+  slides.forEach((_,k)=>{const d=document.createElement('span');d.className='dot';d.innerHTML='<i></i>';
+    d.onclick=()=>{if(k!==i){go(k>i?1:-1,k);}};dots.appendChild(d);});
+  const dotEls=[...dots.children];
+
+  function paint(s){
+    $('eyebrow').textContent=s.eyebrow;
+    $('l1').textContent=s.l1; $('l2').textContent=s.l2;
+    $('desc').textContent=s.desc;
+    frame.style.setProperty('--mauve',s.mauve);
+    frame.style.setProperty('--maroon',s.maroon);
+    $('prodL').innerHTML=`<img loading="lazy" decoding="async" src="${s.wrap}" alt="Veloura ${s.l2} bar, wrapped">`;
+    $('prodR').innerHTML=`<img loading="lazy" decoding="async" src="${s.open}" alt="Veloura ${s.l2} bar, opened">`;
+    dotEls.forEach((d,k)=>{d.classList.toggle('on',k===i);
+      if(k===i){const bar=d.querySelector('i');bar.style.animation='none';void bar.offsetWidth;bar.style.animation='';}});
+  }
+
+  const regions=[center,frame];
+  const setClass=(c,on)=>regions.forEach(r=>r.classList.toggle(c,on));
+
+  function enter(){
+    frame.classList.remove('anim');
+    setClass('leaving',false); setClass('entering',true);
+    setTimeout(()=>setClass('entering',false),1400);
+    clearTimeout(timer); timer=setTimeout(()=>go(1),5000);
+  }
+  function go(dir,target){
+    if(busy) return; busy=true; clearTimeout(timer);
+    const ni=(target!=null)?target:(i+dir+slides.length)%slides.length;
+    // direction drives the slide; each panel overlay carries its incoming colour
+    frame.style.setProperty('--dir',dir);
+    frame.querySelectorAll('.side .pv').forEach(el=>el.style.background=slides[ni].mauve);
+    frame.querySelector('.center .pv').style.background=slides[ni].maroon;
+    frame.classList.remove('blending','next','prev'); void frame.offsetWidth;
+    frame.classList.add('blending',dir>0?'next':'prev');
+    setClass('entering',false); setClass('leaving',true);
+    setTimeout(()=>{
+      i=ni; paint(slides[i]); void frame.offsetWidth; enter(); busy=false;
+    },560);
+    setTimeout(()=>frame.classList.remove('blending','next','prev'),1000);
+  }
+
+  $('next').onclick=()=>go(1); $('prev').onclick=()=>go(-1);
+  addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);});
+
+  // parallax on the two product bars
+  const prods=[...document.querySelectorAll('.prod')];
+  let tx=0,ty=0,cx=0,cy=0;
+  stage.addEventListener('mousemove',e=>{const r=stage.getBoundingClientRect();
+    tx=(e.clientX-r.left)/r.width-.5; ty=(e.clientY-r.top)/r.height-.5;});
+  stage.addEventListener('mouseleave',()=>{tx=0;ty=0;});
+  (function loop(){
+    cx+=(tx-cx)*.08; cy+=(ty-cy)*.08;
+    prods.forEach(p=>{const d=+p.dataset.depth;
+      p.style.setProperty('--px',(cx*d).toFixed(2)+'px');
+      p.style.setProperty('--py',(cy*d).toFixed(2)+'px');});
+    requestAnimationFrame(loop);
+  })();
+
+  stage.addEventListener('mouseenter',()=>{clearTimeout(timer);});
+  stage.addEventListener('mouseleave',()=>{if(!busy){clearTimeout(timer);timer=setTimeout(()=>go(1),5000);}});
+
+  paint(slides[0]); enter();
+</script>
+</body>
+</html>

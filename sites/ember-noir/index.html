@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Ember Noir — Premium Cigar House</title>
+<meta name="description" content="Ember Noir. A premium cigar house bound to ember, oak and midnight. Hand-rolled vintages aged in noir-stained cedar." />
+
+<link rel="icon" href="img/logo.webp" type="image/png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============ PRELOADER ============ -->
+<div class="preloader" id="preloader">
+  <div class="preloader__inner">
+    <div class="preloader__monogram">
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <defs>
+          <linearGradient id="goldG" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#f6cf86"/>
+            <stop offset=".5" stop-color="#c8932f"/>
+            <stop offset="1" stop-color="#7a4a14"/>
+          </linearGradient>
+        </defs>
+        <circle cx="60" cy="60" r="56" fill="none" stroke="url(#goldG)" stroke-width=".75"/>
+        <text x="60" y="74" text-anchor="middle" font-family="Cinzel" font-weight="700" font-size="44" fill="url(#goldG)" letter-spacing="2">EN</text>
+      </svg>
+    </div>
+    <div class="preloader__label"><span data-text="EMBER NOIR">EMBER NOIR</span></div>
+    <div class="preloader__bar"><span></span></div>
+    <div class="preloader__pct"><span id="preloader-pct">00</span></div>
+  </div>
+</div>
+
+<!-- ============ EMBER PARTICLES CANVAS ============ -->
+<canvas id="embers" class="embers"></canvas>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <a href="#top" class="nav__brand">
+    <span class="nav__mark">EN</span>
+    <span class="nav__name">Ember Noir</span>
+  </a>
+  <nav class="nav__links">
+    <a href="#manifesto">Manifesto</a>
+    <a href="#collection">Vintages</a>
+    <a href="#ritual">The Ritual</a>
+    <a href="#atelier">Atelier</a>
+    <a href="#reserve">Reserve</a>
+  </nav>
+  <a href="#reserve" class="nav__cta">
+    <span>Private Cellar</span>
+    <i></i>
+  </a>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero__bg" data-parallax data-speed="0.18">
+    <img decoding="async" src="img/monogram-smoke.webp" alt="" />
+    <div class="hero__bg-veil"></div>
+  </div>
+
+  <div class="hero__smoke">
+    <span class="smoke smoke--a"></span>
+    <span class="smoke smoke--b"></span>
+    <span class="smoke smoke--c"></span>
+  </div>
+
+  <div class="hero__content">
+    <div class="hero__eyebrow">
+      <span class="line"></span>
+      <span class="kicker">Est. MMVII — Vega del Río, Cuba</span>
+      <span class="line"></span>
+    </div>
+
+    <h1 class="hero__title">
+      <span class="word" data-split>Ember</span>
+      <span class="word italic" data-split>&amp;</span>
+      <span class="word" data-split>Noir</span>
+    </h1>
+
+    <p class="hero__sub">
+      A premium cigar house bound to <i>ember, oak and midnight</i>.<br/>
+      Hand-rolled vintages, aged thirteen winters in noir-stained cedar.
+    </p>
+
+    <div class="hero__cta-row">
+      <a href="#collection" class="btn btn--gold">
+        <span>Open the Humidor</span>
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+      </a>
+      <a href="#manifesto" class="btn btn--ghost">
+        <span>The Manifesto</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero__marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>Hecho a mano</span><span>✦</span>
+      <span>Vintage MMXII</span><span>✦</span>
+      <span>Tobacco from Pinar del Río</span><span>✦</span>
+      <span>Aged thirteen winters</span><span>✦</span>
+      <span>Hecho a mano</span><span>✦</span>
+      <span>Vintage MMXII</span><span>✦</span>
+      <span>Tobacco from Pinar del Río</span><span>✦</span>
+      <span>Aged thirteen winters</span><span>✦</span>
+    </div>
+  </div>
+
+  <a href="#manifesto" class="hero__scroll">
+    <span>Descend</span>
+    <i></i>
+  </a>
+</section>
+
+<!-- ============ MANIFESTO ============ -->
+<section class="manifesto" id="manifesto">
+  <div class="manifesto__pin">
+
+    <div class="manifesto__visual" data-tilt>
+      <div class="manifesto__visual-inner">
+        <img fetchpriority="high" decoding="async" src="img/cigar-ember.webp" alt="A lit cigar, glowing ember close" data-parallax data-speed="0.12"/>
+        <div class="manifesto__ember"></div>
+      </div>
+      <div class="manifesto__visual-frame"></div>
+    </div>
+
+    <div class="manifesto__text">
+      <div class="section-kicker"><i></i><span>I. Manifesto</span></div>
+      <h2 class="display">
+        <span data-line>A whisper</span>
+        <span data-line>of <em>midnight</em>,</span>
+        <span data-line>bound in <em>ember</em>.</span>
+      </h2>
+      <p class="lede">
+        Ember Noir is not a cigar — it is a slow argument with time itself.
+        Leaves chosen in the gloom before sunrise. Rolled by four hands that have known
+        the same bench for forty years. Sealed inside cedar darkened with linseed and bone-black.
+      </p>
+      <p>
+        Each batch waits thirteen winters in our cellar beneath the river. What you finally light
+        is the last argument we lost — and the first one you will win.
+      </p>
+      <div class="manifesto__sig">
+        <span>— Esteban N. Vargas</span>
+        <small>Maestro Tabacalero</small>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ THE COLLECTION (3D scroll cigars) ============ -->
+<section class="collection" id="collection">
+
+  <header class="collection__head">
+    <div class="section-kicker"><i></i><span>II. Vintages</span></div>
+    <h2 class="display center">
+      Three nights.<br/><em>Three temperaments.</em>
+    </h2>
+    <p class="muted center">Scroll. The flame keeps its own time.</p>
+  </header>
+
+  <div class="collection__stage">
+    <div class="collection__cigars" data-cigars>
+      <img loading="lazy" decoding="async" src="img/cigars-trio.webp" alt="The Ember Noir trio of cigars" />
+      <div class="collection__glow"></div>
+    </div>
+
+    <div class="collection__slides">
+      <article class="vintage" data-vintage="1">
+        <span class="vintage__num">I</span>
+        <h3>Noir 13 — <em>Robusto</em></h3>
+        <ul>
+          <li><span>Ring</span><b>52 · 5"</b></li>
+          <li><span>Aged</span><b>13 winters</b></li>
+          <li><span>Notes</span><b>Burnt fig · oak · bitter cocoa</b></li>
+        </ul>
+        <p>The opening movement. A first draw the colour of vinyl, of velvet curtains, of the river beneath the cellar.</p>
+      </article>
+
+      <article class="vintage" data-vintage="2">
+        <span class="vintage__num">II</span>
+        <h3>Brasa — <em>Toro</em></h3>
+        <ul>
+          <li><span>Ring</span><b>54 · 6"</b></li>
+          <li><span>Aged</span><b>9 winters</b></li>
+          <li><span>Notes</span><b>Cedar smoke · cured leather · clove</b></li>
+        </ul>
+        <p>The middle hour. Heavier on the palate, slower in its argument — the cigar of long letters and longer silences.</p>
+      </article>
+
+      <article class="vintage" data-vintage="3">
+        <span class="vintage__num">III</span>
+        <h3>Tinta — <em>Churchill</em></h3>
+        <ul>
+          <li><span>Ring</span><b>49 · 7"</b></li>
+          <li><span>Aged</span><b>18 winters</b></li>
+          <li><span>Notes</span><b>Dark espresso · saddle · cassis</b></li>
+        </ul>
+        <p>The final coda. Reserved for the last guest, the last fire, the last unsaid thing of the evening.</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="collection__nav">
+    <button class="dot active" data-jump="1" aria-label="Vintage I"></button>
+    <button class="dot" data-jump="2" aria-label="Vintage II"></button>
+    <button class="dot" data-jump="3" aria-label="Vintage III"></button>
+  </div>
+
+</section>
+
+<!-- ============ RITUAL ============ -->
+<section class="ritual" id="ritual">
+
+  <div class="ritual__hero">
+    <img loading="lazy" decoding="async" src="img/accessories.webp" alt="Cutter, cigar and lighter" data-parallax data-speed="0.2"/>
+    <div class="ritual__hero-fade"></div>
+  </div>
+
+  <div class="ritual__wrap">
+    <header class="ritual__head">
+      <div class="section-kicker light"><i></i><span>III. The Ritual</span></div>
+      <h2 class="display center">
+        How to <em>begin</em> an evening.
+      </h2>
+    </header>
+
+    <ol class="ritual__steps">
+      <li class="step" data-step="1">
+        <span class="step__num">01</span>
+        <div>
+          <h4>Cut <em>clean</em></h4>
+          <p>A single, decisive snip — a sixteenth of an inch above the line. The cigar should never be wounded twice.</p>
+        </div>
+      </li>
+      <li class="step" data-step="2">
+        <span class="step__num">02</span>
+        <div>
+          <h4>Toast the foot</h4>
+          <p>Hold the flame a finger's width below. Rotate. Wait for the ember to remember its own light.</p>
+        </div>
+      </li>
+      <li class="step" data-step="3">
+        <span class="step__num">03</span>
+        <div>
+          <h4>Draw the <em>first</em> hour</h4>
+          <p>No rush. No phone. The first hour of an Ember Noir is a small private country, and you are its only citizen.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ ATELIER (humidor parallax) ============ -->
+<section class="atelier" id="atelier">
+
+  <div class="atelier__layers">
+    <div class="atelier__layer atelier__layer--bg" data-parallax data-speed="0.05"></div>
+    <img loading="lazy" decoding="async" class="atelier__layer atelier__layer--humidor" data-parallax data-speed="0.18" src="img/humidor.webp" alt="" />
+    <div class="atelier__layer atelier__layer--smoke">
+      <span class="smoke smoke--d"></span>
+      <span class="smoke smoke--e"></span>
+    </div>
+  </div>
+
+  <div class="atelier__text">
+    <div class="section-kicker"><i></i><span>IV. The Atelier</span></div>
+    <h2 class="display">
+      A cellar<br/>
+      <em>beneath</em> a river.
+    </h2>
+    <p class="lede">
+      Forty paces below the road, our atelier is colder than the city above it by exactly nine degrees —
+      a number we measure each dawn with the same brass thermometer my grandfather brought across the Atlantic in 1962.
+    </p>
+    <div class="atelier__stats">
+      <div><b>1962</b><span>Founded</span></div>
+      <div><b>9°</b><span>Cooler than the street</span></div>
+      <div><b>4</b><span>Hands per cigar</span></div>
+      <div><b>13</b><span>Winters of patience</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HORIZON (box reveal) ============ -->
+<section class="horizon">
+  <div class="horizon__sticky">
+
+    <div class="horizon__box" data-box>
+      <img loading="lazy" decoding="async" src="img/box-open.webp" alt="Open Ember Noir cigar box"/>
+      <div class="horizon__glow"></div>
+    </div>
+
+    <div class="horizon__copy">
+      <div class="section-kicker"><i></i><span>V. The Box</span></div>
+      <h2 class="display center">
+        <em>Twenty</em> cigars.<br/>
+        One <em>signature</em>.
+      </h2>
+      <p class="muted center wide">
+        Each Ember Noir humidor is hand-numbered, hand-signed, hand-stamped with the burned crest of the
+        EN monogram. We make 480 of them a year. We sell, on a good year, 478.
+      </p>
+    </div>
+
+    <div class="horizon__rail">
+      <div class="horizon__rail-track">
+        <span>Edition Noir XIII</span><i>✦</i>
+        <span>Numbered 001 — 480</span><i>✦</i>
+        <span>Hand-stamped EN crest</span><i>✦</i>
+        <span>Cedar lining, linseed black</span><i>✦</i>
+        <span>Edition Noir XIII</span><i>✦</i>
+        <span>Numbered 001 — 480</span><i>✦</i>
+        <span>Hand-stamped EN crest</span><i>✦</i>
+        <span>Cedar lining, linseed black</span><i>✦</i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NOTES (palate / pull quotes) ============ -->
+<section class="notes">
+
+  <div class="notes__bg" data-parallax data-speed="0.08">
+    <img loading="lazy" decoding="async" src="img/cigar-box-smoke.webp" alt=""/>
+    <div class="notes__bg-fade"></div>
+  </div>
+
+  <div class="notes__wrap">
+    <div class="section-kicker light center"><i></i><span>VI. The Press</span></div>
+
+    <div class="notes__quotes">
+      <blockquote class="quote" data-q>
+        <p>"The closest thing<br/>to <em>silence</em> on fire."</p>
+        <cite>Cigar Aficionado — 96/100</cite>
+      </blockquote>
+      <blockquote class="quote" data-q>
+        <p>"A house that <em>understands</em><br/>the patience of cedar."</p>
+        <cite>El Habano Review</cite>
+      </blockquote>
+      <blockquote class="quote" data-q>
+        <p>"Tabacalero <em>noir</em><br/>en su forma más pura."</p>
+        <cite>La Habanera — Madrid</cite>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESERVE ============ -->
+<section class="reserve" id="reserve">
+  <div class="reserve__inner">
+    <div class="section-kicker"><i></i><span>VII. Reserve</span></div>
+    <h2 class="display">
+      The <em>private</em> cellar<br/>
+      opens by <em>invitation</em>.
+    </h2>
+    <p class="lede">
+      Reservations for the Noir XIII edition are reviewed personally by the Maestro.
+      We respond within seven days, with a letter, in ink, on cotton paper.
+    </p>
+
+    <form class="reserve__form" onsubmit="event.preventDefault(); this.classList.add('sent');">
+      <div class="field">
+        <label>Name</label>
+        <input type="text" required placeholder="As it should appear on the cedar plate"/>
+      </div>
+      <div class="field">
+        <label>Postal Address</label>
+        <input type="text" required placeholder="The letter travels by hand"/>
+      </div>
+      <div class="field">
+        <label>Preferred Vintage</label>
+        <select>
+          <option>Noir 13 — Robusto</option>
+          <option>Brasa — Toro</option>
+          <option>Tinta — Churchill</option>
+          <option>The complete trio</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>A line, should you wish</label>
+        <textarea rows="3" placeholder="On the occasion of…"></textarea>
+      </div>
+      <button type="submit" class="btn btn--gold btn--block">
+        <span>Submit to the Maestro</span>
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+      </button>
+      <div class="reserve__sent">Your letter is on its way. Expect a reply within seven days.</div>
+    </form>
+  </div>
+
+  <div class="reserve__side">
+    <img loading="lazy" decoding="async" src="img/box-stack.webp" alt="Stack of Ember Noir boxes" data-parallax data-speed="0.14"/>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="foot__top">
+    <div class="foot__brand">
+      <img decoding="async" src="img/logo.webp" alt="Ember Noir"/>
+    </div>
+    <div class="foot__cols">
+      <div>
+        <h5>House</h5>
+        <a href="#manifesto">Manifesto</a>
+        <a href="#collection">Vintages</a>
+        <a href="#atelier">Atelier</a>
+      </div>
+      <div>
+        <h5>Cellar</h5>
+        <a href="#reserve">Reservations</a>
+        <a href="#reserve">Private Cellar</a>
+        <a href="#">Concierge</a>
+      </div>
+      <div>
+        <h5>Quietly</h5>
+        <a href="#">Instagram</a>
+        <a href="#">Press</a>
+        <a href="#">Letters</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot__rule"></div>
+
+  <div class="foot__legal">
+    <span>© MMXXVI Ember Noir — Premium Cigar House</span>
+    <span>Hecho a mano · Pinar del Río · Vega del Río</span>
+    <span>Tobacco is a product for adults. Smoke responsibly.</span>
+  </div>
+</footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
