@@ -118,8 +118,8 @@
   /* bars are driven per-layer (JS toggles b-in / b-out) so the outgoing bar and the
      incoming bar animate at the SAME time — you see the new bar arrive as the old
      one leaves, while the colour is still sweeping. */
-  .prod .inner.b-in {animation:barIn 1s var(--ease-io) both;}
-  .prod .inner.b-out{animation:barOut 1s var(--ease-io) both;}
+  .prod .inner.b-in {animation:barIn 1.35s var(--ease-io) both;}
+  .prod .inner.b-out{animation:barOut 1.35s var(--ease-io) both;}
   .p-right .inner.b-in,.p-right .inner.b-out{animation-delay:.06s;}
 
   .leaving .logo,.leaving .eyebrow span,.leaving .desc,.leaving .attrs,.leaving .btn{animation:fadeOut .45s var(--ease-in) both;}
@@ -236,7 +236,7 @@
   // once a bar finishes sliding in, drop b-in so it rests in the visible base state
   // (don't rely on animation fill persisting)
   function settle(el){const done=()=>el.classList.remove('b-in');
-    const t=setTimeout(done,1300);
+    const t=setTimeout(done,1700);
     el.addEventListener('animationend',()=>{clearTimeout(t);done();},{once:true});}
   function addIncoming(host,src,alt){const inn=layer(src,alt,'b-in');host.appendChild(inn);settle(inn);}
   function initBars(s){bars(s).forEach(([host,src,alt])=>{host.innerHTML='';addIncoming(host,src,alt);});}
@@ -245,7 +245,7 @@
     host.querySelectorAll('.inner.b-out').forEach(o=>o.remove()); // drop a stale leaver
     host.querySelectorAll('.inner').forEach(o=>{                  // current -> outgoing
       o.classList.remove('b-in'); o.classList.add('b-out');
-      const t=setTimeout(()=>o.remove(),1400);
+      const t=setTimeout(()=>o.remove(),1800);
       o.addEventListener('animationend',()=>{clearTimeout(t);o.remove();},{once:true});
     });
     addIncoming(host,src,alt);                                    // next -> incoming
