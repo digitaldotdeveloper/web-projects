@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stories — Pour Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#efe2cc; --ink:#2a1a10; --accent:#00704a; --accent-ink:#fff; --spot:#fff6e6;
+  --mark:#00704a; --mark-ink:#fff;
+  --mx:0; --my:0;
+  --cw:min(18.5vw, 31vh);
+  --head:84px; --foot:118px;
+  --cond:"Barlow Condensed","DIN Condensed","Arial Narrow",sans-serif;
+  --sans:"Barlow","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);transition:background-color .01s}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+.stage{position:fixed;inset:0;overflow:hidden;background:var(--bg);color:var(--ink);transition:color .5s}
+
+/* ---------- atmosphere ---------- */
+.flood{position:absolute;inset:0;z-index:1;clip-path:circle(0% at var(--fx,50%) var(--fy,50%));pointer-events:none}
+.flood.grow{transition:clip-path .85s cubic-bezier(.7,0,.25,1);clip-path:circle(150% at var(--fx,50%) var(--fy,50%))}
+.spot{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(38vw 42vh at 57% 52%, var(--spot), transparent 70%);opacity:.9;transition:opacity .6s}
+.grain{position:absolute;inset:-50%;z-index:40;pointer-events:none;opacity:.09;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1.2s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+
+/* giant outlined marquee */
+.ghost{position:absolute;left:0;right:0;top:50%;z-index:3;-webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 50%);mask-image:linear-gradient(90deg,transparent 30%,#000 50%);white-space:nowrap;pointer-events:none;
+  translate:calc(var(--mx) * -28px) calc(-50% + var(--my) * -10px);
+  font:800 30vh/1 var(--cond);text-transform:uppercase;letter-spacing:-.01em;
+  color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 22%,transparent)}
+.ghost-track{display:inline-block;animation:marq 38s linear infinite}
+.ghost.out .ghost-track{opacity:0;transition:opacity .35s}
+.ghost-track span{padding-right:.35em}
+.ghost.in{animation:ghostIn 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes marq{to{transform:translateX(-50%)}}
+@keyframes ghostIn{from{opacity:0;letter-spacing:.2em}to{opacity:1}}
+
+/* ---------- header ---------- */
+.head{position:absolute;left:0;right:0;top:0;height:var(--head);z-index:30;display:flex;align-items:center;justify-content:space-between;padding:0 4.2vw}
+.logo{display:flex;align-items:center;gap:10px;font:800 30px/1 var(--cond);letter-spacing:.02em;text-decoration:none;color:inherit}
+.logo svg{width:34px;height:34px}
+.logo sup{font-size:10px;font-weight:600;margin-left:1px;vertical-align:top;position:relative;top:2px}
+.nav{display:flex;gap:34px;font:600 15px/1 var(--cond);letter-spacing:.16em;text-transform:uppercase}
+.nav a{color:inherit;text-decoration:none;opacity:.7;transition:opacity .2s}
+.nav a:hover,.nav a.on{opacity:1}
+.order{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:99px;border:1.5px solid color-mix(in srgb,var(--ink) 35%,transparent);
+  font:700 14px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;transition:background .25s,color .25s}
+.order:hover{background:var(--ink);color:var(--bg)}
+
+/* ---------- copy ---------- */
+.copy{position:absolute;z-index:20;left:4.2vw;width:37vw;top:calc(var(--head) + (100% - var(--head) - var(--foot)) / 2);transform:translateY(-50%)}
+.eyebrow{display:flex;align-items:center;gap:14px;font:700 14px/1 var(--cond);letter-spacing:.22em;text-transform:uppercase}
+.eyebrow i{flex:0 0 46px;height:1.5px;background:currentColor;opacity:.45}
+.eyebrow b{font-weight:700;opacity:.55}
+h1{margin:22px 0 22px;font:800 clamp(54px,7.2vw,150px)/.84 var(--cond);text-transform:uppercase;letter-spacing:-.012em;white-space:nowrap}
+.ln{display:block;overflow:hidden;padding-bottom:.04em;margin-bottom:-.04em}
+.ln>span{display:block}
+.ln:nth-child(2)>span{color:transparent;-webkit-text-stroke:2px var(--ink)}
+.desc{max-width:30em;font-size:clamp(14px,1.02vw,17px);line-height:1.6;opacity:.78}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 30px}
+.meta span{padding:8px 13px;border-radius:99px;border:1px solid color-mix(in srgb,var(--ink) 25%,transparent);font:600 13px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase}
+.buy{display:flex;align-items:center;gap:26px}
+.price{font:800 clamp(38px,3.4vw,58px)/1 var(--cond);letter-spacing:-.01em}
+.price small{font-size:.42em;vertical-align:top;position:relative;top:.2em;margin-right:3px;font-weight:700}
+.cta{display:flex;align-items:center;gap:14px;padding:18px 26px;border-radius:99px;background:var(--accent);color:var(--accent-ink);
+  font:700 15px/1 var(--cond);letter-spacing:.16em;text-transform:uppercase;transition:transform .25s cubic-bezier(.3,1.6,.5,1),box-shadow .25s;box-shadow:0 12px 30px -12px rgba(0,0,0,.45)}
+.cta:hover{transform:translateY(-3px) scale(1.03)}
+.cta svg{width:18px;transition:transform .25s}
+.cta:hover svg{transform:translateX(4px)}
+
+.copy .rv{animation:rvIn .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+.copy .ln>span{animation:lnIn .95s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+.copy.out .rv{animation:rvOut .38s cubic-bezier(.6,0,.8,.2) both}
+.copy.out .ln>span{animation:lnOut .42s cubic-bezier(.6,0,.8,.2) both}
+@keyframes lnIn{from{transform:translateY(112%) skewY(6deg)}to{transform:none}}
+@keyframes lnOut{to{transform:translateY(-112%)}}
+@keyframes rvIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes rvOut{to{opacity:0;transform:translateY(-14px)}}
+
+/* ---------- scene / cup ---------- */
+.scene{position:absolute;inset:0;z-index:10;pointer-events:none}
+.cup-pos{position:absolute;left:57%;top:calc(var(--head) + (100% - var(--head) - var(--foot)) / 2 + var(--cw) * .2);
+  width:var(--cw);height:calc(var(--cw) * 1.4);transform:translate(-50%,-50%);
+  translate:calc(var(--mx) * -16px) calc(var(--my) * -12px)}
+.cup-in{position:absolute;inset:0;animation:cupIn .8s cubic-bezier(.2,1.25,.35,1) both}
+.scene.out .cup-in{animation:cupOut .55s cubic-bezier(.6,0,.85,.25) both}
+@keyframes cupIn{from{transform:translateY(70vh) rotate(14deg)}to{transform:none}}
+@keyframes cupOut{to{transform:translate(calc(var(--dir) * -34vw), 10vh) rotate(calc(var(--dir) * -26deg)) scale(.85);opacity:0}}
+.cup-float{position:absolute;inset:0;rotate:calc(var(--mx) * 3deg);animation:bob 5s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(-6px)}to{transform:translateY(8px)}}
+
+.shadow{position:absolute;left:-6%;right:-6%;bottom:calc(var(--cw) * -.1);height:calc(var(--cw) * .16);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,0,0,.34),transparent);filter:blur(4px);animation:shIn .8s both}
+@keyframes shIn{from{opacity:0;transform:scale(.4)}}
+
+.body-shape{position:absolute;inset:0;z-index:2;filter:drop-shadow(0 26px 30px rgba(0,0,0,.18))}
+.body{position:absolute;inset:0;clip-path:polygon(0 0,100% 0,88% 100%,12% 100%);
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.14))}
+.lay{position:absolute;left:0;right:0;background:var(--c);transform-origin:50% 100%;
+  animation:fill calc(var(--dur) * 1ms) cubic-bezier(.3,.6,.4,1) both;animation-delay:calc(var(--t) * 1ms)}
+.lay::before{content:"";position:absolute;left:-5%;right:-5%;top:calc(var(--cw) * -.03);height:calc(var(--cw) * .06);background:var(--c);filter:blur(5px)}
+.lay .surf{position:absolute;left:0;right:0;top:calc(var(--cw) * -.045);height:calc(var(--cw) * .09);border-radius:50%;
+  background:color-mix(in srgb,var(--c) 78%,#fff);box-shadow:inset 0 -4px 8px rgba(0,0,0,.08)}
+.lay .streak{position:absolute;top:92%;filter:blur(2.5px);opacity:.75;width:calc(var(--cw) * .028);height:calc(var(--cw) * var(--sh));left:var(--sx);border-radius:0 0 99px 99px;
+  background:linear-gradient(var(--c),color-mix(in srgb,var(--c) 25%,transparent) 55%,transparent);transform-origin:50% 0;
+  animation:streak 1.5s cubic-bezier(.3,.7,.3,1) both;animation-delay:calc(var(--st) * 1ms)}
+@keyframes fill{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes streak{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+.ice{position:absolute;width:calc(var(--cw) * .27);aspect-ratio:1;border-radius:18%;left:var(--x);bottom:var(--y);rotate:var(--r);
+  background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(255,255,255,.14) 55%,rgba(255,255,255,.3));
+  border:1.5px solid rgba(255,255,255,.75);box-shadow:inset -6px -8px 14px rgba(255,255,255,.25),inset 5px 6px 10px rgba(255,255,255,.35);
+  animation:iceIn .7s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(var(--t) * 1ms)}
+@keyframes iceIn{from{transform:translateY(calc(var(--cw) * -1.4));opacity:.6}to{transform:none;opacity:1}}
+
+.crumb{position:absolute;width:var(--s);aspect-ratio:1;border-radius:35%;left:var(--x);bottom:var(--y);background:var(--c);rotate:var(--r);
+  animation:crIn .5s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--t) * 1ms)}
+@keyframes crIn{from{transform:translateY(calc(var(--cw) * -.8)) scale(.4);opacity:0}}
+
+.drizzle{position:absolute;inset:0;width:100%;height:100%}
+.drizzle path{fill:none;stroke-width:4px;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:600;stroke-dashoffset:600;animation:draw 1.4s cubic-bezier(.4,0,.2,1) forwards;animation-delay:calc(var(--t) * 1ms)}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+.gloss{position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.14) 0,rgba(255,255,255,.42) 7%,rgba(255,255,255,.08) 15%,transparent 24%,transparent 68%,rgba(255,255,255,.22) 82%,rgba(255,255,255,.04) 90%,rgba(0,0,0,.16) 100%),
+    radial-gradient(circle at 70% 38%,rgba(255,255,255,.7) 0 2px,transparent 3px),
+    radial-gradient(circle at 76% 52%,rgba(255,255,255,.6) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 24% 64%,rgba(255,255,255,.6) 0 2px,transparent 3px),
+    radial-gradient(circle at 81% 71%,rgba(255,255,255,.55) 0 2.5px,transparent 3.5px),
+    radial-gradient(circle at 30% 30%,rgba(255,255,255,.5) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 64% 84%,rgba(255,255,255,.5) 0 2px,transparent 3px)}
+.rim-line{position:absolute;left:0;right:0;top:0;height:3px;background:rgba(255,255,255,.7)}
+
+.print{position:absolute;left:50%;top:14%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;
+  color:#fff;opacity:.92;font:800 calc(var(--cw) * .085)/1 var(--cond);letter-spacing:.14em;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25));
+  animation:rvIn .6s both;animation-delay:calc(var(--t) * 1ms)}
+.print svg{width:calc(var(--cw) * .2);height:calc(var(--cw) * .2)}
+
+/* stream */
+.stream{position:absolute;z-index:1;left:46%;bottom:6%;width:calc(var(--cw) * .06);height:160vh;border-radius:99px;
+  background:var(--sc,#5b3520);transform-origin:50% 0;transform:scaleY(0);transition:background-color .22s}
+.stream.on{transform:scaleY(1);transition:transform .28s cubic-bezier(.5,0,.8,.4),background-color .22s}
+.stream.off{transform-origin:50% 100%;transform:scaleY(0);transition:transform .32s cubic-bezier(.2,.6,.3,1)}
+
+/* lid + straw */
+.straw{position:absolute;z-index:1;left:57%;bottom:14%;width:calc(var(--cw) * .085);height:calc(var(--cw) * 2.02);transform-origin:50% 100%;rotate:9deg;border-radius:6px 6px 3px 3px;
+  background:repeating-linear-gradient(-35deg,#00704a 0 12px,#0b8a5c 12px 24px);box-shadow:inset -3px 0 0 rgba(0,0,0,.18),inset 3px 0 0 rgba(255,255,255,.25);
+  animation:strawIn .75s cubic-bezier(.25,1.3,.45,1) both;animation-delay:calc(var(--t) * 1ms)}
+@keyframes strawIn{from{transform:translateY(calc(var(--cw) * -2.2));opacity:0}to{transform:none;opacity:1}}
+.lid{position:absolute;z-index:4;left:-4.5%;right:-4.5%;bottom:calc(100% - var(--cw) * .02);animation:lidIn .6s cubic-bezier(.25,1.45,.45,1) both;animation-delay:calc(var(--t) * 1ms)}
+@keyframes lidIn{from{transform:translateY(calc(var(--cw) * -1.2));opacity:0}to{transform:none;opacity:1}}
+.lid .rim{height:calc(var(--cw) * .075);border-radius:calc(var(--cw) * .03);background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,.42));
+  border:1.5px solid rgba(255,255,255,.9);box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.lid .cap{position:absolute;left:5%;right:5%;bottom:calc(100% - 2px);height:calc(var(--cw) * .05);border-radius:12px 12px 4px 4px;background:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.8)}
+.lid .dome{position:absolute;left:5%;right:5%;bottom:calc(100% - 2px);height:calc(var(--cw) * .44);
+  border-radius:50% 50% 6px 6px / 100% 100% 6px 6px;border:1.5px solid rgba(255,255,255,.85);
+  background:linear-gradient(90deg,rgba(255,255,255,.35),rgba(255,255,255,.05) 30%,rgba(255,255,255,.04) 70%,rgba(255,255,255,.3))}
+.cream{position:absolute;z-index:3;left:4%;right:4%;bottom:calc(100% + var(--cw) * .03);height:calc(var(--cw) * .38);transform-origin:50% 100%;
+  animation:creamIn .7s cubic-bezier(.25,1.6,.45,1) both;animation-delay:calc(var(--t) * 1ms)}
+.cream i{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(ellipse at 38% 30%,#fffdf8,#f4e6d2 60%,#dcc4a4)}
+.cream i:nth-child(1){bottom:0;width:100%;height:42%}
+.cream i:nth-child(2){bottom:26%;width:76%;height:40%}
+.cream i:nth-child(3){bottom:52%;width:50%;height:36%}
+.cream i:nth-child(4){bottom:76%;width:20%;height:26%;border-radius:50% 50% 40% 40%}
+.cream svg{position:absolute;inset:-4% 0 0;width:100%;height:100%;overflow:visible}
+.cream b{position:absolute;width:calc(var(--cw) * .05);aspect-ratio:1;border-radius:30%;background:var(--c);left:var(--x);bottom:var(--y);rotate:var(--r)}
+@keyframes creamIn{from{transform:scale(0)}to{transform:none}}
+
+/* anatomy labels */
+.labels{position:absolute;inset:0;z-index:6}
+.lab{position:absolute;left:calc(var(--cw) * var(--ex));top:calc(var(--cw) * var(--ly));display:flex;align-items:center;
+  animation:labIn .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--t) * 1ms)}
+.lab .dot{width:9px;height:9px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 4px color-mix(in srgb,var(--bg) 70%,transparent);margin:-4.5px 0 0 -4.5px;position:absolute;left:0;top:calc(var(--cw) * var(--dy))}
+.lab .line{width:calc(var(--cw) * (1.2 - var(--ex)));height:1.5px;background:color-mix(in srgb,var(--ink) 55%,transparent);transform-origin:0 50%;
+  animation:lineIn .6s cubic-bezier(.6,0,.2,1) both;animation-delay:calc(var(--t) * 1ms)}
+.lab .tx{padding-left:14px;white-space:nowrap;transform:translateY(0)}
+.lab .tx b{display:flex;gap:8px;align-items:baseline;font:700 clamp(15px,1.15vw,20px)/1 var(--cond);letter-spacing:.06em;text-transform:uppercase}
+.lab .tx b em{font-style:normal;font-size:.7em;opacity:.5;letter-spacing:.1em}
+.lab .tx small{display:block;margin-top:4px;font-size:12.5px;opacity:.62}
+@keyframes labIn{from{opacity:0}}
+@keyframes lineIn{from{transform:scaleX(0)}}
+.scene.out .labels{opacity:0;transition:opacity .25s}
+
+/* flying ingredients */
+.p{position:absolute;left:var(--x);top:var(--y);width:calc(var(--s) * 1vmin);aspect-ratio:1;margin:calc(var(--s) * -.5vmin) 0 0 calc(var(--s) * -.5vmin);
+  translate:calc(var(--mx) * var(--d) * 60px) calc(var(--my) * var(--d) * 46px);z-index:var(--z,1)}
+.p.far{filter:blur(2.2px);opacity:.75}
+.p.near{filter:blur(3.5px)}
+.p-in{position:absolute;inset:0;animation:pIn 1.15s cubic-bezier(.16,1.18,.3,1) both;animation-delay:calc(var(--t) * 1ms)}
+.scene.out .p-in{animation:pOut .5s cubic-bezier(.6,0,.8,.3) both}
+@keyframes pIn{from{transform:translate(var(--fx),var(--fy)) scale(.1) rotate(-220deg);opacity:0}25%{opacity:1}to{transform:none}}
+@keyframes pOut{to{transform:translate(calc(var(--fx) * -.4),calc(var(--fy) * -.4)) scale(.2) rotate(160deg);opacity:0}}
+.p-art{position:absolute;inset:0;rotate:var(--r);animation:drift var(--du) ease-in-out infinite alternate}
+.p-art svg{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 12px rgba(0,0,0,.22))}
+@keyframes drift{from{transform:translateY(-10px) rotate(-8deg)}to{transform:translateY(12px) rotate(10deg)}}
+
+/* ---------- menu strip ---------- */
+.menu{position:absolute;z-index:30;left:4.2vw;right:4.2vw;bottom:0;height:var(--foot);display:grid;grid-template-columns:repeat(6,1fr);gap:18px;align-items:start}
+.mi{position:relative;display:flex;gap:12px;align-items:center;padding-top:20px;text-align:left;opacity:.5;transition:opacity .3s}
+.mi:hover,.mi.on{opacity:1}
+.mi .bar{position:absolute;left:0;right:0;top:0;height:2px;background:color-mix(in srgb,var(--ink) 22%,transparent);overflow:hidden}
+.mi .bar i{position:absolute;inset:0;background:var(--ink);transform-origin:0 50%;transform:scaleX(0)}
+.mi.on .bar i{animation:prog var(--auto) linear forwards}
+.stage.paused .mi.on .bar i{animation-play-state:paused}
+.mi.done .bar i{transform:scaleX(1)}
+@keyframes prog{to{transform:scaleX(1)}}
+.mini{flex:0 0 auto;width:20px;height:30px;clip-path:polygon(0 0,100% 0,84% 100%,16% 100%);background:var(--sw);transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.mi.on .mini,.mi:hover .mini{transform:translateY(-3px) rotate(-6deg)}
+.mi .n{display:block;font:700 12px/1 var(--cond);letter-spacing:.2em;opacity:.7}
+.mi .nm{display:block;margin-top:5px;font:700 clamp(14px,1.2vw,20px)/1 var(--cond);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.mi .pr{display:block;margin-top:4px;font-size:12px;opacity:.65}
+
+/* side controls */
+.count{position:absolute;z-index:30;right:4.2vw;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:14px}
+.count button{width:48px;height:48px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--ink) 30%,transparent);display:grid;place-items:center;transition:background .25s,color .25s,transform .25s}
+.count button:hover{background:var(--ink);color:var(--bg);transform:scale(1.06)}
+.count button svg{width:18px}
+.count .num{font:800 34px/1 var(--cond)}
+.count .num small{display:block;text-align:center;font-size:13px;font-weight:600;opacity:.5;letter-spacing:.1em;margin-top:2px}
+
+/* ---------- mobile ---------- */
+@media (max-width:820px){
+  :root{--cw:min(34vw,24vh);--head:64px;--foot:92px}
+  .nav,.count,.labels,.ghost{display:none}
+  .order{padding:9px 14px;font-size:12px}
+  .logo{font-size:24px}.logo svg{width:28px;height:28px}
+  .copy{left:16px;right:16px;width:auto;top:calc(var(--head) + 8px);transform:none}
+  h1{font-size:15vw;margin:12px 0}
+  .desc{font-size:13.5px;max-width:none}
+  .meta{margin:12px 0 14px}.meta span{font-size:11px;padding:6px 10px}
+  .price{font-size:34px}.cta{padding:13px 18px;font-size:13px}
+  .cup-pos{left:50%;top:auto;bottom:calc(var(--foot) + var(--cw) * .1);transform:translate(-50%,0)}
+  .spot{background:radial-gradient(70vw 30vh at 50% 78%, var(--spot), transparent 70%)}
+  .menu{left:0;right:0;padding:0 16px;display:flex;overflow-x:auto;scrollbar-width:none;gap:22px}
+  .menu::-webkit-scrollbar{display:none}
+  .mi{flex:0 0 auto}
+}
+@media (max-width:820px) and (max-height:760px){.desc{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+  <div class="flood" id="flood"></div>
+  <div class="spot"></div>
+  <div class="ghost" id="ghost"><div class="ghost-track" id="ghostTrack"></div></div>
+
+  <header class="head">
+    <a class="logo" href="#" aria-label="Stories Coffee">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="var(--mark)"/><path d="M27.5 12.5c-2.2-2.3-6.6-3.2-9.8-1.6-3.3 1.6-3.6 5.4-.4 7.2 2.6 1.5 6.9 1.9 8.2 4.6 1.4 3-1.6 6.1-5.7 6.2-2.9.1-5.4-.9-7.3-2.8" fill="none" stroke="var(--mark-ink)" stroke-width="3.6" stroke-linecap="round"/></svg>
+      <span>STORIES<sup>®</sup></span>
+    </a>
+    <nav class="nav"><a href="#">Our Story</a><a href="#" class="on">Menu</a><a href="#">Locations</a><a href="#">Brand</a></nav>
+    <button class="order">Order ahead
+      <svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </header>
+
+  <section class="copy" id="copy"></section>
+  <div class="scene" id="scene"></div>
+
+  <div class="count">
+    <button id="prev" aria-label="Previous flavour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+    <div class="num" id="num">01<small>/06</small></div>
+    <button id="next" aria-label="Next flavour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+  </div>
+
+  <nav class="menu" id="menu" aria-label="Menu flavours"></nav>
+  <div class="grain"></div>
+</main>
+
+<script>
+/* ============ MENU DATA (placeholder drinks & prices) ============ */
+const FLAVOURS = [
+  { name:['Spanish','Latte'], tag:'Iced · House favourite', price:'4.25',
+    desc:'Sweet condensed milk, cold whole milk and a double shot of our house espresso — poured slow, so every sip tells a different part of the story.',
+    meta:['16 oz','Double shot','Condensed milk'],
+    bg:'#eee0c8', ink:'#2a1a10', accent:'#00704a', accentInk:'#ffffff', spot:'#fff8ea', mark:'#00704a', markInk:'#fff',
+    layers:[{n:'Condensed milk',d:'The sweet base',c:'#ecd3a2',h:15},{n:'Cold milk',d:'Whole, fresh daily',c:'#faf3e7',h:30},{n:'Espresso',d:'Double shot, house blend',c:'#5b3520',h:20,streak:1},{n:'Crema',d:'Velvet top',c:'#c49565',h:7}],
+    lid:'flat', parts:['bean','drop:#faf3e7','bean','bean','drop:#ecd3a2','bean','ice','bean'] },
+
+  { name:['Salted','Caramel'], tag:'Iced · Cold foam', price:'4.75',
+    desc:'Burnt-sugar caramel on the walls, milk, espresso and a cloud of salted caramel cold foam. Salty, sweet, dangerously easy to finish.',
+    meta:['16 oz','Cold foam','Sea salt'],
+    bg:'#b95f1e', ink:'#fff3e3', accent:'#2a1206', accentInk:'#ffe6c8', spot:'#d98640', mark:'#fff3e3', markInk:'#b95f1e',
+    layers:[{n:'Caramel sauce',d:'Slow-cooked',c:'#7c3a0c',h:12},{n:'Cold milk',d:'Whole, fresh daily',c:'#f7e8d4',h:31},{n:'Espresso',d:'Double shot',c:'#40200f',h:18,streak:1},{n:'Salted cold foam',d:'Sea salt + caramel',c:'#efc790',h:13}],
+    drizzle:'#7c3a0c', crumbs:'#fffaf0', lid:'flat', parts:['cube:#e39a4a','salt','drop:#7c3a0c','cube:#f0b066','salt','bean','salt','cube:#e39a4a'] },
+
+  { name:['Pistachio','Latte'], tag:'Iced · Signature', price:'5.25',
+    desc:'Stone-ground pistachio cream under oat milk and espresso, topped with pistachio foam and crushed nuts. Our greenest story yet.',
+    meta:['16 oz','Oat milk','Real pistachio'],
+    bg:'#00704a', ink:'#eef8e8', accent:'#d9ee9e', accentInk:'#063a26', spot:'#16925f', mark:'#eef8e8', markInk:'#00704a',
+    layers:[{n:'Pistachio cream',d:'Stone-ground',c:'#a9c262',h:15},{n:'Oat milk',d:'Barista edition',c:'#eff1de',h:30},{n:'Espresso',d:'Double shot',c:'#583720',h:18,streak:1},{n:'Pistachio foam',d:'With crushed nuts',c:'#d3e2a0',h:12}],
+    crumbs:'#6e8f2c', lid:'flat', parts:['pistachio','pistachio','bean','pistachio','leaf','pistachio','bean','pistachio'] },
+
+  { name:['Hazelnut','Mocha'], tag:'Iced · Indulgent', price:'5.00',
+    desc:'Dark chocolate, roasted hazelnut milk and a ristretto that sinks straight through it, finished with whipped cream. Dessert, but make it coffee.',
+    meta:['16 oz','Ristretto','Dark chocolate'],
+    bg:'#2d1a12', ink:'#f6dfc4', accent:'#e8b173', accentInk:'#2d1a12', spot:'#4f2f21', mark:'#f6dfc4', markInk:'#2d1a12',
+    layers:[{n:'Dark chocolate',d:'70% cacao',c:'#3a1c0e',h:16},{n:'Hazelnut milk',d:'Roasted in-house',c:'#d6ad83',h:30},{n:'Ristretto',d:'Short & intense',c:'#1f0f07',h:16,streak:1},{n:'Whipped cream',d:'Cocoa dusted',c:'#f3e6d4',h:11}],
+    drizzle:'#3a1c0e', crumbs:'#5a2f17', lid:'flat', parts:['hazelnut','choc','bean','hazelnut','choc','hazelnut','bean','choc'] },
+
+  { name:['Strawberry','Matcha'], tag:'Iced · Viral pick', price:'5.50',
+    desc:'Real strawberry purée, cold milk and ceremonial-grade matcha whisked to order. Pink at the bottom, green at the top, gone in a minute.',
+    meta:['16 oz','Ceremonial matcha','Real fruit'],
+    bg:'#f6c5cf', ink:'#20361a', accent:'#20361a', accentInk:'#f6c5cf', spot:'#fff0f3', mark:'#00704a', markInk:'#fff',
+    layers:[{n:'Strawberry purée',d:'Fresh, never syrup',c:'#d7334f',h:20},{n:'Cold milk',d:'Whole, fresh daily',c:'#fbf0f1',h:25},{n:'Matcha',d:'Ceremonial grade',c:'#6e9b36',h:22,streak:1},{n:'Matcha foam',d:'Whisked to order',c:'#d7e5ae',h:8}],
+    lid:'flat', parts:['strawberry','leaf','strawberry','drop:#d7334f','leaf','strawberry','ice','leaf'] },
+
+  { name:['Lotus','Frappé'], tag:'Blended · Crowd favourite', price:'5.75',
+    desc:'Biscoff sauce, a thick blended coffee frappé and a tower of whipped cream with cookie crumble. The one everyone films before they sip.',
+    meta:['20 oz','Blended','Biscoff crumble'],
+    bg:'#a24e17', ink:'#fff0dc', accent:'#fff0dc', accentInk:'#7a3610', spot:'#c26a2c', mark:'#fff0dc', markInk:'#a24e17',
+    layers:[{n:'Biscoff sauce',d:'Caramelised cookie',c:'#6e3410',h:12},{n:'Coffee frappé',d:'Blended with ice',c:'#d39a5d',h:48}],
+    topping:{n:'Whipped cream',d:'+ cookie crumble'}, drizzle:'#6e3410', crumbs:'#b36a2c', lid:'dome', parts:['biscuit','crumb:#c27a3a','cinnamon','biscuit','drop:#6e3410','crumb:#b36a2c','biscuit','cinnamon'] },
+];
+
+/* ============ INGREDIENT ART (inline SVG, no images) ============ */
+const SVG = (inner) => `<svg viewBox="0 0 100 100">${inner}</svg>`;
+const ART = {
+  bean: () => SVG(`<ellipse cx="50" cy="50" rx="31" ry="41" fill="#4b2a17"/><ellipse cx="40" cy="36" rx="10" ry="17" fill="#7a4a2c" opacity=".55"/><path d="M50 11C36 38 64 60 50 89" stroke="#24120a" stroke-width="6" fill="none" stroke-linecap="round"/>`),
+  drop: (c) => SVG(`<path d="M50 5C50 5 17 46 17 66a33 33 0 0 0 66 0C83 46 50 5 50 5Z" fill="${c}"/><ellipse cx="37" cy="64" rx="7" ry="13" fill="#fff" opacity=".45"/>`),
+  cube: (c) => SVG(`<rect x="13" y="13" width="74" height="74" rx="17" fill="${c}"/><rect x="13" y="58" width="74" height="29" rx="15" fill="#000" opacity=".13"/><rect x="23" y="21" width="38" height="13" rx="6.5" fill="#fff" opacity=".4"/>`),
+  salt: () => SVG(`<polygon points="28,22 80,34 70,82 20,68" fill="#fffaf1"/><polygon points="28,22 80,34 50,48" fill="#ffffff"/><polygon points="20,68 50,48 70,82" fill="#e9ddcc"/>`),
+  ice: () => SVG(`<rect x="12" y="12" width="76" height="76" rx="18" fill="#fff" fill-opacity=".38" stroke="#fff" stroke-opacity=".9" stroke-width="3"/><path d="M26 30L52 23" stroke="#fff" stroke-width="6" stroke-linecap="round"/>`),
+  pistachio: () => SVG(`<ellipse cx="50" cy="52" rx="35" ry="43" fill="#dcc79c"/><path d="M22 28C12 52 18 80 44 94" stroke="#b39c70" stroke-width="5" fill="none"/><ellipse cx="55" cy="50" rx="25" ry="35" fill="#8db04a"/><ellipse cx="60" cy="54" rx="14" ry="22" fill="#a9c75e"/><ellipse cx="47" cy="38" rx="7" ry="13" fill="#d7e8a0" opacity=".8"/>`),
+  hazelnut: () => SVG(`<path d="M50 22C80 22 90 50 86 68 82 88 64 95 50 95S18 88 14 68C10 50 20 22 50 22Z" fill="#8a4c22"/><path d="M17 42C26 16 74 16 83 42 70 35 30 35 17 42Z" fill="#cda77b"/><path d="M50 8V22" stroke="#6b3a19" stroke-width="5" stroke-linecap="round"/><ellipse cx="35" cy="64" rx="8" ry="15" fill="#fff" opacity=".18"/>`),
+  choc: () => SVG(`<rect x="10" y="17" width="80" height="66" rx="8" fill="#361a0c"/><g fill="#542f1b"><rect x="16" y="23" width="32" height="25" rx="4"/><rect x="52" y="23" width="32" height="25" rx="4"/><rect x="16" y="52" width="32" height="25" rx="4"/><rect x="52" y="52" width="32" height="25" rx="4"/></g><rect x="19" y="26" width="18" height="5" rx="2.5" fill="#fff" opacity=".18"/>`),
+  strawberry: () => SVG(`<path d="M50 30C80 20 95 44 87 62 79 82 58 97 50 97S21 82 13 62C5 44 20 20 50 30Z" fill="#e0304b"/><path d="M50 30C80 20 95 44 87 62 84 58 78 40 50 36Z" fill="#fff" opacity=".12"/><g fill="#ffe0a6"><ellipse cx="34" cy="50" rx="2.4" ry="3.6"/><ellipse cx="52" cy="54" rx="2.4" ry="3.6"/><ellipse cx="68" cy="48" rx="2.4" ry="3.6"/><ellipse cx="42" cy="70" rx="2.4" ry="3.6"/><ellipse cx="60" cy="72" rx="2.4" ry="3.6"/><ellipse cx="50" cy="87" rx="2.4" ry="3.6"/><ellipse cx="74" cy="64" rx="2.4" ry="3.6"/><ellipse cx="26" cy="64" rx="2.4" ry="3.6"/></g><path d="M50 36L28 18 43 29 50 4 57 29 72 18Z" fill="#3e8b2c"/>`),
+  leaf: () => SVG(`<path d="M13 87C13 40 44 12 90 10 88 57 60 87 13 87Z" fill="#6e9b36"/><path d="M13 87C40 62 60 40 86 14" stroke="#b3d275" stroke-width="4" fill="none" stroke-linecap="round"/>`),
+  biscuit: () => SVG(`<rect x="7" y="20" width="86" height="60" rx="9" fill="#c47a3b"/><rect x="15" y="28" width="70" height="44" rx="5" fill="none" stroke="#9e5a24" stroke-width="3" stroke-dasharray="1 7" stroke-linecap="round"/><g fill="#9e5a24"><circle cx="35" cy="50" r="3"/><circle cx="50" cy="50" r="3"/><circle cx="65" cy="50" r="3"/></g><rect x="12" y="23" width="40" height="6" rx="3" fill="#fff" opacity=".2"/>`),
+  cinnamon: () => SVG(`<g transform="rotate(-28 50 50)"><rect x="6" y="36" width="88" height="28" rx="12" fill="#8a4620"/><rect x="6" y="36" width="88" height="10" rx="5" fill="#a9602f"/><ellipse cx="90" cy="50" rx="7" ry="14" fill="#c98a5a"/><path d="M90 42a6 8 0 1 1-3 10" stroke="#7a3a18" stroke-width="2.5" fill="none"/></g>`),
+  crumb: (c) => SVG(`<polygon points="22,30 64,14 88,48 70,86 26,80 12,54" fill="${c}"/><polygon points="22,30 64,14 52,40" fill="#fff" opacity=".2"/>`),
+};
+const art = (spec) => { const [k,c] = spec.split(':'); return ART[k](c); };
+
+/* slots around the cup: [x%, y%, size vmin, depth] */
+const SLOTS = [[45,17,7,.6],[47,77,6,.8],[70,13,5,.45],[92,21,10,1.4],[89,76,6.5,.75],[39,58,3.6,.3],[68,84,4.4,.5],[97,50,4,.3]];
+
+/* ============ TIMING ============ */
+const T = { copy:120, cupIn:0, fill0:620, step:380, auto:7000 };
+const stage = document.getElementById('stage'), scene = document.getElementById('scene'), copy = document.getElementById('copy');
+const flood = document.getElementById('flood'), ghostEl = document.getElementById('ghost'), ghostTrack = document.getElementById('ghostTrack');
+const menu = document.getElementById('menu'), num = document.getElementById('num');
+stage.style.setProperty('--auto', T.auto + 'ms');
+
+let idx = 0, busy = false, timers = [];
+const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+const pad = (n) => String(n).padStart(2, '0');
+
+function applyTheme(f){
+  const r = stage.style;
+  r.setProperty('--bg', f.bg); r.setProperty('--ink', f.ink); r.setProperty('--accent', f.accent);
+  r.setProperty('--accent-ink', f.accentInk); r.setProperty('--spot', f.spot);
+  r.setProperty('--mark', f.mark); r.setProperty('--mark-ink', f.markInk);
+  document.body.style.background = f.bg;
+}
+
+/* ---- menu strip ---- */
+FLAVOURS.forEach((f, i) => {
+  const b = document.createElement('button');
+  b.className = 'mi';
+  let acc = 0;
+  const bands = f.layers.map(l => { const a = acc; acc += l.h; return `${l.c} ${a/0.8}% ${acc/0.8}%`; });
+  b.style.setProperty('--sw', `linear-gradient(0deg, ${bands.join(',')}, color-mix(in srgb, currentColor 18%, transparent) 0)`);
+  b.innerHTML = `<i class="bar"><i></i></i><span class="mini"></span><span><span class="n">${pad(i+1)}</span><span class="nm">${f.name.join(' ')}</span><span class="pr">$${f.price}</span></span>`;
+  b.addEventListener('click', () => go(i));
+  b.querySelector('.bar i').addEventListener('animationend', () => { if (i === idx) go((idx + 1) % FLAVOURS.length, 1); });
+  menu.appendChild(b);
+});
+
+/* ---- copy ---- */
+function renderCopy(f, i){
+  copy.className = 'copy';
+  copy.innerHTML = `
+    <div class="eyebrow rv" style="--d:${T.copy}"><b>${pad(i+1)}</b><i></i><span>${f.tag}</span></div>
+    <h1>${f.name.map((w,j)=>`<span class="ln"><span style="--d:${T.copy + 90 + j*110}">${w}</span></span>`).join('')}</h1>
+    <p class="desc rv" style="--d:${T.copy + 380}">${f.desc}</p>
+    <div class="meta rv" style="--d:${T.copy + 470}">${f.meta.map(m=>`<span>${m}</span>`).join('')}</div>
+    <div class="buy rv" style="--d:${T.copy + 560}">
+      <div class="price"><small>$</small>${f.price}</div>
+      <button class="cta">Add to order <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>`;
+}
+
+/* ---- cup + ingredients ---- */
+function renderScene(f){
+  const L = f.layers.length, fill = f.layers.reduce((a,l)=>a+l.h,0);
+  const endFill = T.fill0 + L * T.step;
+  const tIce = endFill + 40, tTop = endFill + 180, tLid = endFill + 420, tStraw = endFill + 560, tLab = endFill + 700;
+
+  let acc = 0, layers = '';
+  f.layers.forEach((l, i) => {
+    let extra = '';
+    if (l.streak) [[.14,.34],[.3,.52],[.47,.26],[.62,.44],[.78,.3]].forEach(([x,h],k) =>
+      extra += `<i class="streak" style="--sx:${x*100}%;--sh:${h};--st:${T.fill0 + (i+1)*T.step + k*90}"></i>`);
+    if (i === L - 1) extra += '<i class="surf"></i>';
+    layers += `<div class="lay" style="--c:${l.c};bottom:${acc}%;height:${l.h}%;--t:${T.fill0 + i*T.step};--dur:${T.step + 80};z-index:${i+1}">${extra}</div>`;
+    acc += l.h;
+  });
+
+  const ice = f.lid === 'dome' ? '' : [[14,fill-26,-14],[52,fill-18,12],[30,fill-11,26],[58,fill-34,-8]]
+    .map(([x,y,r],k)=>`<i class="ice" style="--x:${x}%;--y:${y}%;--r:${r}deg;--t:${tIce + k*90};z-index:${L+1}"></i>`).join('');
+
+  const crumbs = (f.crumbs && f.lid !== 'dome') ? Array.from({length:9},(_,k)=>{
+    const x = 18 + k*7.5 + (k%2)*2, y = fill - 1 + (k%3)*1.2;
+    return `<i class="crumb" style="--x:${x}%;--y:${y}%;--s:${5 + (k%3)*2}px;--c:${f.crumbs};--r:${k*37}deg;--t:${tTop + k*40};z-index:${L+2}"></i>`;
+  }).join('') : '';
+
+  const drizzle = f.drizzle ? `<svg class="drizzle" viewBox="0 0 100 140" preserveAspectRatio="none" style="z-index:${L+1}">
+      <path style="--t:${tTop}" stroke="${f.drizzle}" d="M16 ${140-fill*1.4+4} C8 60 22 80 15 104 S20 128 20 136"/>
+      <path style="--t:${tTop+160}" stroke="${f.drizzle}" d="M84 ${140-fill*1.4+4} C92 58 76 78 86 100 S80 122 80 132"/>
+      <path style="--t:${tTop+300}" stroke="${f.drizzle}" opacity=".7" d="M40 ${140-fill*1.4+6} C34 64 46 84 42 110"/></svg>` : '';
+
+  const cream = f.topping ? `<div class="cream" style="--t:${tTop}"><i></i><i></i><i></i><i></i>
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M12 72C30 56 70 80 88 62M24 44C40 32 62 52 76 38M38 20C46 12 56 26 62 16" stroke="${f.drizzle}" stroke-width="3" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round"/></svg>
+      ${Array.from({length:8},(_,k)=>`<b style="--c:${k%2?f.crumbs:'#c47a3b'};--x:${16+k*9}%;--y:${22+((k*37)%60)}%;--r:${k*41}deg"></b>`).join('')}</div>` : '';
+
+  const lid = f.lid === 'dome'
+    ? `<div class="lid" style="--t:${tLid}"><div class="dome"></div><div class="rim"></div></div>`
+    : `<div class="lid" style="--t:${tLid}"><div class="cap"></div><div class="rim"></div></div>`;
+
+  /* anatomy labels, top-most first, min spacing enforced */
+  const H = 1.4; let labs = [], acc2 = 0;
+  f.layers.forEach(l => { const mid = (acc2 + l.h/2)/100; labs.push({l, mid}); acc2 += l.h; });
+  labs = labs.reverse().map(({l, mid}) => ({ n:l.n, d:l.d, dotY: H*(1-mid), edge: 1 - .12*(1-mid) }));
+  if (f.topping) labs.unshift({ n:f.topping.n, d:f.topping.d, dotY: -.18, edge: .78 });
+  let prevY = -1;
+  labs.forEach(o => { o.ly = Math.max(o.dotY, prevY + .165); prevY = o.ly; });
+  const labels = `<div class="labels">${labs.map((o,k)=>`
+      <div class="lab" style="--ex:${o.edge};--ly:${o.ly};--dy:${o.dotY - o.ly};--t:${tLab + k*110}">
+        <i class="dot"></i><i class="line"></i>
+        <div class="tx"><b><em>${pad(k+1)}</em>${o.n}</b><small>${o.d}</small></div></div>`).join('')}</div>`;
+
+  /* flying ingredients */
+  const cupX = 57, cupY = 52;
+  const parts = f.parts.map((spec, k) => {
+    const [x,y,s,d] = SLOTS[k % SLOTS.length];
+    const cls = d >= 1.2 ? 'near' : d <= .35 ? 'far' : '';
+    return `<div class="p ${cls}" style="--x:${x}%;--y:${y}%;--s:${s};--d:${d};--z:${d>=1.2?20:1}">
+      <div class="p-in" style="--fx:${cupX - x}vw;--fy:${cupY - y}vh;--t:${260 + k*55}">
+        <div class="p-art" style="--r:${(k*47)%80 - 40}deg;--du:${3.2 + (k%4)*.7}s">${art(spec)}</div></div></div>`;
+  }).join('');
+
+  scene.className = 'scene';
+  scene.innerHTML = `${parts}
+    <div class="cup-pos"><div class="cup-in">
+      <div class="shadow"></div>
+      <div class="cup-float">
+        <i class="stream" id="stream"></i>
+        <i class="straw" style="--t:${tStraw}"></i>
+        ${cream}
+        <div class="body-shape"><div class="body">
+          ${layers}${ice}${crumbs}${drizzle}
+          <div class="print" style="--t:${tTop};z-index:${L+3}"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M27.5 12.5c-2.2-2.3-6.6-3.2-9.8-1.6-3.3 1.6-3.6 5.4-.4 7.2 2.6 1.5 6.9 1.9 8.2 4.6 1.4 3-1.6 6.1-5.7 6.2-2.9.1-5.4-.9-7.3-2.8" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>STORIES</div>
+          <div class="gloss" style="z-index:${L+4}"></div><i class="rim-line" style="z-index:${L+4}"></i>
+        </div></div>
+        ${lid}
+      </div>
+      ${labels}
+    </div></div>`;
+
+  /* the pour: one stream that changes colour per layer */
+  const stream = document.getElementById('stream');
+  later(() => { stream.style.setProperty('--sc', f.layers[0].c); stream.classList.add('on'); }, T.fill0 - 220);
+  f.layers.forEach((l, i) => later(() => stream.style.setProperty('--sc', l.c), T.fill0 + i*T.step - 60));
+  later(() => stream.classList.add('off'), endFill - 60);
+
+  return tLab + labs.length * 110 + 500;
+}
+
+function renderGhost(f){
+  const word = f.name.join(' ');
+  ghostTrack.innerHTML = Array(8).fill(`<span>${word}</span>`).join('');
+  ghostEl.classList.remove('out','in'); void ghostEl.offsetWidth; ghostEl.classList.add('in');
+}
+
+function setMenu(i){
+  [...menu.children].forEach((b, j) => {
+    b.classList.toggle('on', j === i);
+    const bar = b.querySelector('.bar i'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
+  });
+  num.innerHTML = `${pad(i+1)}<small>/${pad(FLAVOURS.length)}</small>`;
+}
+
+function show(i){
+  const f = FLAVOURS[i];
+  applyTheme(f); renderCopy(f, i); renderGhost(f); renderScene(f); setMenu(i);
+  history.replaceState(null, '', '#' + (i + 1));
+}
+
+function go(i, dir){
+  if (busy || i === idx) return;
+  dir = dir || (i > idx ? 1 : -1);
+  timers.forEach(clearTimeout); timers = [];
+  busy = true;
+  const f = FLAVOURS[i];
+  stage.style.setProperty('--dir', dir);
+  scene.classList.add('out'); copy.classList.add('out'); ghostEl.classList.add('out');
+
+  const cup = scene.querySelector('.cup-pos'), r = cup.getBoundingClientRect();
+  flood.style.setProperty('--fx', (r.left + r.width/2) + 'px');
+  flood.style.setProperty('--fy', (r.top + r.height/2) + 'px');
+  flood.style.background = f.bg;
+
+  setTimeout(() => { flood.classList.add('grow'); }, 260);
+  setTimeout(() => { idx = i; show(i); }, 560);
+  setTimeout(() => { flood.classList.remove('grow'); busy = false; }, 1160);
+}
+
+/* ---- controls ---- */
+const step = (d) => go((idx + d + FLAVOURS.length) % FLAVOURS.length, d);
+document.getElementById('next').onclick = () => step(1);
+document.getElementById('prev').onclick = () => step(-1);
+addEventListener('keydown', e => {
+  if (['ArrowRight','ArrowDown'].includes(e.key)) step(1);
+  if (['ArrowLeft','ArrowUp'].includes(e.key)) step(-1);
+});
+let wheelLock = 0;
+addEventListener('wheel', e => {
+  if (Math.abs(e.deltaY) < 24 || Date.now() < wheelLock) return;
+  wheelLock = Date.now() + 1300; step(e.deltaY > 0 ? 1 : -1);
+}, {passive:true});
+let tx0 = null;
+addEventListener('touchstart', e => tx0 = e.touches[0].clientX, {passive:true});
+addEventListener('touchend', e => {
+  if (tx0 == null) return; const dx = e.changedTouches[0].clientX - tx0; tx0 = null;
+  if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+});
+document.querySelector('.copy').addEventListener('mouseenter', () => stage.classList.add('paused'));
+document.querySelector('.copy').addEventListener('mouseleave', () => stage.classList.remove('paused'));
+menu.addEventListener('mouseenter', () => stage.classList.add('paused'));
+menu.addEventListener('mouseleave', () => stage.classList.remove('paused'));
+
+/* ---- self-stopping parallax loop ---- */
+let mx = 0, my = 0, cx = 0, cy = 0, raf = 0;
+function loop(){
+  cx += (mx - cx) * .07; cy += (my - cy) * .07;
+  stage.style.setProperty('--mx', cx.toFixed(4)); stage.style.setProperty('--my', cy.toFixed(4));
+  raf = (Math.abs(mx - cx) + Math.abs(my - cy) > .001) ? requestAnimationFrame(loop) : 0;
+}
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
+  mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1;
+  if (!raf) raf = requestAnimationFrame(loop);
+});
+
+/* ---- boot (supports #1..#6 deep links) ---- */
+const h = parseInt(location.hash.slice(1), 10);
+idx = (h >= 1 && h <= FLAVOURS.length) ? h - 1 : 0;
+show(idx);
+</script>
+</body>
+</html>
