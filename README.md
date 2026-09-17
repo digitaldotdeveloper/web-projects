@@ -8,6 +8,7 @@ A live showcase of front-end work by [Digital Dot](https://digitaldotdeveloper.c
 
 | Project | Type | Open |
 |---|---|---|
+| DepthForge — Pure CSS 3D | Slider | [`sliders/depthforge/`](sliders/depthforge/) · reel mode: `?reel` |
 | Cedar Flame — Resto Slider | Slider | [`sliders/resto-cedar-flame/`](sliders/resto-cedar-flame/) |
 | Veloura — Chocolate Brand | Slider | [`sliders/chocolate-veloura/`](sliders/chocolate-veloura/) |
 | Rachidi Home — Live Slider | Slider | [`sliders/rachidi/`](sliders/rachidi/) |
