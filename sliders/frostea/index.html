@@ -110,7 +110,7 @@ body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antia
 /* ribbons */
 .rib-pos{position:absolute;left:-170px;width:1420px;height:94px}
 .rib-pos.back{top:1300px;transform:rotate(7deg);z-index:8}
-.rib-pos.front{top:1446px;transform:rotate(-4deg);z-index:24}
+.rib-pos.front{top:1466px;transform:rotate(-4deg);z-index:24}
 .rib{width:100%;height:100%;overflow:hidden;display:flex;align-items:center;box-shadow:0 22px 40px rgba(0,0,0,.16);clip-path:inset(0 100% 0 0)}
 .back .rib{background:var(--ribbon);color:var(--ribbonInk)}
 .front .rib{background:var(--ribbon2);color:var(--ribbon2Ink)}
@@ -208,6 +208,14 @@ body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antia
 .f-ice::before{left:14%;top:12%;width:44%;height:12%;border-radius:10px;background:rgba(255,255,255,.9);transform:rotate(-8deg)}
 .f-ice::after{right:12%;bottom:14%;width:14%;height:40%;border-radius:10px;background:rgba(255,255,255,.5)}
 
+/* photo layers (Gemini Studio cut-outs in img/) */
+.f-img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.2))}
+.back .f-img{filter:none}
+.bottle.photo>*:not(.b-img){display:none}
+.b-img{position:absolute;left:50%;bottom:0;height:100%;width:auto;transform:translateX(-50%);display:none;pointer-events:none}
+.bottle.photo .b-img{display:block}
+.bottle.photo{filter:drop-shadow(0 34px 34px rgba(0,0,0,.22))}
+
 /* splash on landing */
 #splash{position:absolute;inset:0;z-index:25;pointer-events:none}
 .splash{position:absolute;width:0;height:0}
@@ -215,7 +223,7 @@ body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antia
 .splash b{position:absolute;left:0;top:0;border-radius:50%;margin:-8px}
 
 /* ---------- info row ---------- */
-.info{position:absolute;left:70px;right:70px;top:1606px;display:flex;justify-content:space-between;align-items:flex-end;z-index:30;color:var(--ink)}
+.info{position:absolute;left:70px;right:70px;top:1642px;display:flex;justify-content:space-between;align-items:flex-end;z-index:30;color:var(--ink)}
 .info .left{width:600px}
 .tag>span{font-weight:800;font-size:44px;line-height:1.08;letter-spacing:-.01em}
 .ar{margin-top:8px}
@@ -226,7 +234,7 @@ body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antia
 .cta{display:flex;align-items:center;gap:14px;white-space:nowrap;background:var(--ctaBg);color:var(--ctaInk);padding:22px 30px 22px 34px;border-radius:99px;font-weight:900;font-size:28px;letter-spacing:.06em;transform:scale(0);box-shadow:0 18px 36px rgba(0,0,0,.18)}
 .cta .price{opacity:.7}
 .cta svg{width:34px;height:34px}
-.foot{position:absolute;left:0;right:0;top:1826px;text-align:center;z-index:30;color:var(--ink);font-weight:700;font-size:22px;letter-spacing:.3em;opacity:.55;transition:color .6s}
+.foot{position:absolute;left:0;right:0;top:1846px;text-align:center;z-index:30;color:var(--ink);font-weight:700;font-size:22px;letter-spacing:.3em;opacity:.55;transition:color .6s}
 
 /* ---------- landscape composition (1920x1080 canvas) ---------- */
 .land .head{left:130px;top:215px;width:1000px}
@@ -236,7 +244,7 @@ body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antia
 .land .word-pos{left:650px;top:240px;width:1100px;height:520px}
 .land .rib-pos{left:790px;width:1950px;-webkit-mask:linear-gradient(90deg,transparent,#000 280px);mask:linear-gradient(90deg,transparent,#000 280px)}
 .land .rib-pos.back{top:620px;transform:rotate(8deg)}
-.land .rib-pos.front{top:725px;transform:rotate(-5deg)}
+.land .rib-pos.front{top:792px;transform:rotate(-5deg)}
 .land .b-pos{left:1200px;top:165px;scale:.78}
 .land .sh-pos{left:1200px;top:842px;scale:.78}
 .land .info{left:130px;right:auto;top:668px;width:800px;display:block}
@@ -295,6 +303,7 @@ body.rec #stage{cursor:none}
               </div>
               <div class="gloss"></div><div class="gloss g2"></div>
               <div class="drops" id="drops"></div>
+              <img class="b-img" id="bImg" alt="">
             </div>
           </div>
         </div>
@@ -415,6 +424,20 @@ const SLIDES = [
         {t:'bolt',x:125,y:975,s:112,r:-15,z:'front'},{t:'drop',x:300,y:600,s:50,z:'back'},{t:'drop',x:800,y:550,s:40,z:'front'},
         {t:'drop',x:760,y:1400,s:50,z:'front'},{t:'ice',x:160,y:1470,s:160,r:12,z:'front'},{t:'ice',x:930,y:1480,s:130,r:-12,z:'back'}]},
 ];
+
+/* Photo layers. Keys are SLIDES[].word; each fx type cycles through its list in order.
+   Types left out (drop, bolt) keep their CSS art. */
+const IMG = {
+  PEACH:  { bottle: 'bottle-peach',  peach: ['ing-peach-1', 'ing-peach-2'], peachslice: ['ing-peach-3'], mint: ['ing-peach-4'] },
+  MANGO:  { bottle: 'bottle-mango',  cube: ['ing-mango-1', 'ing-mango-2', 'ing-mango-4', 'ing-mango-5'], leaf: ['ing-mango-3', 'ing-mango-6'] },
+  BERRY:  { bottle: 'bottle-berry',  rasp: ['ing-berry-1', 'ing-berry-3'], blue: ['ing-berry-2'], mint: ['ing-berry-4'] },
+  CITRUS: { bottle: 'bottle-citrus', slice: ['ing-citrus-1', 'ing-citrus-2'], mint: ['ing-citrus-3'], tea: ['ing-citrus-4'] },
+  SPORT:  { bottle: 'bottle-sport',  slice: ['ing-sport-1', 'ing-sport-2'], cherry: ['ing-sport-3', 'ing-sport-4'] },
+  ice: ['ice-1', 'ice-2', 'ice-3', 'ice-4'],
+};
+const src = name => `img/${name}.webp`;
+const preload = name => new Promise(res => { const im = new Image(); im.onload = im.onerror = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); im.src = src(name); });
+const slideImages = s => { const m = IMG[s.word]; return [m.bottle, ...Object.entries(m).filter(([k]) => k !== 'bottle').flatMap(([, v]) => v), ...IMG.ice]; };
 
 const DWELL = 4200;                         // hold time per slide once it has landed
 
@@ -629,6 +652,8 @@ function placeFx() {
 }
 function build(s, i) {
   $('#bottle').classList.toggle('sport', !!s.sport);
+  $('#bottle').classList.add('photo');
+  $('#bImg').src = src(IMG[s.word].bottle);
   $('#lbFlav').textContent = s.flav;
   $('#lbFlav').style.setProperty('--lf', s.flav.length > 5 ? '76px' : '92px');
   $('#lbSub').textContent = s.sub;
@@ -647,14 +672,17 @@ function build(s, i) {
   $$('.links a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === (s.sport ? '#sport' : '#iced-tea')));
 
   $('#fxBack').innerHTML = $('#fxFront').innerHTML = '';
+  const used = {};
+  const pick = t => { const list = t === 'ice' ? IMG.ice : IMG[s.word][t]; if (!list) return null; used[t] = (used[t] || 0) + 1; return list[(used[t] - 1) % list.length]; };
   s.fx.forEach(f => {
     const pos = document.createElement('div');
     pos.className = 'fx-pos ' + f.z;
     pos.dataset.depth = f.z === 'front' ? rnd(1.3, 1.7).toFixed(2) : rnd(.35, .6).toFixed(2);
     const type = ['mint', 'tea'].includes(f.t) ? `leaf f-${f.t}` : f.t;
+    const img = pick(f.t);
     pos.innerHTML = `<div class="fx-anim" data-layer="${f.t}">
       <div class="fx-art" style="--bd:${rnd(2.8, 4.6).toFixed(2)}s;--bdl:-${rnd(0, 4).toFixed(2)}s;--bx:${rnd(-14, 14).toFixed(0)}px;--by:${rnd(-30, -12).toFixed(0)}px;--br:${rnd(-12, 12).toFixed(0)}deg">
-        <div class="f f-${type}" style="--r:${f.r || 0}deg;${f.v || ''}"></div></div></div>`;
+        ${img ? `<img class="f f-img" src="${src(img)}" alt="" style="--r:${f.r || 0}deg">` : `<div class="f f-${type}" style="--r:${f.r || 0}deg;${f.v || ''}"></div>`}</div></div>`;
     pos._fx = f;
     (f.z === 'front' ? $('#fxFront') : $('#fxBack')).appendChild(pos);
   });
@@ -771,8 +799,10 @@ async function go(i) {
   const s = SLIDES[i], first = idx < 0;
   setSegments(i);
   if (!first) { exitScene(); await sleep(230); }
+  const imgs = Promise.all(slideImages(s).map(preload));
   revealBg(s);
   if (!first) await sleep(430);
+  await Promise.race([imgs, new Promise(r => setTimeout(r, 1500))]);
   applyTheme(s);
   build(s, i);
   idx = i;
@@ -826,7 +856,10 @@ const start = Math.max(0, Math.min(SLIDES.length - 1, (parseInt((location.hash.m
 const fontsIn = document.fonts
   ? Promise.all(['400 100px Anton', '700 40px Cairo', '800 40px "Inter Tight"', '900 40px "Inter Tight"'].map(f => document.fonts.load(f, 'AZ مرحبا').catch(() => {})))
   : Promise.resolve();
-Promise.race([fontsIn, new Promise(r => setTimeout(r, 2500))]).then(() => go(start));
+Promise.race([fontsIn, new Promise(r => setTimeout(r, 2500))]).then(() => {
+  go(start);
+  setTimeout(() => SLIDES.forEach(sl => slideImages(sl).forEach(preload)), 2500);   // warm the rest
+});
 </script>
 </body>
 </html>
