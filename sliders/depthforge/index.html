@@ -713,25 +713,26 @@ function xray(on){
 }
 
 /* ------------------------------------------------------------------ *
- * REEL AUTOPILOT — ?reel plays a scripted ~27s take, then loops.
+ * REEL AUTOPILOT — ?reel plays a scripted ~28s take, then loops.
  * A visible "finger" performs the drags so viewers see it's interactive.
  * ------------------------------------------------------------------ */
 var finger = $("#finger"), hook = $("#hook"), T0 = 0, step = 0, G = null;
 var TIMELINE = [
-  [0,     function(){ B.classList.remove("ending"); B.classList.add("hooking");
-                      hook.classList.add("show"); if(cur > 0) go(0, 1); }],
-  [2700,  function(){ B.classList.remove("hooking"); hook.classList.add("docked"); }],
-  [3800,  function(){ flick(1, 0); }],
-  [7400,  function(){ go(1, 1); }],
-  [9000,  function(){ flick(-1, .35); }],
-  [12400, function(){ go(2, 1); }],
-  [14000, function(){ xray(true); }],
-  [15200, function(){ flick(1, -.2); }],
-  [17400, function(){ xray(false); }],
-  [18600, function(){ go(3, 1); }],
-  [20200, function(){ flick(1, .25); }],
-  [23400, function(){ B.classList.add("ending"); }],
-  [27000, function(){ hook.classList.remove("show", "docked"); T0 = performance.now() + 150; step = 0; }]
+  /* end card clears under the dim before the hook starts, so the loop never overlaps text */
+  [0,     function(){ B.classList.remove("ending"); B.classList.add("hooking"); if(cur > 0) go(0, 1); }],
+  [800,   function(){ hook.classList.add("show"); }],
+  [3500,  function(){ B.classList.remove("hooking"); hook.classList.add("docked"); }],
+  [4600,  function(){ flick(1, 0); }],
+  [8200,  function(){ go(1, 1); }],
+  [9800,  function(){ flick(-1, .35); }],
+  [13200, function(){ go(2, 1); }],
+  [14800, function(){ xray(true); }],
+  [16000, function(){ flick(1, -.2); }],
+  [18200, function(){ xray(false); }],
+  [19400, function(){ go(3, 1); }],
+  [21000, function(){ flick(1, .25); }],
+  [24200, function(){ B.classList.add("ending"); }],
+  [27800, function(){ hook.classList.remove("show", "docked"); T0 = performance.now() + 200; step = 0; }]
 ];
 
 function flick(dir, tilt){
