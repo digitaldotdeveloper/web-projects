@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Frostea Hero Slider</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Cairo:wght@700;800&family=Inter+Tight:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   FROSTEA: full-screen web hero slider for an iced tea + sport drink brand.
+   Phase 1: LAYERS + TRANSITIONS only. All art is CSS placeholder,
+   so each layer can be swapped for a real PNG later.
+   Backgrounds, header and index are full-bleed viewport CSS. The product
+   composition lives on #canvas: 1920x1080 on landscape screens and
+   1080x1920 on portrait/mobile, scaled to fit.
+   Keys: <- -> switch, Space pause, S slow-mo, L layer map, H hide hint
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#07090b;overflow:hidden}
+body{font-family:"Inter Tight",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+
+#stage{
+  position:fixed;inset:0;overflow:hidden;background:#101316;user-select:none;touch-action:pan-y;
+  --ink:#fff;--rays:rgba(255,255,255,.14);
+}
+#canvas{position:absolute;left:50%;top:50%;transform-origin:50% 50%}
+#shake,#scene{position:absolute;inset:0}
+#scene{animation:dolly 9s ease-in-out infinite alternate}
+@keyframes dolly{from{transform:scale(1)}to{transform:scale(1.025)}}
+
+/* ---------- background plates ---------- */
+#bgs{position:absolute;inset:0}
+.bg{position:absolute;inset:0;will-change:clip-path,transform}
+#rays{position:absolute;left:-860px;top:-400px;width:2800px;height:2800px;
+  background:repeating-conic-gradient(from 0deg,var(--rays) 0 5deg,transparent 5deg 15deg);
+  -webkit-mask:radial-gradient(closest-side,#000 10%,transparent 72%);mask:radial-gradient(closest-side,#000 10%,transparent 72%);
+  animation:spin 90s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+
+/* ---------- site header (viewport CSS) ---------- */
+.nav{position:absolute;left:0;right:0;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(12px,1.7vw,28px) clamp(16px,3.4vw,64px);color:var(--ink);transition:color .6s}
+.nav a{color:inherit;text-decoration:none}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:clamp(18px,1.5vw,26px);letter-spacing:.08em}
+.logo svg{width:clamp(24px,1.9vw,32px);height:clamp(24px,1.9vw,32px)}
+.logo svg path{fill:currentColor}
+.logo svg .cut{stroke:var(--logoCut,#000);stroke-width:2.6;stroke-linecap:round;fill:none;transition:stroke .6s}
+.links{display:flex;gap:clamp(18px,2.3vw,42px)}
+.links a{position:relative;font-weight:700;font-size:13px;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.links a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:currentColor;transform:scaleX(0);transform-origin:0 50%;transition:transform .35s}
+.links a:hover::after,.links a.on::after{transform:scaleX(1)}
+.acts{display:flex;align-items:center;gap:10px}
+.ico{all:unset;cursor:pointer;position:relative;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;
+  border:1.5px solid color-mix(in srgb,var(--ink) 35%,transparent)}
+.ico svg{width:18px;height:18px}
+.bag span{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--ctaBg);color:var(--ctaInk);font:800 10px/18px "Inter Tight",sans-serif;text-align:center}
+.nav a.order{margin-left:6px;background:var(--ctaBg);color:var(--ctaInk);padding:13px 22px;border-radius:99px;font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase;transition:background .6s,color .6s}
+.burger{display:none}
+.port .links,.port .nav a.order,.port .ico.search{display:none}
+.port .burger{display:grid}
+
+/* ---------- numbered flavour index (replaces dots) ---------- */
+.index{position:absolute;z-index:50;display:flex;color:var(--ink);transition:color .6s}
+.land .index{right:calc(clamp(18px,3.2vw,60px) + 136px);bottom:clamp(16px,3vw,48px);height:50px;align-items:center;gap:22px}
+.port .index{left:50%;bottom:14px;transform:translateX(-50%);gap:12px}
+.it{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;opacity:.45;transition:opacity .3s}
+.it:hover,.it.on{opacity:1}
+.it .no{font-family:Anton,Impact,sans-serif;font-size:24px;letter-spacing:.02em}
+.it .nm{font-weight:800;font-size:11px;letter-spacing:.2em;text-transform:uppercase;max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .5s}
+.land .it.on .nm,.land .it:hover .nm{max-width:170px}
+.bar{display:block;width:22px;height:3px;border-radius:3px;overflow:hidden;background:color-mix(in srgb,var(--ink) 28%,transparent);transition:width .5s}
+.it.on .bar{width:64px}
+.bar b{display:block;height:100%;background:var(--ink);transform:scaleX(0);transform-origin:0 50%}
+.port .it .no{font-size:18px}
+.port .it .nm{display:none}
+.port .it.on .bar{width:40px}
+.arrows{position:absolute;z-index:50;right:clamp(18px,3.2vw,60px);bottom:clamp(16px,3vw,48px);display:flex;gap:10px;color:var(--ink)}
+.arrows button{all:unset;cursor:pointer;width:50px;height:50px;display:grid;place-items:center;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--ink) 40%,transparent);transition:background .25s,color .25s}
+.arrows button:hover{background:var(--ink);color:var(--bg)}
+.arrows svg{width:20px;height:20px}
+.port .arrows{display:none}
+
+/* ---------- text masks ---------- */
+.ln{display:block;overflow:hidden;padding-top:.04em}
+.ln>span{display:inline-block;will-change:transform}
+.head{position:absolute;left:70px;top:246px;width:760px;z-index:30;color:var(--ink)}
+.kicker>span{font-weight:800;font-size:28px;letter-spacing:.26em;display:flex;align-items:center;gap:16px}
+.kicker>span::before{content:"";width:46px;height:4px;background:currentColor;border-radius:4px}
+.name{margin-top:-6px}
+.name>span{font-family:Anton,Impact,sans-serif;font-size:146px;line-height:1;letter-spacing:-.004em}
+.name.alt>span{color:var(--nameAlt)}
+
+.count{position:absolute;right:66px;top:250px;display:flex;align-items:flex-start;z-index:30;color:var(--ink)}
+.cmask{overflow:hidden;height:176px}
+.cnum{display:block;font-family:Anton,Impact,sans-serif;font-size:176px;line-height:1;color:transparent;-webkit-text-stroke:3px var(--ink)}
+.ctot{font-weight:800;font-size:32px;margin:18px 0 0 8px;opacity:.8}
+
+/* giant word behind the bottle */
+.word-pos{position:absolute;left:0;top:600px;width:1080px;height:600px;display:flex;align-items:center;justify-content:center;z-index:5}
+.word{position:relative;font-family:Anton,Impact,sans-serif;line-height:1;white-space:nowrap}
+.w-out,.w-fill{display:block;overflow:hidden;padding:.03em .02em 0}
+.w-fill{position:absolute;inset:0;clip-path:inset(100% 0 0 0)}
+.w-fill .ch{color:var(--word)}
+.w-out{position:relative}
+.w-out .ch{color:transparent;-webkit-text-stroke:4px var(--wordLine)}
+.ch{display:inline-block}
+
+/* ribbons */
+.rib-pos{position:absolute;left:-170px;width:1420px;height:94px}
+.rib-pos.back{top:1300px;transform:rotate(7deg);z-index:8}
+.rib-pos.front{top:1446px;transform:rotate(-4deg);z-index:24}
+.rib{width:100%;height:100%;overflow:hidden;display:flex;align-items:center;box-shadow:0 22px 40px rgba(0,0,0,.16);clip-path:inset(0 100% 0 0)}
+.back .rib{background:var(--ribbon);color:var(--ribbonInk)}
+.front .rib{background:var(--ribbon2);color:var(--ribbon2Ink)}
+.track{display:flex;white-space:nowrap;font-family:Anton,Impact,sans-serif;font-size:52px;letter-spacing:.05em;animation:marq 16s linear infinite}
+.front .track{animation-direction:reverse;animation-duration:13s}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ---------- bottle rig: pos (parallax) > anim (WAAPI) > float (CSS) ---------- */
+.b-pos{position:absolute;left:540px;top:600px;width:0;height:0;z-index:15}
+.b-anim{position:absolute;left:-170px;top:0;width:340px;height:870px;transform-origin:50% 97%;transform:translateY(-2600px)}
+.b-float{width:100%;height:100%;animation:bfloat 4.6s ease-in-out infinite alternate}
+@keyframes bfloat{from{transform:translateY(0) rotate(-1.2deg)}to{transform:translateY(-20px) rotate(1.2deg)}}
+.bottle{position:relative;width:340px;height:870px;--cap:var(--labelInk);filter:drop-shadow(0 38px 44px rgba(0,0,0,.2))}
+.bottle>*{position:absolute}
+.capgrad{background:
+  repeating-linear-gradient(90deg,rgba(0,0,0,.16) 0 5px,transparent 5px 12px),
+  linear-gradient(90deg,color-mix(in srgb,var(--cap) 60%,#000),var(--cap) 30%,color-mix(in srgb,var(--cap) 55%,#fff) 50%,var(--cap) 72%,color-mix(in srgb,var(--cap) 60%,#000))}
+.cap{left:95px;top:0;width:150px;height:88px;border-radius:18px 18px 10px 10px;z-index:3}
+.ring{left:86px;top:84px;width:168px;height:20px;border-radius:7px;z-index:3}
+.nozzle{display:none;left:128px;top:0;width:84px;height:52px;border-radius:30px 30px 6px 6px;z-index:3}
+.neck{left:115px;top:100px;width:110px;height:80px;z-index:1;
+  background:linear-gradient(90deg,rgba(255,255,255,.4),rgba(255,255,255,.08) 38%,rgba(255,255,255,.34) 66%,rgba(255,255,255,.1));
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.body{left:0;top:150px;width:340px;height:720px;overflow:hidden;z-index:2;
+  border-radius:120px 120px 58px 58px/170px 170px 50px 50px;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 2px rgba(255,255,255,.4)}
+.body::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:8;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,.3),transparent 20%,rgba(255,255,255,.3) 32%,transparent 44%,transparent 76%,rgba(0,0,0,.28))}
+.liq{position:absolute;left:-35%;width:170%;top:12%;height:130%;transform-origin:50% 2%;
+  background:linear-gradient(180deg,var(--liq),var(--liq2) 80%)}
+.liq::before{content:"";position:absolute;left:0;right:0;top:-10px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--liq) 55%,#fff);opacity:.85}
+.liq i{position:absolute;bottom:25%;border-radius:50%;border:2px solid rgba(255,255,255,.55);animation:rise var(--d) linear var(--dl) infinite;opacity:0}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-640px);opacity:0}}
+.label{position:absolute;left:0;right:0;top:36%;height:40%;z-index:4;background:var(--label);
+  border-top:9px solid var(--labelInk);border-bottom:9px solid var(--labelInk);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--labelInk);text-align:center}
+.lb-brand{font-weight:900;font-size:22px;letter-spacing:.34em;margin-left:.34em}
+.lb-flav{font-family:Anton,Impact,sans-serif;font-size:var(--lf,92px);line-height:.95;margin:8px 0 6px}
+.lb-sub{font-weight:800;font-size:17px;letter-spacing:.3em;margin-left:.3em}
+.grip{display:none;left:0;right:0;top:82%;height:13%;z-index:5;background:repeating-linear-gradient(180deg,rgba(0,0,0,.2) 0 6px,rgba(255,255,255,.14) 6px 15px)}
+.gloss{z-index:9;left:48px;top:250px;width:24px;height:540px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,.05));filter:blur(1px)}
+.gloss.g2{left:262px;top:300px;width:9px;height:420px;opacity:.6}
+.drops{inset:150px 0 0 0;z-index:9;pointer-events:none}
+.drops i{position:absolute;width:var(--w);height:calc(var(--w)*1.25);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95) 0 16%,rgba(255,255,255,.3) 42%,rgba(255,255,255,.06) 72%);
+  box-shadow:0 2px 3px rgba(0,0,0,.14)}
+.drops i.t{animation:trickle var(--d) ease-in var(--dl) infinite}
+@keyframes trickle{0%,55%{transform:translateY(0);opacity:1}100%{transform:translateY(90px) scaleY(1.3);opacity:0}}
+/* sport bottle variant */
+.bottle.sport .nozzle{display:block}
+.bottle.sport .cap{left:85px;top:44px;width:170px;height:62px;border-radius:14px 14px 8px 8px}
+.bottle.sport .ring{top:102px}
+.bottle.sport .body{border-radius:92px 92px 64px 64px/130px 130px 54px 54px}
+.bottle.sport .grip{display:block}
+.bottle.sport .label{top:33%}
+
+.sh-pos{position:absolute;left:540px;top:1468px;width:0;height:0;z-index:14}
+.shadow{position:absolute;left:-200px;top:-34px;width:400px;height:68px;opacity:0}
+.sh-float{width:100%;height:100%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.34),transparent);animation:sfloat 4.6s ease-in-out infinite alternate}
+@keyframes sfloat{from{transform:scale(1)}to{transform:scale(.88);opacity:.75}}
+
+/* ---------- fruit / ice layers: pos (parallax) > anim (WAAPI) > art (CSS bob) ---------- */
+.fx{position:absolute;inset:0;pointer-events:none}
+#fxBack{z-index:10}#fxFront{z-index:26}
+.fx-pos{position:absolute;width:0;height:0}
+.fx-anim{position:absolute;width:var(--s);height:var(--s);left:calc(var(--s)/-2);top:calc(var(--s)/-2)}
+.fx-art{width:100%;height:100%;animation:bob var(--bd) ease-in-out var(--bdl) infinite alternate}
+@keyframes bob{from{transform:translate(0,0) rotate(0)}to{transform:translate(var(--bx),var(--by)) rotate(var(--br))}}
+.back .fx-art{filter:blur(3px) saturate(.9)}
+.f{position:relative;width:100%;height:100%;transform:rotate(var(--r))}
+.f::before,.f::after{content:"";position:absolute}
+.f-peach{border-radius:50%;background:radial-gradient(circle at 34% 30%,#ffe6bf 0 7%,#ffb27a 30%,#f2685a 72%,#d23f4d)}
+.f-peach::before{left:46%;top:8%;width:40%;height:84%;border-left:5px solid rgba(160,40,40,.3);border-radius:50%}
+.f-peach::after{left:52%;top:-13%;width:42%;height:24%;border-radius:0 100% 0 100%;background:linear-gradient(135deg,#7bd06f,#2f8f46);transform:rotate(-12deg)}
+.f-peachslice{border-radius:50%;background:radial-gradient(circle,#8e3418 0 16%,#d9602f 18% 23%,#ffc873 31%,#ffb24f 68%,#f28a3c 75%,#e0513d 80%)}
+.f-peachslice::after,.f-slice::after,.f-cube::after,.f-blue::before{left:18%;top:14%;width:34%;height:22%;border-radius:50%;background:rgba(255,255,255,.35);filter:blur(3px)}
+.f-cube{border-radius:22%;background:linear-gradient(145deg,#ffe36e,#ffb321 50%,#ff8800);box-shadow:inset -12px -14px 0 rgba(200,90,0,.3),inset 8px 8px 0 rgba(255,255,255,.35)}
+.f-cube::before{inset:18%;border-radius:12%;background:linear-gradient(90deg,transparent 31%,rgba(210,110,0,.35) 31% 35%,transparent 35% 64%,rgba(210,110,0,.35) 64% 68%,transparent 68%),linear-gradient(0deg,transparent 31%,rgba(210,110,0,.35) 31% 35%,transparent 35% 64%,rgba(210,110,0,.35) 64% 68%,transparent 68%)}
+.f-leaf{border-radius:0 100% 0 100%;background:linear-gradient(135deg,var(--l1,#49b565),var(--l2,#1d6b43))}
+.f-leaf::before{left:50%;top:50%;width:128%;height:4px;background:rgba(255,255,255,.35);transform:translate(-50%,-50%) rotate(45deg)}
+.f-mint{--l1:#8ae88f;--l2:#2f9e4b}
+.f-tea{--l1:#6d9a3a;--l2:#2c4a14;transform:rotate(var(--r)) scaleX(.62)}
+.f-rasp{border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 38%,#ff86ad 0 14%,#e0245f 42%,#9c0c3d 68%);background-size:23% 23%}
+.f-rasp::after{inset:0;border-radius:50%;background:radial-gradient(circle at 36% 30%,rgba(255,255,255,.3),transparent 40%,rgba(60,0,20,.45) 88%)}
+.f-blue{border-radius:50%;background:radial-gradient(circle at 36% 32%,#9aa8f0 0 6%,#4b5bb8 30%,#262b6e 70%,#141838)}
+.f-blue::after{left:36%;top:36%;width:28%;height:28%;background:#10132c;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.f-slice{border-radius:50%;
+  background:radial-gradient(circle,var(--c3) 0 6%,transparent 6.5%),repeating-conic-gradient(from 8deg,var(--c2) 0 26deg,var(--c3) 26deg 30deg);
+  box-shadow:inset 0 0 0 calc(var(--s)*.05) var(--c3),inset 0 0 0 calc(var(--s)*.1) var(--c1),0 10px 24px rgba(0,0,0,.12)}
+.f-cherry{border-radius:50%;background:radial-gradient(circle at 34% 30%,#ff8a8a 0 7%,#e0112f 36%,#7a0016)}
+.f-cherry::before{left:48%;top:-44%;width:7%;height:52%;border-radius:6px;background:#5b7a2a;transform:rotate(18deg);transform-origin:50% 100%}
+.f-bolt{background:linear-gradient(160deg,#6ff7df,var(--acc,#19e3c4) 55%,#0a9c86);clip-path:polygon(42% 0,96% 0,62% 40%,90% 40%,18% 100%,38% 56%,8% 56%)}
+.f-drop{border-radius:0 50% 50% 50%;transform:rotate(45deg);background:radial-gradient(circle at 62% 62%,rgba(255,255,255,.98),var(--dropc,rgba(255,255,255,.4)) 62%);box-shadow:0 4px 10px rgba(0,0,0,.1)}
+.f-ice{border-radius:20%;background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.28) 45%,rgba(205,238,255,.55));
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.7),inset -14px -16px 26px rgba(255,255,255,.45),0 24px 40px rgba(0,0,0,.14)}
+.f-ice::before{left:14%;top:12%;width:44%;height:12%;border-radius:10px;background:rgba(255,255,255,.9);transform:rotate(-8deg)}
+.f-ice::after{right:12%;bottom:14%;width:14%;height:40%;border-radius:10px;background:rgba(255,255,255,.5)}
+
+/* splash on landing */
+#splash{position:absolute;inset:0;z-index:25;pointer-events:none}
+.splash{position:absolute;width:0;height:0}
+.splash .sring{position:absolute;left:0;top:0;width:380px;height:74px;border-radius:50%;border:6px solid rgba(255,255,255,.85)}
+.splash b{position:absolute;left:0;top:0;border-radius:50%;margin:-8px}
+
+/* ---------- info row ---------- */
+.info{position:absolute;left:70px;right:70px;top:1606px;display:flex;justify-content:space-between;align-items:flex-end;z-index:30;color:var(--ink)}
+.info .left{width:600px}
+.tag>span{font-weight:800;font-size:44px;line-height:1.08;letter-spacing:-.01em}
+.ar{margin-top:8px}
+.ar>span{font-family:Cairo,sans-serif;font-weight:700;font-size:36px;opacity:.85}
+.right{display:flex;flex-direction:column;align-items:flex-end;gap:16px}
+.chips{display:flex;gap:10px}
+.chips b{white-space:nowrap;font-weight:800;font-size:21px;letter-spacing:.12em;padding:10px 18px;border:2px solid var(--ink);border-radius:99px;transform:scale(0)}
+.cta{display:flex;align-items:center;gap:14px;white-space:nowrap;background:var(--ctaBg);color:var(--ctaInk);padding:22px 30px 22px 34px;border-radius:99px;font-weight:900;font-size:28px;letter-spacing:.06em;transform:scale(0);box-shadow:0 18px 36px rgba(0,0,0,.18)}
+.cta .price{opacity:.7}
+.cta svg{width:34px;height:34px}
+.foot{position:absolute;left:0;right:0;top:1826px;text-align:center;z-index:30;color:var(--ink);font-weight:700;font-size:22px;letter-spacing:.3em;opacity:.55;transition:color .6s}
+
+/* ---------- landscape composition (1920x1080 canvas) ---------- */
+.land .head{left:130px;top:215px;width:1000px}
+.land .name>span{font-size:170px}
+.land .count,.land .foot{display:none}
+.land #rays{left:-200px;top:-910px}
+.land .word-pos{left:650px;top:240px;width:1100px;height:520px}
+.land .rib-pos{left:790px;width:1950px;-webkit-mask:linear-gradient(90deg,transparent,#000 280px);mask:linear-gradient(90deg,transparent,#000 280px)}
+.land .rib-pos.back{top:620px;transform:rotate(8deg)}
+.land .rib-pos.front{top:725px;transform:rotate(-5deg)}
+.land .b-pos{left:1200px;top:165px;scale:.78}
+.land .sh-pos{left:1200px;top:842px;scale:.78}
+.land .info{left:130px;right:auto;top:668px;width:800px;display:block}
+.land .info .left{width:760px}
+.land .tag>span{font-size:40px}
+.land .ar>span{font-size:34px}
+.land .right{align-items:flex-start;margin-top:26px;gap:22px}
+.cta-row{display:flex;align-items:center;gap:34px}
+.cta2{font-weight:800;font-size:24px;letter-spacing:.08em;color:var(--ink);text-decoration:none;border-bottom:3px solid currentColor;padding-bottom:4px;opacity:0}
+.port .cta2{display:none}
+a.cta{text-decoration:none}
+
+/* ---------- layer map (L) ---------- */
+body.map [data-layer]{outline:3px dashed #00e5ff;outline-offset:-3px}
+body.map [data-layer]::after{content:attr(data-layer);position:absolute;left:0;top:0;background:#00e5ff;color:#001;font:800 18px/1 "Inter Tight",sans-serif;padding:5px 8px;white-space:nowrap;z-index:99;filter:none}
+body.map .fx-art,body.map .rib{filter:none!important}
+
+.hint{position:fixed;left:14px;bottom:12px;z-index:99;color:#9aa3ab;font:500 12px/1.6 "Inter Tight",sans-serif;background:rgba(0,0,0,.55);padding:8px 12px;border-radius:10px;pointer-events:none}
+.hint b{color:#fff}
+body.rec .hint{display:none}
+body.rec #stage{cursor:none}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="bgs" data-layer="background plates"></div>
+  <div id="canvas">
+  <div id="shake">
+    <div id="scene">
+      <div id="rays" data-depth="-.15"></div>
+
+      <div class="word-pos" data-depth=".25"><div class="word" data-layer="giant word"><span class="w-fill"></span><span class="w-out"></span></div></div>
+
+      <div class="rib-pos back" data-depth=".45"><div class="rib" data-layer="ribbon back"><div class="track"></div></div></div>
+
+      <div class="fx" id="fxBack"></div>
+
+      <div class="sh-pos" data-depth=".8"><div class="shadow" data-layer="shadow"><div class="sh-float"></div></div></div>
+      <div class="b-pos" data-depth=".8">
+        <div class="b-anim" data-layer="bottle">
+          <div class="b-float">
+            <div class="bottle" id="bottle">
+              <div class="nozzle capgrad"></div>
+              <div class="cap capgrad"></div>
+              <div class="ring capgrad"></div>
+              <div class="neck"></div>
+              <div class="body">
+                <div class="liq" id="liq"></div>
+                <div class="label">
+                  <span class="lb-brand">FROSTEA</span>
+                  <span class="lb-flav" id="lbFlav"></span>
+                  <span class="lb-sub" id="lbSub"></span>
+                </div>
+                <div class="grip"></div>
+              </div>
+              <div class="gloss"></div><div class="gloss g2"></div>
+              <div class="drops" id="drops"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rib-pos front" data-depth=".95"><div class="rib" data-layer="ribbon front"><div class="track"></div></div></div>
+      <div class="fx" id="fxFront"></div>
+      <div id="splash"></div>
+    </div>
+  </div>
+
+  <!-- text sits outside the shake so it stays readable on impact -->
+  <div class="head" data-layer="title">
+    <div class="ln kicker"><span id="kicker"></span></div>
+    <div class="ln name"><span id="n1"></span></div>
+    <div class="ln name alt"><span id="n2"></span></div>
+  </div>
+  <div class="count" data-layer="counter"><div class="cmask"><span class="cnum" id="cnum"></span></div><div class="ctot" id="ctot"></div></div>
+  <div class="info" data-layer="info">
+    <div class="left">
+      <div class="ln tag"><span id="tag"></span></div>
+      <div class="ln ar"><span id="ar" dir="rtl"></span></div>
+    </div>
+    <div class="right">
+      <div class="chips" id="chips"></div>
+      <div class="cta-row">
+        <a class="cta" id="cta" href="#shop"><span class="price" id="price"></span><span>SHOP NOW</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="cta2" id="cta2" href="#stockists">FIND A STORE</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot">MADE IN LEBANON ✦ SERVE ICE COLD</div>
+  </div><!-- /canvas -->
+
+  <header class="nav" data-layer="site header">
+    <a class="logo" href="#">
+      <svg viewBox="0 0 48 48"><path d="M24 3C24 3 7 21.5 7 31.5a17 17 0 0 0 34 0C41 21.5 24 3 24 3Z"/><g class="cut"><path d="M24 22v20M15.3 27l17.4 10M32.7 27 15.3 37"/></g></svg>
+      FROSTEA
+    </a>
+    <nav class="links"><a href="#shop">Shop</a><a href="#iced-tea">Iced Tea</a><a href="#sport">Sport</a><a href="#story">Our Story</a><a href="#stockists">Stockists</a></nav>
+    <div class="acts">
+      <button class="ico search" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+      <button class="ico bag" aria-label="Cart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span>2</span></button>
+      <button class="ico burger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></svg></button>
+      <a class="order" href="#shop">Order now</a>
+    </div>
+  </header>
+  <div class="index" id="index" data-layer="flavour index"></div>
+  <div class="arrows">
+    <button id="prev" aria-label="Previous flavour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    <button id="next" aria-label="Next flavour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </div>
+</div>
+
+<div class="hint"><b>← →</b> / index / swipe to switch · <b>Space</b> pause · <b>S</b> slow-mo · <b>L</b> layer map · <b>H</b> hide this hint · <b>#s3</b> deep link</div>
+
+<script>
+/* ============================================================
+   SLIDES: all copy, prices and handle are placeholders.
+   enter  = bottle entrance: drop | spin | swing | zoom | rush
+   reveal = background transition: pour | burst | blinds | slice | rush
+   fx     = t: type, x/y: stage px (centre), s: size, r: rotation, z: back|front
+   ============================================================ */
+const SLIDES = [
+  { word:'PEACH', short:'Peach Zero', flav:'PEACH', sub:'ZERO · ICED TEA', kicker:'ICED TEA · ZERO SUGAR', name:['PEACH','ZERO'],
+    tag:'All of summer. None of the sugar.', ar:'طعم الصيف، بلا سكّر', chips:['500 ML','0 KCAL'], price:'$1.00',
+    ribbon:'ICE COLD ✦ ZERO SUGAR ✦ BREWED IN LEBANON ✦ ', enter:'drop', reveal:'pour',
+    theme:{bg:'#ffb48c',bgDeep:'#ff7c6a',glow:'#ffe4c8',ink:'#3a120c',nameAlt:'#ffffff',word:'#ff9c7f',wordLine:'rgba(58,18,12,.3)',
+      liq:'#f7893f',liq2:'#c8501f',label:'#fff3e6',labelInk:'#d2452f',ribbon:'#3a120c',ribbonInk:'#ffd6bf',ribbon2:'#fff3e6',ribbon2Ink:'#d2452f',
+      ctaBg:'#3a120c',ctaInk:'#ffe9dc',rays:'rgba(255,255,255,.16)',logoCut:'#ffb48c'},
+    fx:[{t:'peach',x:230,y:770,s:240,r:-12,z:'front'},{t:'peachslice',x:865,y:720,s:210,r:25,z:'back'},{t:'peachslice',x:850,y:1215,s:260,r:-18,z:'front'},
+        {t:'peach',x:180,y:1250,s:170,r:18,z:'back'},{t:'mint',x:940,y:960,s:120,r:40,z:'back'},{t:'mint',x:130,y:1010,s:100,r:-120,z:'back'},
+        {t:'drop',x:300,y:610,s:46,z:'back'},{t:'drop',x:790,y:560,s:36,z:'front'},
+        {t:'ice',x:160,y:1470,s:160,r:15,z:'front'},{t:'ice',x:940,y:1455,s:150,r:-10,z:'back'},{t:'ice',x:700,y:1520,s:96,r:8,z:'front'}]},
+
+  { word:'MANGO', short:'Mango', flav:'MANGO', sub:'ICED TEA', kicker:'ICED TEA · TROPICAL', name:['TROPICAL','MANGO'],
+    tag:'Sunshine, brewed cold.', ar:'نكهة استوائية بكل رشفة', chips:['500 ML','REAL FRUIT'], price:'$1.00',
+    ribbon:'TROPICAL ✦ ICE COLD ✦ REAL MANGO ✦ ', enter:'spin', reveal:'burst',
+    theme:{bg:'#ffcd40',bgDeep:'#ff9f1c',glow:'#fff4b8',ink:'#2b1a00',nameAlt:'#1d6b43',word:'#ffba2e',wordLine:'rgba(43,26,0,.28)',
+      liq:'#ffa51f',liq2:'#de6b09',label:'#1d6b43',labelInk:'#ffd23f',ribbon:'#1d6b43',ribbonInk:'#ffe27a',ribbon2:'#2b1a00',ribbon2Ink:'#ffc93c',
+      ctaBg:'#1d6b43',ctaInk:'#fff4b8',rays:'rgba(255,255,255,.2)',logoCut:'#ffcd40'},
+    fx:[{t:'cube',x:220,y:760,s:170,r:-18,z:'front'},{t:'cube',x:870,y:690,s:130,r:22,z:'back'},{t:'cube',x:880,y:1160,s:190,r:12,z:'front'},
+        {t:'cube',x:170,y:1190,s:140,r:-30,z:'back'},{t:'cube',x:790,y:560,s:80,r:40,z:'back'},{t:'leaf',x:950,y:930,s:150,r:30,z:'back'},
+        {t:'leaf',x:120,y:960,s:130,r:-140,z:'front'},{t:'cube',x:300,y:1400,s:90,r:15,z:'front'},
+        {t:'ice',x:930,y:1470,s:170,r:-14,z:'front'},{t:'ice',x:150,y:1480,s:140,r:10,z:'back'}]},
+
+  { word:'BERRY', short:'Wild Berries', flav:'BERRY', sub:'ICED TEA', kicker:'ICED TEA · WILD BERRIES', name:['WILD','BERRIES'],
+    tag:'Dark, wild & dangerously cold.', ar:'توت برّي، بارد ومنعش', chips:['500 ML','ANTIOXIDANTS'], price:'$1.00',
+    ribbon:'WILD ✦ DARK ✦ DANGEROUSLY COLD ✦ ', enter:'swing', reveal:'blinds',
+    theme:{bg:'#63163c',bgDeep:'#26061a',glow:'#b8246d',ink:'#ffe3f0',nameAlt:'#ff5aa3',word:'#74194a',wordLine:'rgba(255,200,230,.32)',
+      liq:'#b3124f',liq2:'#590627',label:'#ffe3f0',labelInk:'#7a0f3d',ribbon:'#ff4f9a',ribbonInk:'#26061a',ribbon2:'#ffe3f0',ribbon2Ink:'#63163c',
+      ctaBg:'#ff4f9a',ctaInk:'#26061a',rays:'rgba(255,120,190,.1)',logoCut:'#63163c'},
+    fx:[{t:'rasp',x:230,y:770,s:150,r:0,z:'front'},{t:'rasp',x:880,y:720,s:120,r:20,z:'back'},{t:'rasp',x:860,y:1220,s:175,r:-10,z:'front'},
+        {t:'blue',x:170,y:1100,s:110,r:0,z:'back'},{t:'blue',x:290,y:1260,s:80,r:30,z:'front'},{t:'blue',x:950,y:980,s:90,r:0,z:'back'},
+        {t:'blue',x:790,y:570,s:60,r:0,z:'back'},{t:'blue',x:110,y:880,s:62,r:0,z:'back'},{t:'mint',x:940,y:1420,s:130,r:200,z:'front'},
+        {t:'ice',x:160,y:1470,s:170,r:12,z:'front'},{t:'ice',x:690,y:1525,s:104,r:-8,z:'front'}]},
+
+  { word:'CITRUS', short:'Green Citrus', flav:'CITRUS', sub:'GREEN TEA', kicker:'GREEN TEA · CITRUS', name:['GREEN','CITRUS'],
+    tag:'Green tea with a sharp twist.', ar:'شاي أخضر بلمسة حامض', chips:['500 ML','LOW SUGAR'], price:'$1.00',
+    ribbon:'FRESH ✦ SHARP ✦ GREEN TEA ✦ ', enter:'zoom', reveal:'slice',
+    theme:{bg:'#cdef72',bgDeep:'#7fc443',glow:'#f6ffc9',ink:'#10300f',nameAlt:'#2d7a1e',word:'#b8df5a',wordLine:'rgba(16,48,15,.28)',
+      liq:'#bcd93f',liq2:'#6c981b',label:'#10300f',labelInk:'#d9f67b',ribbon:'#10300f',ribbonInk:'#e3ff8a',ribbon2:'#fffad0',ribbon2Ink:'#10300f',
+      ctaBg:'#10300f',ctaInk:'#e3ff8a',rays:'rgba(255,255,255,.22)',logoCut:'#cdef72'},
+    fx:[{t:'slice',x:220,y:770,s:230,r:0,z:'front',v:'--c1:#6fae24;--c2:#d6f06c;--c3:#f5ffd6'},{t:'slice',x:880,y:720,s:180,r:0,z:'back',v:'--c1:#f2c200;--c2:#ffe766;--c3:#fff8cf'},
+        {t:'slice',x:870,y:1250,s:240,r:0,z:'front',v:'--c1:#f2c200;--c2:#ffe766;--c3:#fff8cf'},{t:'mint',x:150,y:1120,s:140,r:-40,z:'back'},
+        {t:'mint',x:950,y:990,s:120,r:60,z:'back'},{t:'tea',x:310,y:1330,s:110,r:20,z:'front'},{t:'tea',x:790,y:570,s:90,r:-30,z:'back'},
+        {t:'ice',x:150,y:1470,s:160,r:14,z:'front'},{t:'ice',x:940,y:1480,s:130,r:-6,z:'back'},{t:'ice',x:660,y:1530,s:96,r:10,z:'front'}]},
+
+  { word:'SPORT', short:'Fruit Punch', flav:'PUNCH', sub:'SPORT DRINK', kicker:'SPORT DRINK · ELECTROLYTES', name:['FRUIT','PUNCH'],
+    tag:'Refuel. Rehydrate. Repeat.', ar:'اشرب، ارتاح، وكفّي', chips:['500 ML','ELECTROLYTES'], price:'$1.00',
+    ribbon:'REFUEL ✦ REHYDRATE ✦ REPEAT ✦ ', enter:'rush', reveal:'rush', sport:true,
+    theme:{bg:'#10171b',bgDeep:'#030506',glow:'#0e5a55',ink:'#eafffb',nameAlt:'#19e3c4',word:'#141d22',wordLine:'rgba(25,227,196,.55)',
+      liq:'#ff3b5c',liq2:'#9e0f2b',label:'#19e3c4',labelInk:'#061012',ribbon:'#19e3c4',ribbonInk:'#061012',ribbon2:'#ff3b5c',ribbon2Ink:'#ffffff',
+      ctaBg:'#19e3c4',ctaInk:'#061012',rays:'rgba(25,227,196,.07)',logoCut:'#10171b',acc:'#19e3c4',dropc:'rgba(120,255,235,.45)'},
+    fx:[{t:'slice',x:220,y:770,s:220,r:0,z:'front',v:'--c1:#f07a12;--c2:#ffa53a;--c3:#fff0d6'},{t:'slice',x:880,y:1235,s:240,r:0,z:'front',v:'--c1:#e5202e;--c2:#ff6a55;--c3:#ffe3dc'},
+        {t:'cherry',x:880,y:730,s:130,r:-10,z:'back'},{t:'cherry',x:170,y:1200,s:115,r:15,z:'back'},{t:'bolt',x:955,y:980,s:150,r:12,z:'back'},
+        {t:'bolt',x:125,y:975,s:112,r:-15,z:'front'},{t:'drop',x:300,y:600,s:50,z:'back'},{t:'drop',x:800,y:550,s:40,z:'front'},
+        {t:'drop',x:760,y:1400,s:50,z:'front'},{t:'ice',x:160,y:1470,s:160,r:12,z:'front'},{t:'ice',x:930,y:1480,s:130,r:-12,z:'back'}]},
+];
+
+const DWELL = 4200;                         // hold time per slide once it has landed
+
+/* Two compositions share every layer. Fruit coordinates in SLIDES are authored
+   around the portrait bottle (540,1010) and re-projected around the landscape one. */
+const LAYOUT = {
+  land: { W: 1920, H: 1080, bx: 1200, btop: 165, sc: .78, sx: 1.2, sy: 1, fs: 1.08, wordW: 1050, wordMax: 470 },
+  port: { W: 1080, H: 1920, bx: 540, btop: 600, sc: 1, sx: 1, sy: 1, fs: 1, wordW: 1000, wordMax: 560 },
+};
+const SRC_CX = 540, SRC_CY = 1010;
+
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const stage = $('#stage'), canvas = $('#canvas'), bgs = $('#bgs');
+let idx = -1, busy = false, queued = null, paused = false, rate = 1, prog = null;
+let MODE = null, L = LAYOUT.land, S = 1;
+
+/* ---------- helpers ---------- */
+const sleep = ms => new Promise(r => setTimeout(r, ms * rate));
+const clamp = v => Math.max(0, Math.min(1, v));
+const eio = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+const eout = t => 1 - Math.pow(1 - t, 3);
+const rnd = (a, b) => a + Math.random() * (b - a);
+function A(el, frames, o = {}) {
+  const a = el.animate(frames, { duration: o.d || 600, delay: o.delay || 0, easing: o.e || 'cubic-bezier(.2,.8,.2,1)', fill: o.fill || 'both' });
+  a.playbackRate = 1 / rate;
+  return a;
+}
+function clearAnims(el) {
+  el.getAnimations().forEach(a => { if (!(window.CSSAnimation && a instanceof CSSAnimation)) a.cancel(); });
+}
+const origin = () => ({ x: L.bx, y: L.btop + 410 * L.sc });   // bottle centre on the canvas
+const groundY = () => L.btop + 868 * L.sc;
+function toViewport(x, y) {                                     // canvas px -> viewport px
+  return { x: (innerWidth - L.W * S) / 2 + x * S, y: (innerHeight - L.H * S) / 2 + y * S };
+}
+
+/* ---------- responsive fit ---------- */
+function fit() {
+  const m = innerWidth / innerHeight >= 1 ? 'land' : 'port';
+  const changed = m !== MODE;
+  MODE = m; L = LAYOUT[m];
+  stage.classList.toggle('land', m === 'land');
+  stage.classList.toggle('port', m === 'port');
+  S = Math.min(innerWidth / L.W, innerHeight / L.H);
+  canvas.style.width = L.W + 'px';
+  canvas.style.height = L.H + 'px';
+  canvas.style.transform = `translate(-50%,-50%) scale(${S})`;
+  if (changed && idx >= 0) { placeFx(); fitWord(); }
+}
+addEventListener('resize', fit); fit();
+
+/* ---------- static bottle details (bubbles + condensation) ---------- */
+(function bottleDetails() {
+  const liq = $('#liq');
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('i'), w = rnd(8, 22);
+    b.style.cssText = `left:${rnd(34, 64)}%;width:${w}px;height:${w}px;--d:${rnd(2.6, 5)}s;--dl:${rnd(0, 5)}s`;
+    liq.appendChild(b);
+  }
+  const drops = $('#drops');
+  for (let i = 0; i < 22; i++) {
+    const d = document.createElement('i');
+    d.style.cssText = `left:${rnd(30, 300)}px;top:${rnd(120, 680)}px;--w:${rnd(7, 20)}px;--d:${rnd(5, 9)}s;--dl:${rnd(0, 6)}s`;
+    if (Math.random() < .35) d.className = 't';
+    drops.appendChild(d);
+  }
+})();
+
+/* ---------- numbered index + autoplay progress ---------- */
+$('#index').innerHTML = SLIDES.map((s, k) =>
+  `<button class="it" data-k="${k}" aria-label="${s.short}"><span class="nm">${s.short}</span><i class="bar"><b></b></i><span class="no">${String(k + 1).padStart(2, '0')}</span></button>`).join('');
+const items = $$('.it'), segFills = $$('.it .bar b');
+items.forEach(it => it.addEventListener('click', () => go(+it.dataset.k)));
+function setSegments(i) {
+  if (prog) { prog.cancel(); prog = null; }
+  items.forEach((it, k) => it.classList.toggle('on', k === i));
+  segFills.forEach(f => { clearAnims(f); f.style.transform = 'scaleX(0)'; });
+}
+function startProgress() {
+  prog = A(segFills[idx], [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { d: DWELL, e: 'linear' });
+  prog.onfinish = () => { prog = null; go(idx + 1); };
+  if (paused) prog.pause();
+}
+
+/* ============================================================
+   BACKGROUND REVEALS: full-bleed clip-path functions of t (0..1),
+   computed in viewport px so they cover any screen shape.
+   A liquid-coloured lead plate runs 150 ms ahead of the real background.
+   ============================================================ */
+const P = pts => pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ') + ' Z';
+const REVEAL = {
+  pour: (t, W, H) => {
+    const e = eio(t), y = H + 80 - e * (H + 360), a = H * .06 * Math.sin(t * Math.PI * 4) * (1 - e * .7) + H * .016;
+    return `M-10 ${y} C${W * .25} ${y - a} ${W * .5} ${y + a} ${W * .75} ${y} C${W * .83} ${y - a * .7} ${W * .92} ${y - a * .5} ${W + 10} ${y} L${W + 10} ${H + 10} L-10 ${H + 10} Z`;
+  },
+  blinds: (t, W, H) => {
+    const n = 8, k = H * .24, cw = (W + k) / n, st = .07;
+    let d = '';
+    for (let i = 0; i < n; i++) {
+      const p = eout(clamp((t - i * st) / (1 - (n - 1) * st))), h = p * (H + 40);
+      const x0 = -k + i * cw - 2, x1 = x0 + cw + 4, top = H + 20 - h;
+      d += (i % 2 === 0
+        ? P([[x0, -20], [x1, -20], [x1 + k * h / H, h - 20], [x0 + k * h / H, h - 20]])
+        : P([[x0 + k * top / H, top], [x1 + k * top / H, top], [x1 + k, H + 20], [x0 + k, H + 20]])) + ' ';
+    }
+    return d;
+  },
+  slice: (t, W, H) => {
+    const off = W * 1.9, oa = off * (1 - eio(clamp(t / .8))), ob = off * (1 - eio(clamp((t - .2) / .8)));
+    const tx = W * .62 + H * .35, bx = W * .38 - H * .35;          // diagonal from (tx,top) to (bx,bottom)
+    return P([[-W - oa, -20], [tx + 30 - oa, -20], [bx + 30 - oa, H + 20], [-W - oa, H + 20]]) + ' ' +
+           P([[tx - 30 + ob, -20], [W * 2 + ob, -20], [W * 2 + ob, H + 20], [bx - 30 + ob, H + 20]]);
+  },
+  rush: (t, W, H) => {
+    const n = 10, h = H / n, dl = [0, .14, .05, .2, .09, .24, .02, .17, .11, .22];
+    let d = '';
+    for (let i = 0; i < n; i++) {
+      const p = eio(clamp((t - dl[i]) / .74)), xl = W + 240 - p * (W + 480), y0 = i * h - 1, y1 = y0 + h + 2;
+      d += P([[xl, y0], [W + 20, y0], [W + 20, y1], [xl - 140, y1]]) + ' ';
+    }
+    return d;
+  },
+};
+function reveal(el, type, d, delay) {
+  const W = innerWidth, H = innerHeight;
+  if (type === 'burst') {
+    const o = toViewport(origin().x, origin().y), r = Math.hypot(W, H) * 1.05;
+    return A(el, [{ clipPath: `circle(0px at ${o.x}px ${o.y}px)` }, { clipPath: `circle(${r}px at ${o.x}px ${o.y}px)` }], { d, delay, e: 'cubic-bezier(.7,0,.2,1)' });
+  }
+  const f = [];
+  for (let i = 0; i <= 40; i++) f.push({ clipPath: `path('${REVEAL[type](i / 40, W, H)}')` });
+  return A(el, f, { d, delay, e: 'linear' });
+}
+const bgCss = t => `radial-gradient(70vmax 70vmax at ${MODE === 'land' ? '65% 48%' : '50% 52%'}, ${t.glow}, transparent 70%), linear-gradient(170deg, ${t.bg} 28%, ${t.bgDeep})`;
+async function revealBg(s) {
+  const t = s.theme, olds = [...bgs.children];
+  const lead = document.createElement('div'), bg = document.createElement('div');
+  lead.className = bg.className = 'bg';
+  lead.style.background = `linear-gradient(180deg, ${t.liq}, ${t.liq2})`;
+  bg.style.background = bgCss(t);
+  bgs.append(lead, bg);
+  const D = 1100;
+  reveal(lead, s.reveal, D, 0);
+  const main = reveal(bg, s.reveal, D, 150);
+  olds.forEach(o => A(o, [{ transform: 'scale(1)', filter: 'brightness(1)' }, { transform: 'scale(1.14)', filter: 'brightness(.75)' }], { d: 1250, e: 'cubic-bezier(.5,0,.2,1)' }));
+  try { await main.finished; } catch (e) { return; }
+  olds.forEach(o => o.remove()); lead.remove();
+  clearAnims(bg); bg.style.clipPath = 'none';
+}
+
+/* ============================================================
+   BOTTLE ENTRANCES: land = ms at which the bottle hits the ground
+   ============================================================ */
+const ENTER = {
+  drop: { d: 1000, land: 520, shake: [0, 16], f: [
+    { transform: 'translateY(-2300px) rotate(-14deg)', easing: 'cubic-bezier(.55,0,.9,.5)' },
+    { transform: 'translateY(0) rotate(0) scale(1.09,.87)', offset: .52, easing: 'cubic-bezier(.2,.7,.3,1)' },
+    { transform: 'translateY(-95px) rotate(3deg) scale(.96,1.05)', offset: .72, easing: 'cubic-bezier(.6,0,.8,.5)' },
+    { transform: 'translateY(0) rotate(0) scale(1.03,.97)', offset: .86 },
+    { transform: 'none' }] },
+  spin: { d: 1150, land: 830, shake: [0, 12], f: [
+    { transform: 'translateY(1900px) rotate(-540deg) scale(.5)' },
+    { transform: 'translateY(-150px) rotate(15deg) scale(1.05)', offset: .55, easing: 'cubic-bezier(.5,0,.8,.6)' },
+    { transform: 'translateY(0) rotate(-6deg) scale(1.07,.9)', offset: .72 },
+    { transform: 'translateY(0) rotate(3deg) scale(.98,1.02)', offset: .86 },
+    { transform: 'none' }] },
+  swing: { d: 1150, land: 520, shake: [12, 6], f: [
+    { transform: 'translateX(-2000px) rotate(-70deg)', easing: 'cubic-bezier(.3,.6,.4,1)' },
+    { transform: 'translateX(60px) rotate(18deg)', offset: .45 },
+    { transform: 'translateX(-20px) rotate(-10deg)', offset: .63 },
+    { transform: 'translateX(8px) rotate(5deg)', offset: .78 },
+    { transform: 'rotate(-2deg)', offset: .9 },
+    { transform: 'none' }] },
+  zoom: { d: 1000, land: 550, shake: [8, 8], f: [
+    { transform: 'translateY(260px) scale(3.4)', opacity: 0, filter: 'blur(30px)', easing: 'cubic-bezier(.6,0,.9,.4)' },
+    { transform: 'scale(.93)', opacity: 1, filter: 'blur(0px)', offset: .55, easing: 'cubic-bezier(.3,1.5,.6,1)' },
+    { transform: 'none', opacity: 1, filter: 'blur(0px)' }] },
+  rush: { d: 950, land: 470, shake: [22, 0], f: [
+    { transform: 'translateX(1900px) skewX(-30deg) scaleX(1.5)', easing: 'cubic-bezier(.3,0,.3,1)' },
+    { transform: 'translateX(-80px) skewX(14deg) scaleX(.9)', offset: .5 },
+    { transform: 'translateX(25px) skewX(-6deg)', offset: .72 },
+    { transform: 'translateX(-6px) skewX(2deg)', offset: .87 },
+    { transform: 'none' }] },
+};
+
+/* ---------- build a slide's DOM (runs while everything is off-screen) ---------- */
+const charSpans = w => [...w].map(c => `<span class="ch">${c}</span>`).join('');
+// Vars are also written onto the animated wrappers: Chrome caches the base style of an
+// element under a running animation, so inherited vars alone can go stale there.
+const THEMED = [stage, $('#shake'), $('#scene')];
+function applyTheme(s) {
+  THEMED.forEach(el => {
+    for (const [k, v] of Object.entries(s.theme)) el.style.setProperty('--' + k, v);
+    if (!s.theme.acc) el.style.removeProperty('--acc');
+    if (!s.theme.dropc) el.style.removeProperty('--dropc');
+  });
+}
+function fitWord() {
+  const word = $('.word');
+  word.style.fontSize = '400px';
+  word.style.fontSize = Math.min(L.wordMax, 400 * L.wordW / word.offsetWidth) + 'px';
+}
+function placeFx() {
+  const o = origin();
+  $$('.fx-pos').forEach(p => {
+    const f = p._fx;
+    p._x = o.x + (f.x - SRC_CX) * L.sc * L.sx;
+    p._y = o.y + (f.y - SRC_CY) * L.sc * L.sy;
+    p.style.left = p._x + 'px'; p.style.top = p._y + 'px';
+    p.firstElementChild.style.setProperty('--s', f.s * L.sc * L.fs + 'px');
+  });
+}
+function build(s, i) {
+  $('#bottle').classList.toggle('sport', !!s.sport);
+  $('#lbFlav').textContent = s.flav;
+  $('#lbFlav').style.setProperty('--lf', s.flav.length > 5 ? '76px' : '92px');
+  $('#lbSub').textContent = s.sub;
+  $('.w-out').innerHTML = $('.w-fill').innerHTML = charSpans(s.word);
+  fitWord();
+  $$('.track').forEach(tr => { const r = s.ribbon.repeat(5); tr.innerHTML = `<span>${r}</span><span>${r}</span>`; });
+  $('#kicker').textContent = s.kicker;
+  $('#n1').textContent = s.name[0];
+  $('#n2').textContent = s.name[1];
+  $('#tag').textContent = s.tag;
+  $('#ar').textContent = s.ar;
+  $('#chips').innerHTML = s.chips.map(c => `<b>${c}</b>`).join('');
+  $('#price').textContent = s.price;
+  $('#cnum').textContent = String(i + 1).padStart(2, '0');
+  $('#ctot').textContent = '/' + String(SLIDES.length).padStart(2, '0');
+  $$('.links a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === (s.sport ? '#sport' : '#iced-tea')));
+
+  $('#fxBack').innerHTML = $('#fxFront').innerHTML = '';
+  s.fx.forEach(f => {
+    const pos = document.createElement('div');
+    pos.className = 'fx-pos ' + f.z;
+    pos.dataset.depth = f.z === 'front' ? rnd(1.3, 1.7).toFixed(2) : rnd(.35, .6).toFixed(2);
+    const type = ['mint', 'tea'].includes(f.t) ? `leaf f-${f.t}` : f.t;
+    pos.innerHTML = `<div class="fx-anim" data-layer="${f.t}">
+      <div class="fx-art" style="--bd:${rnd(2.8, 4.6).toFixed(2)}s;--bdl:-${rnd(0, 4).toFixed(2)}s;--bx:${rnd(-14, 14).toFixed(0)}px;--by:${rnd(-30, -12).toFixed(0)}px;--br:${rnd(-12, 12).toFixed(0)}deg">
+        <div class="f f-${type}" style="--r:${f.r || 0}deg;${f.v || ''}"></div></div></div>`;
+    pos._fx = f;
+    (f.z === 'front' ? $('#fxFront') : $('#fxBack')).appendChild(pos);
+  });
+  placeFx();
+  applyParallax();
+}
+
+/* ---------- exits ---------- */
+function exitScene() {
+  const out = (el, frames, o) => { clearAnims(el); return A(el, frames, o); };
+  const up = { d: 340, e: 'cubic-bezier(.6,0,.9,.4)' };
+  ['#kicker', '#n1', '#n2', '#tag', '#ar', '#cnum'].forEach((s, i) =>
+    out($(s), [{ transform: 'translateY(0)' }, { transform: 'translateY(-118%)' }], { ...up, delay: i * 35 }));
+  $$('#chips b').forEach((b, i) => out(b, [{ transform: 'scale(1)' }, { transform: 'scale(0)' }], { d: 260, delay: i * 40, e: 'ease-in' }));
+  out($('#cta'), [{ transform: 'scale(1)' }, { transform: 'scale(0)' }], { d: 300, e: 'cubic-bezier(.6,-.4,.8,.4)' });
+  out($('#cta2'), [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-20px)' }], { d: 260 });
+  $$('.w-out .ch').forEach((c, i) => out(c, [{ transform: 'translateY(0)' }, { transform: 'translateY(-112%)' }], { d: 360, delay: i * 28, e: 'cubic-bezier(.6,0,.9,.4)' }));
+  out($('.w-fill'), [{ opacity: 1 }, { opacity: 0 }], { d: 160 });
+  $$('.rib').forEach((r, i) => out(r, [{ clipPath: 'inset(0 0 0 0)' }, { clipPath: 'inset(0 0 0 100%)' }], { d: 420, delay: i * 60, e: 'cubic-bezier(.7,0,.3,1)' }));
+  const o = origin();
+  $$('.fx-pos').forEach(p => {
+    const f = p._fx, el = p.firstElementChild;
+    if (f.t === 'ice') return out(el, [{ transform: 'none' }, { transform: `translateY(1200px) rotate(${rnd(-120, 120)}deg)`, opacity: 0 }], { d: 520, delay: rnd(0, 80), e: 'cubic-bezier(.5,0,.9,.4)' });
+    const dx = p._x - o.x, dy = p._y - o.y, len = Math.hypot(dx, dy) || 1;
+    out(el, [{ transform: 'none', opacity: 1 }, { transform: `translate(${dx / len * 900}px,${dy / len * 900}px) rotate(${Math.sign(dx) * 170}deg) scale(.6)`, opacity: 0 }], { d: 520, delay: rnd(0, 90), e: 'cubic-bezier(.5,0,.9,.4)' });
+  });
+  // bottle: anticipation dip, then launch up and away
+  out($('.b-anim'), [
+    { transform: 'none' },
+    { transform: 'translateY(34px) rotate(-3deg) scale(1.05,.93)', offset: .2, easing: 'cubic-bezier(.5,0,.8,.3)' },
+    { transform: 'translate(160px,-2600px) rotate(32deg) scale(.85)' }], { d: 620, e: 'linear' });
+  A($('#liq'), [{ transform: 'rotate(0)' }, { transform: 'rotate(12deg)' }], { d: 300, fill: 'none', e: 'ease-in' });
+  out($('.shadow'), [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(.3)' }], { d: 380 });
+}
+
+/* ---------- entrances ---------- */
+function enterScene(s) {
+  const E = ENTER[s.enter], LAND = E.land, o = origin();
+  const inn = (el, frames, op) => { clearAnims(el); return A(el, frames, op); };
+
+  inn($('.b-anim'), E.f, { d: E.d, e: 'linear' });
+  inn($('.shadow'), [{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1)' }], { d: 420, delay: Math.max(0, LAND - 260) });
+  A($('#liq'), [{ transform: 'rotate(0)' }, { transform: 'rotate(-17deg)', offset: .2 }, { transform: 'rotate(12deg)', offset: .42 },
+    { transform: 'rotate(-6deg)', offset: .62 }, { transform: 'rotate(3deg)', offset: .8 }, { transform: 'rotate(0)' }], { d: 1500, delay: LAND, fill: 'none', e: 'ease-in-out' });
+  setTimeout(() => { shake(E.shake); splash(); }, LAND * rate);
+
+  // giant word rises letter by letter, then fills with colour
+  $$('.w-out .ch').forEach((c, i) => inn(c, [{ transform: 'translateY(112%) rotate(8deg)' }, { transform: 'none' }], { d: 700, delay: 60 + i * 55, e: 'cubic-bezier(.2,.9,.2,1)' }));
+  inn($('.w-fill'), [{ clipPath: 'inset(100% 0 0 0)', opacity: 1 }, { clipPath: 'inset(0 0 0 0)', opacity: 1 }], { d: 1000, delay: LAND + 250, e: 'cubic-bezier(.6,0,.2,1)' });
+
+  const ribs = $$('.rib');
+  inn(ribs[0], [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { d: 650, delay: 200, e: 'cubic-bezier(.7,0,.2,1)' });
+  inn(ribs[1], [{ clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0)' }], { d: 650, delay: LAND + 40, e: 'cubic-bezier(.7,0,.2,1)' });
+
+  // fruit bursts out of the bottle on impact; ice falls in just before
+  let k = 0;
+  $$('.fx-pos').forEach(p => {
+    const f = p._fx, el = p.firstElementChild;
+    if (f.t === 'ice') {
+      inn(el, [{ transform: `translateY(-2000px) rotate(${rnd(-160, 160)}deg)`, easing: 'cubic-bezier(.5,0,.9,.5)' },
+        { transform: 'translateY(0) rotate(0) scale(1.12,.84)', offset: .62, easing: 'cubic-bezier(.2,.8,.3,1)' },
+        { transform: 'translateY(-60px) rotate(5deg)', offset: .8, easing: 'ease-in' },
+        { transform: 'none' }], { d: 950, delay: Math.max(0, LAND - 380) + rnd(0, 260), e: 'linear' });
+      return;
+    }
+    const dx = o.x - p._x, dy = o.y - p._y;
+    inn(el, [{ transform: `translate(${dx}px,${dy}px) scale(.1) rotate(-220deg)`, opacity: 0 },
+      { opacity: 1, offset: .12 },
+      { transform: `translate(${-dx * .09}px,${-dy * .09}px) scale(1.14) rotate(14deg)`, opacity: 1, offset: .58 },
+      { transform: 'none', opacity: 1 }], { d: 950, delay: LAND + 30 + k++ * 45, e: 'cubic-bezier(.12,.8,.25,1)' });
+  });
+
+  // text
+  const rise = [{ transform: 'translateY(118%)' }, { transform: 'none' }];
+  ['#cnum', '#kicker', '#n1', '#n2'].forEach((sel, i) => inn($(sel), rise, { d: 800, delay: 120 + i * 90, e: 'cubic-bezier(.2,.9,.2,1)' }));
+  ['#tag', '#ar'].forEach((sel, i) => inn($(sel), rise, { d: 800, delay: LAND + 150 + i * 90, e: 'cubic-bezier(.2,.9,.2,1)' }));
+  $$('#chips b').forEach((b, i) => inn(b, [{ transform: 'scale(0) rotate(-12deg)' }, { transform: 'scale(1.15) rotate(3deg)', offset: .6 }, { transform: 'none' }], { d: 550, delay: LAND + 380 + i * 80 }));
+  inn($('#cta'), [{ transform: 'scale(0)' }, { transform: 'scale(1.12)', offset: .6 }, { transform: 'scale(.97)', offset: .82 }, { transform: 'none' }], { d: 700, delay: LAND + 560 });
+  inn($('#cta2'), [{ opacity: 0, transform: 'translateX(-30px)' }, { opacity: 1, transform: 'none' }], { d: 600, delay: LAND + 720 });
+  return LAND + 1100;
+}
+
+function shake([x, y]) {
+  const f = [0, 1, -.8, .55, -.35, .18, 0].map(m => ({ transform: `translate(${x * m}px,${y * m}px)` }));
+  A($('#shake'), f, { d: 420, e: 'linear', fill: 'none' });
+}
+function splash() {
+  const box = document.createElement('div');
+  box.className = 'splash';
+  box.style.cssText = `left:${L.bx}px;top:${groundY() - 6}px;scale:${L.sc}`;
+  box.innerHTML = '<i class="sring"></i>';
+  $('#splash').appendChild(box);
+  A(box.firstChild, [{ transform: 'translate(-50%,-50%) scale(.2)', opacity: .9 }, { transform: 'translate(-50%,-50%) scale(2.6)', opacity: 0 }], { d: 750, e: 'cubic-bezier(.1,.7,.3,1)' });
+  for (let i = 0; i < 18; i++) {
+    const d = document.createElement('b'), sz = rnd(10, 30);
+    d.style.cssText = `width:${sz}px;height:${sz}px;background:${i % 3 ? 'var(--liq)' : '#fff'}`;
+    box.appendChild(d);
+    const ang = rnd(-170, -10) * Math.PI / 180, v = rnd(380, 820), fr = [];
+    for (let k = 0; k <= 12; k++) {
+      const t = k / 12 * .95;
+      fr.push({ transform: `translate(${Math.cos(ang) * v * t}px,${Math.sin(ang) * v * t + 1250 * t * t}px) scale(${1 - k / 16})`, opacity: k > 8 ? (12 - k) / 4 : 1 });
+    }
+    A(d, fr, { d: 850, e: 'linear', delay: rnd(0, 50) });
+  }
+  setTimeout(() => box.remove(), 1500 * rate);
+}
+
+/* ---------- the transition conductor ---------- */
+async function go(i) {
+  i = (i + SLIDES.length) % SLIDES.length;
+  if (busy) { queued = i; return; }
+  if (i === idx) return;
+  busy = true;
+  const s = SLIDES[i], first = idx < 0;
+  setSegments(i);
+  if (!first) { exitScene(); await sleep(230); }
+  revealBg(s);
+  if (!first) await sleep(430);
+  applyTheme(s);
+  build(s, i);
+  idx = i;
+  history.replaceState(null, '', location.search + '#s' + (i + 1));
+  const settle = enterScene(s);
+  await sleep(settle);
+  busy = false;
+  if (queued !== null) { const q = queued; queued = null; if (q !== idx) return go(q); }
+  startProgress();
+}
+
+/* ---------- pointer parallax (self-stopping; only writes `translate` on pos wrappers) ---------- */
+let tx = 0, ty = 0, cx = 0, cy = 0, running = false;
+function applyParallax() {
+  $$('[data-depth]').forEach(e => { const d = +e.dataset.depth; e.style.translate = `${-cx * d * 34}px ${-cy * d * 34}px`; });
+}
+function loop() {
+  cx += (tx - cx) * .07; cy += (ty - cy) * .07;
+  applyParallax();
+  if (Math.abs(tx - cx) + Math.abs(ty - cy) > .002) requestAnimationFrame(loop); else running = false;
+}
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
+  tx = e.clientX / innerWidth * 2 - 1; ty = e.clientY / innerHeight * 2 - 1;
+  if (!running) { running = true; requestAnimationFrame(loop); }
+});
+
+/* ---------- input ---------- */
+function setRate(r) { rate = r; document.getAnimations().forEach(a => a.playbackRate = 1 / r); }
+$('#prev').addEventListener('click', () => go(idx - 1));
+$('#next').addEventListener('click', () => go(idx + 1));
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') go(idx + 1);
+  else if (e.key === 'ArrowLeft') go(idx - 1);
+  else if (e.code === 'Space') { e.preventDefault(); paused = !paused; if (prog) paused ? prog.pause() : prog.play(); }
+  else if (e.key === 's' || e.key === 'S') setRate(rate === 1 ? 4 : 1);
+  else if (e.key === 'l' || e.key === 'L') document.body.classList.toggle('map');
+  else if (e.key === 'h' || e.key === 'H') document.body.classList.toggle('rec');
+});
+let downX = null;                                   // touch swipe
+stage.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') downX = e.clientX; });
+stage.addEventListener('pointerup', e => {
+  if (downX === null) return;
+  const dx = e.clientX - downX; downX = null;
+  if (Math.abs(dx) > 50) go(idx + (dx < 0 ? 1 : -1));
+});
+
+/* ---------- boot ---------- */
+if (/[?&]rec\b/.test(location.search)) document.body.classList.add('rec');
+const start = Math.max(0, Math.min(SLIDES.length - 1, (parseInt((location.hash.match(/#s(\d+)/) || [])[1]) || 1) - 1));
+const fontsIn = document.fonts
+  ? Promise.all(['400 100px Anton', '700 40px Cairo', '800 40px "Inter Tight"', '900 40px "Inter Tight"'].map(f => document.fonts.load(f, 'AZ مرحبا').catch(() => {})))
+  : Promise.resolve();
+Promise.race([fontsIn, new Promise(r => setTimeout(r, 2500))]).then(() => go(start));
+</script>
+</body>
+</html>
