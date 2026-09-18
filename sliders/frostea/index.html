@@ -270,7 +270,7 @@ body.map .fx-art,body.map .rib{filter:none!important}
 body.reel{background:#000}
 .reel #stage{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
   width:min(100vw,56.25vh);height:min(177.778vw,100vh);cursor:none}
-.reel .nav,.reel .arrows,.reel .foot{display:none}   /* .foot overlaps .index in portrait */
+.reel .arrows,.reel .foot{display:none}   /* the nav stays: it reads as a website. .foot overlaps .index in portrait */
 
 .reel .dim{display:block;position:absolute;inset:0;z-index:70;pointer-events:none;
   background:radial-gradient(120% 90% at 50% 50%,rgba(4,7,9,.42),rgba(4,7,9,.8));opacity:0;transition:opacity .75s ease}
@@ -298,12 +298,12 @@ body.reel{background:#000}
   pointer-events:none;text-align:center;color:#fff;opacity:0;transition:opacity .2s ease}
 .reel.ending .endcard{opacity:1;transition:opacity .7s ease}
 .reel .endcard b{display:block;font-family:Anton,sans-serif;font-weight:400;letter-spacing:.06em;
-  font-size:calc(var(--rh,900px)*.105);line-height:1}
+  font-size:calc(var(--rh,900px)*.076);line-height:.98}
 .reel .endcard span{display:block;margin-top:calc(var(--rh,900px)*.018);font-weight:800;
   font-size:calc(var(--rh,900px)*.019);letter-spacing:.24em;white-space:nowrap;opacity:.82}
 .reel .endcard i{display:inline-block;margin-top:calc(var(--rh,900px)*.042);font-style:normal;font-weight:900;
-  font-size:calc(var(--rh,900px)*.028);letter-spacing:.1em;border:calc(var(--rh,900px)*.0026) solid rgba(255,255,255,.85);
-  border-radius:99px;padding:calc(var(--rh,900px)*.016) calc(var(--rh,900px)*.038)}
+  font-size:calc(var(--rh,900px)*.024);letter-spacing:.08em;white-space:nowrap;border:calc(var(--rh,900px)*.0024) solid rgba(255,255,255,.85);
+  border-radius:99px;padding:calc(var(--rh,900px)*.015) calc(var(--rh,900px)*.032)}
 
 body.rec #stage{cursor:none}
 </style>
@@ -399,9 +399,9 @@ body.rec #stage{cursor:none}
   </div>
 
   <i class="dim"></i>
-  <div class="hook" id="hook"><span>ZERO SUGAR.</span><span>FIVE FLAVOURS.</span><span><em>ONE</em> ICE-COLD TEA.</span></div>
+  <div class="hook" id="hook"><span><em>ONE</em> HERO SLIDER.</span><span>FIVE FLAVOURS.</span><span>ZERO LIBRARIES.</span></div>
   <i class="finger" id="finger"></i>
-  <div class="endcard" id="endcard"><b>FROSTEA</b><span>ICE COLD &#10022; ZERO SUGAR</span><i>@frostea</i></div>
+  <div class="endcard" id="endcard"><b>DIGITAL DOT<br>DEVELOPER</b><span>WEB DESIGN &#10022; DEVELOPMENT</span><i>@digitaldotdeveloper</i></div>
 </div>
 
 
