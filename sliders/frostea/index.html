@@ -262,6 +262,49 @@ body.map [data-layer]{outline:3px dashed #00e5ff;outline-offset:-3px}
 body.map [data-layer]::after{content:attr(data-layer);position:absolute;left:0;top:0;background:#00e5ff;color:#001;font:800 18px/1 "Inter Tight",sans-serif;padding:5px 8px;white-space:nowrap;z-index:99;filter:none}
 body.map .fx-art,body.map .rib{filter:none!important}
 
+/* ---------- ?reel : hands-free 9:16 take for screen recording ----------
+   #stage becomes a true 9:16 box centred on black, so the recorded frame is
+   the frame -- no letterbox baked in and no dependence on window shape.
+   --rw/--rh are that box in px (set by fit), because vw/vh still mean window. */
+.dim,.hook,.finger,.endcard{display:none}
+body.reel{background:#000}
+.reel #stage{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
+  width:min(100vw,56.25vh);height:min(177.778vw,100vh);cursor:none}
+.reel .nav,.reel .arrows,.reel .foot{display:none}   /* .foot overlaps .index in portrait */
+
+.reel .dim{display:block;position:absolute;inset:0;z-index:70;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 50%,rgba(4,7,9,.42),rgba(4,7,9,.8));opacity:0;transition:opacity .75s ease}
+.reel.hooking .dim,.reel.ending .dim{opacity:1}
+
+.reel .hook{display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:80;
+  pointer-events:none;width:86%;text-align:center;color:#fff;
+  font-family:Anton,"Inter Tight",sans-serif;font-weight:400;letter-spacing:.005em;line-height:1.04;
+  font-size:calc(var(--rh,900px)*.055);text-transform:uppercase;white-space:nowrap;opacity:1;transition:opacity .5s ease}
+.reel .hook span{display:block;opacity:0;transform:translateY(38px);filter:blur(12px);
+  transition:opacity .75s ease,transform .75s cubic-bezier(.2,.8,.2,1),filter .75s ease}
+.reel .hook.show span{opacity:1;transform:none;filter:none}
+.reel .hook.show span:nth-child(2){transition-delay:.38s}
+.reel .hook.show span:nth-child(3){transition-delay:.76s}
+.reel .hook em{font-style:normal;color:transparent;-webkit-text-stroke:calc(var(--rh,900px)*.0026) #fff}
+
+.reel .finger{display:block;position:absolute;left:0;top:0;z-index:78;pointer-events:none;
+  width:calc(var(--rh,900px)*.052);height:calc(var(--rh,900px)*.052);margin:calc(var(--rh,900px)*-.026) 0 0 calc(var(--rh,900px)*-.026);
+  border-radius:50%;background:rgba(255,255,255,.28);box-shadow:0 0 0 2px rgba(255,255,255,.75),0 8px 26px rgba(0,0,0,.35);
+  opacity:0;scale:1;transition:opacity .18s ease,scale .18s ease}
+.reel .finger.on{opacity:1}
+.reel .finger.press{scale:.72;background:rgba(255,255,255,.5)}
+
+.reel .endcard{display:block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:82;
+  pointer-events:none;text-align:center;color:#fff;opacity:0;transition:opacity .7s ease}
+.reel.ending .endcard{opacity:1}
+.reel .endcard b{display:block;font-family:Anton,sans-serif;font-weight:400;letter-spacing:.06em;
+  font-size:calc(var(--rh,900px)*.105);line-height:1}
+.reel .endcard span{display:block;margin-top:calc(var(--rh,900px)*.018);font-weight:800;
+  font-size:calc(var(--rh,900px)*.019);letter-spacing:.24em;white-space:nowrap;opacity:.82}
+.reel .endcard i{display:inline-block;margin-top:calc(var(--rh,900px)*.042);font-style:normal;font-weight:900;
+  font-size:calc(var(--rh,900px)*.028);letter-spacing:.1em;border:calc(var(--rh,900px)*.0026) solid rgba(255,255,255,.85);
+  border-radius:99px;padding:calc(var(--rh,900px)*.016) calc(var(--rh,900px)*.038)}
+
 body.rec #stage{cursor:none}
 </style>
 </head>
@@ -354,6 +397,11 @@ body.rec #stage{cursor:none}
     <button id="prev" aria-label="Previous flavour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
     <button id="next" aria-label="Next flavour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   </div>
+
+  <i class="dim"></i>
+  <div class="hook" id="hook"><span>ZERO SUGAR.</span><span>FIVE FLAVOURS.</span><span><em>ONE</em> ICE-COLD TEA.</span></div>
+  <i class="finger" id="finger"></i>
+  <div class="endcard" id="endcard"><b>FROSTEA</b><span>ICE COLD &#10022; ZERO SUGAR</span><i>@frostea</i></div>
 </div>
 
 
@@ -447,6 +495,11 @@ const SRC_CX = 540, SRC_CY = 1010;
 
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const stage = $('#stage'), canvas = $('#canvas'), bgs = $('#bgs');
+/* ?reel forces the 9:16 box, so every viewport measurement below reads the
+   stage rather than the window -- they are identical off-reel. */
+const REEL = /[?&]reel\b/.test(location.search);
+if (REEL) document.body.classList.add('reel');
+const VW = () => stage.clientWidth, VH = () => stage.clientHeight;
 let idx = -1, busy = false, queued = null, paused = false, rate = 1, prog = null;
 let MODE = null, L = LAYOUT.land, S = 1;
 
@@ -467,17 +520,19 @@ function clearAnims(el) {
 const origin = () => ({ x: L.bx, y: L.btop + 410 * L.sc });   // bottle centre on the canvas
 const groundY = () => L.btop + 868 * L.sc;
 function toViewport(x, y) {                                     // canvas px -> viewport px
-  return { x: (innerWidth - L.W * S) / 2 + x * S, y: (innerHeight - L.H * S) / 2 + y * S };
+  return { x: (VW() - L.W * S) / 2 + x * S, y: (VH() - L.H * S) / 2 + y * S };
 }
 
 /* ---------- responsive fit ---------- */
 function fit() {
-  const m = innerWidth / innerHeight >= 1 ? 'land' : 'port';
+  const m = REEL ? 'port' : (VW() / VH() >= 1 ? 'land' : 'port');
   const changed = m !== MODE;
   MODE = m; L = LAYOUT[m];
   stage.classList.toggle('land', m === 'land');
   stage.classList.toggle('port', m === 'port');
-  S = Math.min(innerWidth / L.W, innerHeight / L.H);
+  S = Math.min(VW() / L.W, VH() / L.H);
+  document.documentElement.style.setProperty('--rw', VW() + 'px');
+  document.documentElement.style.setProperty('--rh', VH() + 'px');
   canvas.style.width = L.W + 'px';
   canvas.style.height = L.H + 'px';
   canvas.style.transform = `translate(-50%,-50%) scale(${S})`;
@@ -513,8 +568,8 @@ function setSegments(i) {
   segFills.forEach(f => { clearAnims(f); f.style.transform = 'scaleX(0)'; });
 }
 function startProgress() {
-  prog = A(segFills[idx], [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { d: DWELL, e: 'linear' });
-  prog.onfinish = () => { prog = null; go(idx + 1); };
+  prog = A(segFills[idx], [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { d: REEL ? REEL_STEP - 1400 : DWELL, e: 'linear' });
+  if (!REEL) prog.onfinish = () => { prog = null; go(idx + 1); };
   if (paused) prog.pause();
 }
 
@@ -558,7 +613,7 @@ const REVEAL = {
   },
 };
 function reveal(el, type, d, delay) {
-  const W = innerWidth, H = innerHeight;
+  const W = VW(), H = VH();
   if (type === 'burst') {
     const o = toViewport(origin().x, origin().y), r = Math.hypot(W, H) * 1.05;
     return A(el, [{ clipPath: `circle(0px at ${o.x}px ${o.y}px)` }, { clipPath: `circle(${r}px at ${o.x}px ${o.y}px)` }], { d, delay, e: 'cubic-bezier(.7,0,.2,1)' });
@@ -821,7 +876,7 @@ function loop() {
   if (Math.abs(tx - cx) + Math.abs(ty - cy) > .002) requestAnimationFrame(loop); else running = false;
 }
 addEventListener('pointermove', e => {
-  if (e.pointerType !== 'mouse') return;
+  if (e.pointerType !== 'mouse' || REEL) return;
   tx = e.clientX / innerWidth * 2 - 1; ty = e.clientY / innerHeight * 2 - 1;
   if (!running) { running = true; requestAnimationFrame(loop); }
 });
@@ -846,13 +901,55 @@ stage.addEventListener('pointerup', e => {
   if (Math.abs(dx) > 50) go(idx + (dx < 0 ? 1 : -1));
 });
 
+/* ============================================================
+   ?reel AUTOPILOT: a scripted, seamlessly looping 9:16 take.
+   go() stays the only thing that changes a slide, so the reel and the live
+   site can never drift apart; the finger is cosmetic, it just sells the
+   swipe to a viewer who cannot see the timeline driving it.
+   The timeline reads performance.now() directly, so slow-mo (S) desyncs it:
+   record at rate 1.
+   ============================================================ */
+const REEL_STEP = 5400;                       // ms of screen time per flavour
+const REEL_HOLD = 3000;                       // end card before the loop point (total: exactly 30s)
+const hook = $('#hook'), finger = $('#finger');
+let T0 = 0, step = 0, gest = null;
+const swipe = () => { gest = performance.now(); };
+
+const TIMELINE = [
+  [0,    () => { document.body.classList.remove('ending'); document.body.classList.add('hooking'); go(0); }],
+  [700,  () => hook.classList.add('show')],
+  [3400, () => { document.body.classList.remove('hooking'); hook.classList.remove('show'); }],
+];
+for (let k = 1; k < SLIDES.length; k++) TIMELINE.push([k * REEL_STEP - 400, swipe], [k * REEL_STEP, () => go(k)]);
+const REEL_PERIOD = SLIDES.length * REEL_STEP + REEL_HOLD;
+TIMELINE.push([SLIDES.length * REEL_STEP - 400, () => document.body.classList.add('ending')]);
+TIMELINE.push([REEL_PERIOD, () => { T0 = performance.now(); step = 0; }]);   // next frame replays from 0
+
+function pilot(now) {
+  requestAnimationFrame(pilot);
+  if (!T0) T0 = now;
+  while (step < TIMELINE.length && now - T0 >= TIMELINE[step][0]) TIMELINE[step++][1]();
+  if (gest === null) return;
+  const g = now - gest, D = 620;
+  if (g >= D + 140) { finger.classList.remove('on', 'press'); gest = null; return; }
+  finger.classList.add('on');
+  finger.classList.toggle('press', g > 80 && g < D - 60);
+  finger.style.transform = `translate(${(VW() * (.74 - .48 * eio(clamp(g / D)))).toFixed(1)}px,${(VH() * .62).toFixed(1)}px)`;
+}
+
 /* ---------- boot ---------- */
 if (/[?&]rec\b/.test(location.search)) document.body.classList.add('rec');
 const start = Math.max(0, Math.min(SLIDES.length - 1, (parseInt((location.hash.match(/#s(\d+)/) || [])[1]) || 1) - 1));
 const fontsIn = document.fonts
   ? Promise.all(['400 100px Anton', '700 40px Cairo', '800 40px "Inter Tight"', '900 40px "Inter Tight"'].map(f => document.fonts.load(f, 'AZ مرحبا').catch(() => {})))
   : Promise.resolve();
-Promise.race([fontsIn, new Promise(r => setTimeout(r, 2500))]).then(() => {
+Promise.race([fontsIn, new Promise(r => setTimeout(r, 2500))]).then(async () => {
+  if (REEL) {                                  // a take cannot stutter on a cold image
+    const all = [...new Set(SLIDES.flatMap(slideImages))];
+    await Promise.race([Promise.all(all.map(preload)), new Promise(r => setTimeout(r, 20000))]);
+    requestAnimationFrame(pilot);
+    return;
+  }
   go(start);
   setTimeout(() => SLIDES.forEach(sl => slideImages(sl).forEach(preload)), 2500);   // warm the rest
 });
