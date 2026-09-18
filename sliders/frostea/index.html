@@ -15,7 +15,7 @@
    Backgrounds, header and index are full-bleed viewport CSS. The product
    composition lives on #canvas: 1920x1080 on landscape screens and
    1080x1920 on portrait/mobile, scaled to fit.
-   Keys: <- -> switch, Space pause, S slow-mo, L layer map, H hide hint
+   Keys: <- -> switch, Space pause, S slow-mo, L layer map, H hide cursor
    ============================================================ */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#07090b;overflow:hidden}
@@ -262,9 +262,6 @@ body.map [data-layer]{outline:3px dashed #00e5ff;outline-offset:-3px}
 body.map [data-layer]::after{content:attr(data-layer);position:absolute;left:0;top:0;background:#00e5ff;color:#001;font:800 18px/1 "Inter Tight",sans-serif;padding:5px 8px;white-space:nowrap;z-index:99;filter:none}
 body.map .fx-art,body.map .rib{filter:none!important}
 
-.hint{position:fixed;left:14px;bottom:12px;z-index:99;color:#9aa3ab;font:500 12px/1.6 "Inter Tight",sans-serif;background:rgba(0,0,0,.55);padding:8px 12px;border-radius:10px;pointer-events:none}
-.hint b{color:#fff}
-body.rec .hint{display:none}
 body.rec #stage{cursor:none}
 </style>
 </head>
@@ -359,7 +356,6 @@ body.rec #stage{cursor:none}
   </div>
 </div>
 
-<div class="hint"><b>← →</b> / index / swipe to switch · <b>Space</b> pause · <b>S</b> slow-mo · <b>L</b> layer map · <b>H</b> hide this hint · <b>#s3</b> deep link</div>
 
 <script>
 /* ============================================================
