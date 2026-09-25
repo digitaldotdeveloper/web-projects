@@ -1,0 +1,1342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#efe6d3">
+<meta name="description" content="ROSSO: rent the Ferraris on your childhood wall. 250 GT California, Testarossa, F40, Daytona, Dino, Enzo. A concept website.">
+<title>ROSSO — Classic Ferrari Rental</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='1' y='1' width='38' height='38' rx='11' fill='%230b0b0c'/%3E%3Cpath d='M13 30V10h8a6 6 0 0 1 0 12h-8M20 22l7 8' stroke='%23f3ece0' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cpath d='M8 32 32 8' stroke='%23d40000' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ROSSO — Rent the Ferrari from your bedroom wall">
+<meta property="og:description" content="250 GT California, Testarossa, F40, Daytona, Dino, Enzo. Six legends, six roads, one scroll. A concept website.">
+<meta property="og:image" content="https://digitaldotdeveloper.github.io/web-projects/sliders/rosso-ferrari/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#efe6d3; --ink:#1b2a21; --accent:#1d3a2b; --accent-ink:#efe6d3; --mark:#1b2a21; --mark-ink:#efe6d3;
+  --mx:0; --my:0; --spd:0;
+  --head:84px; --foot:118px; --dock:78px;
+  --cw:min(50vw, calc((100vh - var(--head) - var(--foot) - var(--dock)) * 1.45));
+  --cy:calc(var(--head) + (100vh - var(--head) - var(--foot) - var(--dock)) * .6);
+  --cx:66%;
+  --cond:"Barlow Condensed","DIN Condensed","Arial Narrow",sans-serif;
+  --sans:"Barlow","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+.stage{position:fixed;inset:0;overflow:hidden;background:var(--bg);color:var(--ink);transition:color .5s;touch-action:none}
+.stage.reel{cursor:none}
+
+/* ---------- atmosphere ---------- */
+.wipe{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;pointer-events:none}
+.wipe i{flex:1;transform:scaleX(0);margin:-1px 0}
+.grain{position:absolute;inset:0;z-index:40;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* giant outlined marquee — scenery: speeds up with the car */
+.ghost{position:absolute;left:0;right:0;top:calc(var(--cy) - 6vh);z-index:3;white-space:nowrap;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 50%);mask-image:linear-gradient(90deg,transparent 30%,#000 50%);
+  translate:calc(var(--mx) * -28px) calc(-50% + var(--my) * -10px);
+  font:800 30vh/1 var(--cond);text-transform:uppercase;letter-spacing:-.01em;
+  color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 20%,transparent)}
+.ghost-track{display:inline-block;will-change:transform}
+.ghost-track span{padding-right:.35em}
+.ghost.in{animation:ghostIn 1.2s cubic-bezier(.2,.8,.2,1) both}
+.ghost.out .ghost-track{opacity:0;transition:opacity .35s}
+@keyframes ghostIn{from{opacity:0;letter-spacing:.2em}to{opacity:1}}
+
+/* road line under the wheels */
+.road{position:absolute;left:0;right:0;z-index:4;height:3px;pointer-events:none;overflow:hidden;
+  top:calc(var(--cy) + var(--cw) * .42 * .41);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent);mask-image:linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent)}
+.road-t{width:200%;height:100%;will-change:transform;
+  background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--ink) 30%,transparent) 0 64px,transparent 64px 120px)}
+
+/* giant tachometer behind the car: revs with the car, blips to the redline on unlock */
+.tach{position:absolute;z-index:2;pointer-events:none;width:calc(var(--cw) * .66);aspect-ratio:1;
+  left:calc(var(--cx) + var(--cw) * .28);top:calc(var(--cy) + var(--cw) * .42 * .27);
+  transform:translate(-50%,-50%);translate:calc(var(--mx) * -8px) calc(var(--my) * -6px);color:color-mix(in srgb,var(--ink) 13%,transparent)}
+.tach svg{width:100%;height:100%;display:block;overflow:visible}
+.tach text{font-family:var(--cond);font-weight:800;fill:currentColor}
+.tach .needle{transform:rotate(var(--na,135deg))}
+.tach .red{color:color-mix(in srgb,#e10600 55%,transparent)}
+
+/* ---------- header ---------- */
+.head{position:absolute;left:0;right:0;top:0;height:var(--head);z-index:30;display:flex;align-items:center;justify-content:space-between;padding:0 4.2vw}
+.logo{display:flex;align-items:center;gap:11px;font:800 30px/1 var(--cond);letter-spacing:.1em;text-decoration:none;color:inherit}
+.logo svg{width:34px;height:34px}
+.logo small{font:600 11px/1 var(--cond);letter-spacing:.24em;opacity:.6;margin-left:2px;align-self:flex-end;padding-bottom:3px}
+.nav{display:flex;gap:34px;font:600 15px/1 var(--cond);letter-spacing:.16em;text-transform:uppercase}
+.nav a{color:inherit;text-decoration:none;opacity:.7;transition:opacity .2s}
+.nav a:hover,.nav a.on{opacity:1}
+.book{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:99px;border:1.5px solid color-mix(in srgb,var(--ink) 35%,transparent);
+  font:700 14px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;transition:background .25s,color .25s}
+.book:hover{background:var(--ink);color:var(--bg)}
+
+/* ---------- copy ---------- */
+.copy{position:absolute;z-index:20;left:4.2vw;width:37vw;top:calc(var(--head) + (100% - var(--head) - var(--foot)) / 2);transform:translateY(-50%)}
+.eyebrow{display:flex;align-items:center;gap:14px;font:700 14px/1 var(--cond);letter-spacing:.22em;text-transform:uppercase}
+.eyebrow i{flex:0 0 46px;height:1.5px;background:currentColor;opacity:.45}
+.eyebrow b{font-weight:700;opacity:.55}
+h1{margin:22px 0 22px;font:800 clamp(54px,7.2vw,150px)/.84 var(--cond);text-transform:uppercase;letter-spacing:-.012em;white-space:nowrap}
+.ln{display:block;overflow:hidden;padding-bottom:.04em;margin-bottom:-.04em}
+.ln>span{display:block}
+.ln:nth-child(2)>span{color:transparent;-webkit-text-stroke:2px var(--ink)}
+.desc{max-width:30em;font-size:clamp(14px,1.02vw,17px);line-height:1.6;opacity:.8}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 26px}
+.meta span{padding:8px 13px;border-radius:99px;border:1px solid color-mix(in srgb,var(--ink) 25%,transparent);font:600 13px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase}
+.spec{display:flex;gap:26px;margin:-8px 0 22px}
+.spec span{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;font:700 15px/1.15 var(--cond);letter-spacing:.06em;text-transform:uppercase}
+.spec i{grid-row:span 2;width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink) 35%,transparent),inset -6px -8px 12px rgba(0,0,0,.25),inset 5px 6px 10px rgba(255,255,255,.25)}
+.spec small{font:600 10px/1 var(--cond);letter-spacing:.2em;opacity:.55}
+.route{display:flex;align-items:center;gap:12px;margin:0 0 30px;font:700 13px/1 var(--cond);letter-spacing:.16em;text-transform:uppercase}
+.route i{position:relative;flex:0 0 90px;height:1.5px;margin:0 8px;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--ink) 45%,transparent) 0 6px,transparent 6px 11px)}
+.route i::before,.route i::after{content:"";position:absolute;top:-3.5px;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--ink);box-sizing:border-box}
+.route i::before{left:-10px}.route i::after{right:-10px;background:var(--sc);border-color:var(--sc)}
+.route em{position:absolute;top:-3px;left:0;width:7px;height:7px;border-radius:50%;background:var(--sc);animation:trip 2.6s cubic-bezier(.5,0,.5,1) 1.2s infinite}
+@keyframes trip{0%{left:0;opacity:0}15%,85%{opacity:1}100%{left:calc(100% - 7px);opacity:0}}
+.route span{opacity:.55;letter-spacing:.12em;font-weight:600;margin-left:4px}
+.buy{display:flex;align-items:center;gap:26px}
+.price{display:flex;align-items:flex-start;font:800 clamp(38px,3.4vw,58px)/1 var(--cond);letter-spacing:-.01em}
+.price small{font-size:.42em;position:relative;top:.12em;margin-right:3px;font-weight:700}
+.price em{align-self:flex-end;font:700 .32em/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin:0 0 .3em 6px;font-style:normal}
+/* odometer digits */
+.dg{display:inline-block;height:1em;overflow:hidden}
+.dg>span{display:block;line-height:1;transform:translateY(calc((var(--n) + 10) * -5%));
+  animation:roll 1.5s cubic-bezier(.2,.75,.15,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+@keyframes roll{from{transform:translateY(0)}}
+.cta{display:flex;align-items:center;gap:14px;padding:18px 26px;border-radius:99px;background:var(--accent);color:var(--accent-ink);
+  font:700 15px/1 var(--cond);letter-spacing:.16em;text-transform:uppercase;transition:transform .25s cubic-bezier(.3,1.6,.5,1);box-shadow:0 12px 30px -12px rgba(0,0,0,.45)}
+.cta:hover{transform:translateY(-3px) scale(1.03)}
+.cta svg{width:18px;transition:transform .25s}
+.cta:hover svg{transform:translateX(4px)}
+
+.copy .rv{animation:rvIn .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+.copy .ln>span{animation:lnIn .95s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+.copy.out .rv{animation:rvOut .38s cubic-bezier(.6,0,.8,.2) both}
+.copy.out .ln>span{animation:lnOut .42s cubic-bezier(.6,0,.8,.2) both}
+@keyframes lnIn{from{transform:translateY(112%) skewY(6deg)}to{transform:none}}
+@keyframes lnOut{to{transform:translateY(-112%)}}
+@keyframes rvIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes rvOut{to{opacity:0;transform:translateY(-14px)}}
+
+/* ---------- scene / the car ---------- */
+.scene{position:absolute;inset:0;z-index:10;pointer-events:none}
+.car-pos{position:absolute;left:var(--cx);top:var(--cy);width:var(--cw);aspect-ratio:1000/420;--H:calc(var(--cw) * .42);
+  transform:translate(-50%,-50%);translate:calc(var(--mx) * -16px) calc(var(--my) * -10px)}
+.car-drive{position:absolute;inset:0;will-change:transform}
+.car-pitch{position:absolute;inset:0;transform-origin:50% 91%}
+.shot,.layer,.art{position:absolute;inset:0}
+.art svg,.art .photo{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
+.art.real svg{display:none}
+.art .wimg{position:absolute;aspect-ratio:1;translate:-50% -50%;rotate:var(--wa,0deg);display:none}
+.art.real .wimg{display:block}
+.wh{transform:rotate(var(--wa,0deg))}
+.empty{color:var(--ink)}
+.empty .photo,.empty .wimg{opacity:.2;filter:blur(1.2px) grayscale(1)}
+.full{clip-path:inset(-40% calc((1 - var(--rv,0)) * 100%) -10% -5%);transition:clip-path calc(var(--rt,0) * 1ms) cubic-bezier(.35,.1,.3,1)}
+
+/* ground shadow + speed trail */
+.shadow{position:absolute;left:8%;right:8%;top:86%;height:9%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.34),transparent);filter:blur(4px)}
+.trail{position:absolute;top:22%;bottom:18%;width:70%;right:92%;display:flex;flex-direction:column;justify-content:space-around;opacity:var(--spd)}
+.car-pos.rev .trail{right:auto;left:92%;transform:scaleX(-1)}
+.trail i{height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 45%,transparent))}
+.trail i:nth-child(2){margin-left:30%}.trail i:nth-child(3){margin-left:12%}.trail i:nth-child(4){margin-left:45%}
+
+/* blueprint grid while scanning */
+.grid{position:absolute;inset:-12% -4%;opacity:0;transition:opacity .5s;
+  background:linear-gradient(color-mix(in srgb,var(--ink) 9%,transparent) 1px,transparent 1px) 0 0/28px 28px,
+             linear-gradient(90deg,color-mix(in srgb,var(--ink) 9%,transparent) 1px,transparent 1px) 0 0/28px 28px;
+  -webkit-mask-image:radial-gradient(closest-side,#000 40%,transparent);mask-image:radial-gradient(closest-side,#000 40%,transparent)}
+.car-pos.scanning .grid{opacity:1}
+
+/* the scanner: builds the car band by band (Strata's pour, but sideways) */
+.scan{position:absolute;z-index:3;top:-10%;bottom:4%;left:calc(var(--rv,0) * 100%);width:3px;margin-left:-1.5px;border-radius:3px;opacity:0;
+  background:var(--sc);box-shadow:0 0 18px 4px var(--sc);transition:left calc(var(--rt,0) * 1ms) cubic-bezier(.35,.1,.3,1),opacity .3s}
+.scan::before{content:"";position:absolute;right:100%;top:0;bottom:0;width:calc(var(--cw) * .12);
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--sc) 35%,transparent))}
+.car-pos.scanning .scan{opacity:1}
+
+/* lights */
+.lamp{position:absolute;z-index:2;left:calc(var(--lx) * 100%);top:calc(var(--ly) * 100%);width:calc(var(--cw) * .03);aspect-ratio:1;translate:-50% -50%;border-radius:50%;opacity:0;transition:opacity .4s}
+.lamp.h{background:radial-gradient(#fffdf0 30%,rgba(255,244,190,.6) 55%,transparent 72%)}
+.lamp.t{background:radial-gradient(#ff5b4a 25%,rgba(255,40,30,.55) 55%,transparent 72%)}
+.beam{position:absolute;z-index:1;left:calc(var(--lx) * 100%);top:calc(var(--ly) * 100%);width:calc(var(--cw) * .55);height:calc(var(--cw) * .14);translate:0 -50%;opacity:0;
+  clip-path:polygon(0 44%,100% 0,100% 100%,0 56%);background:linear-gradient(90deg,rgba(255,248,210,.75),transparent);transition:opacity .4s}
+.car-pos.lit .lamp{opacity:.95}.car-pos.lit .beam{opacity:.5}
+.car-pos.unlock .lamp,.car-pos.unlock .beam{animation:blink .9s steps(1) both}
+@keyframes blink{0%,50%{opacity:1}25%,75%,100%{opacity:0}}
+
+/* spec callouts rising above the car */
+.labels{position:absolute;inset:0;z-index:6}
+.lab{position:absolute;left:calc(var(--px) * 100%);top:calc(var(--py) * 100%);--lift:var(--lk)}
+.lab .dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--ink);transform:scale(0);transition:transform .45s cubic-bezier(.3,1.8,.5,1)}
+.lab .dot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1.5px solid var(--c);opacity:0}
+.lab.on .dot{transform:none}
+.lab.on .dot::after{animation:ping 1.6s ease-out .3s 2}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(2.4);opacity:0}}
+.lab .stick{position:absolute;left:-.75px;bottom:0;width:1.5px;height:calc((var(--py) + var(--lift)) * var(--H));
+  background:color-mix(in srgb,var(--ink) 55%,transparent);transform-origin:50% 100%;transform:scaleY(0);transition:transform .55s cubic-bezier(.6,0,.2,1) .1s}
+.lab.on .stick{transform:none}
+.lab .tx{position:absolute;left:-.75px;bottom:calc((var(--py) + var(--lift)) * var(--H) - 2px);padding:0 0 2px 11px;border-left:1.5px solid color-mix(in srgb,var(--ink) 55%,transparent);white-space:nowrap;
+  opacity:0;transform:translateY(10px);transition:opacity .45s .45s,transform .6s cubic-bezier(.2,.8,.2,1) .45s}
+.lab.on .tx{opacity:1;transform:none}
+.lab.r .tx{left:auto;right:-.75px;padding:0 11px 2px 0;border-left:0;border-right:1.5px solid color-mix(in srgb,var(--ink) 55%,transparent);text-align:right}
+.lab .tx b{display:block;font:800 clamp(20px,1.7vw,32px)/1 var(--cond);letter-spacing:-.005em;text-transform:uppercase}
+.lab .tx small{display:block;margin-top:4px;font:600 12px/1 var(--cond);letter-spacing:.18em;text-transform:uppercase;opacity:.6}
+.lab .tx small em{font-style:normal;opacity:.6;margin-right:4px}
+.scene.out .labels,.scene.out .dim{opacity:0;transition:opacity .25s}
+
+/* dimension line → morphs into the unlock tag */
+.dim{position:absolute;left:6%;right:6%;top:104%;height:14px;display:flex;align-items:center;justify-content:center}
+.dim>i{position:absolute;left:0;right:0;top:50%;height:1.5px;background:color-mix(in srgb,var(--ink) 40%,transparent);transform:scaleX(0);transition:transform .9s cubic-bezier(.6,0,.2,1)}
+.dim>i::before,.dim>i::after{content:"";position:absolute;top:-6px;width:1.5px;height:13px;background:inherit}
+.dim>i::before{left:0}.dim>i::after{right:0}
+.dim .tag{position:relative;display:grid;place-items:center;padding:6px 14px;border-radius:99px;background:var(--bg);font:700 13px/1 var(--cond);letter-spacing:.18em;text-transform:uppercase;opacity:0;transition:opacity .4s .4s}
+.dim .tag>span{grid-area:1/1;display:flex;align-items:center;gap:8px;transition:opacity .35s,transform .45s cubic-bezier(.3,1.6,.5,1)}
+.dim .tag svg{width:15px}
+.dim .ul{opacity:0;transform:translateY(8px);background:var(--sc);color:#111;padding:6px 14px;margin:-6px -14px;border-radius:99px}
+.car-pos.measured .dim>i{transform:none}.car-pos.measured .dim .tag{opacity:1}
+.car-pos.open .dim .ln0{opacity:0;transform:translateY(-8px)}
+.car-pos.open .dim .ul{opacity:1;transform:none}
+
+/* placeholder slot (hidden once the real photo loads, and in reel/clean mode) */
+.ph{position:absolute;inset:-3% -1%;border:1.5px dashed color-mix(in srgb,var(--ink) 35%,transparent);border-radius:14px}
+.ph span{position:absolute;left:10px;top:-9px;padding:0 8px;background:var(--bg);font:600 11px/18px ui-monospace,Consolas,monospace;letter-spacing:.02em;opacity:.75;white-space:nowrap}
+.car-pos.real .ph,.stage.clean .ph{display:none}
+.car-pos.clink .car-pitch{animation:clink .6s cubic-bezier(.3,1.8,.5,1)}
+@keyframes clink{0%{transform:none}35%{transform:scale(1.02,.97)}70%{transform:scale(.995,1.015)}100%{transform:none}}
+
+/* extras that pop out of the car (keys, luggage...) */
+.p{position:absolute;left:var(--x);top:var(--y);width:calc(var(--s) * 1vmin);aspect-ratio:1;margin:calc(var(--s) * -.5vmin) 0 0 calc(var(--s) * -.5vmin);
+  translate:calc(var(--mx) * var(--d) * 60px) calc(var(--my) * var(--d) * 46px);z-index:var(--z,1)}
+.p.far{filter:blur(2.5px);opacity:.8}
+.p.near{filter:blur(3px)}
+.p-in{position:absolute;inset:0;animation:pIn 1.15s cubic-bezier(.16,1.18,.3,1) both;animation-delay:calc(var(--t) * 1ms)}
+.scene.out .p-in{animation:pOut .5s cubic-bezier(.6,0,.8,.3) both}
+@keyframes pIn{from{transform:translate(var(--fx),var(--fy)) scale(.1) rotate(-220deg);opacity:0}25%{opacity:1}to{transform:none}}
+@keyframes pOut{to{transform:translate(calc(var(--fx) * -.4),calc(var(--fy) * -.4)) scale(.2) rotate(160deg);opacity:0}}
+.p-art{position:absolute;inset:0;rotate:var(--r);animation:drift var(--du) ease-in-out infinite alternate;will-change:transform}
+.p-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 14px 16px rgba(0,0,0,.28))}
+.chip{position:absolute;inset:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 14px 26px -10px rgba(0,0,0,.45)}
+.chip svg{width:46%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.p-art.real .chip{display:none}
+@keyframes drift{from{transform:translateY(-10px) rotate(-8deg)}to{transform:translateY(12px) rotate(10deg)}}
+
+/* ---------- fleet strip ---------- */
+.menu{position:absolute;z-index:30;left:4.2vw;right:4.2vw;bottom:0;height:var(--foot);display:grid;grid-template-columns:repeat(6,1fr);gap:18px;align-items:start}
+.mi{position:relative;display:flex;gap:12px;align-items:center;padding-top:20px;text-align:left;opacity:.5;transition:opacity .3s}
+.mi:hover,.mi.on{opacity:1}
+.mi .bar{position:absolute;left:0;right:0;top:0;height:2px;background:color-mix(in srgb,var(--ink) 22%,transparent);overflow:hidden}
+.mi .bar i{position:absolute;inset:0;background:var(--ink);transform-origin:0 50%;transform:scaleX(0)}
+.mi.on .bar i{animation:prog var(--auto) linear forwards}
+.stage.paused .mi.on .bar i,.stage.hold .mi.on .bar i{animation-play-state:paused}
+@keyframes prog{to{transform:scaleX(1)}}
+.mini{flex:0 0 auto;width:58px;height:25px;transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.mini svg{width:100%;height:100%;display:block}
+.mi.on .mini,.mi:hover .mini{transform:translateX(4px)}
+.mi .n{display:block;font:700 12px/1 var(--cond);letter-spacing:.2em;opacity:.7}
+.mi .nm{display:block;margin-top:5px;font:700 clamp(14px,1.2vw,20px)/1 var(--cond);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.mi .pr{display:block;margin-top:4px;font-size:12px;opacity:.65}
+
+.legal{position:absolute;z-index:31;right:4.2vw;bottom:10px;font:600 10px/1.3 var(--cond);letter-spacing:.16em;text-transform:uppercase;opacity:.45;text-align:right;pointer-events:none}
+
+/* ---------- camera views: the car becomes the frame, then the camera orbits ---------- */
+.car-pos{transition:opacity .5s,scale .8s cubic-bezier(.6,0,.2,1)}
+.tach,.road{transition:opacity .5s}
+.p{transition:opacity .4s}
+.stage.viewing .car-pos{opacity:0;scale:1.12}
+.stage.viewing .tach,.stage.viewing .road,.stage.viewing .scene .p{opacity:0}
+.stage.viewing .ghost{opacity:.45;transition:opacity .6s}
+
+.views{position:absolute;z-index:15;left:43vw;right:calc(4.2vw + 76px);top:calc(var(--head) + 12px);bottom:calc(var(--foot) + var(--dock) + 12px);visibility:hidden;pointer-events:none}
+.stage.viewing .views,.views.keep{visibility:visible}
+.stage.viewing .views{pointer-events:auto}
+.vp{position:absolute;inset:0;border-radius:18px;overflow:hidden;perspective:1400px;background:color-mix(in srgb,var(--ink) 7%,var(--bg))}
+.vshots{position:absolute;inset:0;transform-style:preserve-3d}
+.vshot{position:absolute;inset:0;backface-visibility:hidden;will-change:transform}
+.vshot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.vph{position:absolute;inset:0;display:grid;place-items:center;color:color-mix(in srgb,var(--ink) 45%,transparent);
+  background:linear-gradient(color-mix(in srgb,var(--ink) 6%,transparent) 1px,transparent 1px) 0 0/34px 34px,
+             linear-gradient(90deg,color-mix(in srgb,var(--ink) 6%,transparent) 1px,transparent 1px) 0 0/34px 34px}
+.vph svg{width:min(52%,380px);overflow:visible}
+.vph code{position:absolute;left:50%;bottom:22%;translate:-50% 0;font:600 11px/1.4 ui-monospace,Consolas,monospace;white-space:nowrap;padding:5px 10px;border:1px dashed currentColor;border-radius:8px}
+.vshot.real .vph{display:none}
+.stage.clean .vph code{display:none}
+.vshade{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .5s;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent 22%,transparent 58%,rgba(0,0,0,.6))}
+.vp.photo .vshade{opacity:1}
+.flare{position:absolute;top:-10%;bottom:-10%;left:-30%;width:26%;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--sc) 30%,rgba(255,255,255,.5)),transparent);filter:blur(6px)}
+/* viewfinder UI */
+.vui{position:absolute;inset:18px;pointer-events:none;color:var(--ink);font:700 12px/1 var(--cond);letter-spacing:.2em;text-transform:uppercase;transition:color .4s}
+.vp.photo .vui{color:#fff}
+.vui .c{position:absolute;width:24px;height:24px;border:0 solid currentColor;opacity:.75}
+.c1{left:0;top:0;border-width:1.5px 0 0 1.5px!important}.c2{right:0;top:0;border-width:1.5px 1.5px 0 0!important}
+.c3{left:0;bottom:0;border-width:0 0 1.5px 1.5px!important}.c4{right:0;bottom:0;border-width:0 1.5px 1.5px 0!important}
+.vui.pulse{animation:vf .8s cubic-bezier(.3,1.4,.5,1)}
+@keyframes vf{35%{transform:scale(.965);opacity:.35}}
+.vtl{position:absolute;left:36px;top:6px;display:flex;align-items:center;gap:10px}
+.vtl i{width:8px;height:8px;border-radius:50%;background:#e10600;animation:rec 1.4s steps(1) infinite}
+@keyframes rec{50%{opacity:.15}}
+.vtr{position:absolute;right:36px;top:6px;text-align:right}
+.vtr b{display:block;font:800 30px/1 var(--cond);letter-spacing:.02em}
+.vtr small{display:block;margin-top:6px;font-size:10px;opacity:.6}
+.vcap{position:absolute;left:36px;right:36px;bottom:6px}
+.vcap b{display:block;font:800 clamp(28px,2.6vw,48px)/.95 var(--cond);letter-spacing:-.005em}
+.vcap span{display:block;max-width:34em;margin-top:8px;font:400 15px/1.45 var(--sans);letter-spacing:0;text-transform:none;opacity:.85}
+
+/* the dock: orbit dial + view list */
+.dock{position:absolute;z-index:25;left:44vw;right:calc(4.2vw + 76px);bottom:calc(var(--foot) + 2px);height:var(--dock);display:flex;align-items:center;gap:22px}
+.dial{flex:0 0 auto;width:66px;height:66px;overflow:visible}
+.orb .ring{fill:none;stroke:color-mix(in srgb,var(--ink) 35%,transparent);stroke-width:1;stroke-dasharray:1.5 3}
+.orb .body{fill:color-mix(in srgb,var(--ink) 12%,transparent);stroke:color-mix(in srgb,var(--ink) 60%,transparent);stroke-width:1.3}
+.orb .gl{fill:none;stroke:color-mix(in srgb,var(--ink) 60%,transparent);stroke-width:1.2}
+.orb .ty{fill:color-mix(in srgb,var(--ink) 60%,transparent)}
+.orb .mk{fill:color-mix(in srgb,var(--ink) 40%,transparent);transition:fill .3s}
+.dial .vm{cursor:pointer}.dial .vm:hover .mk{fill:var(--ink)}
+.orb .cone{fill:color-mix(in srgb,var(--sc) 45%,transparent)}
+.orb .cd{fill:var(--sc);stroke:var(--bg);stroke-width:1.5}
+.vrail{flex:1;display:flex;gap:4px;height:46px;min-width:0}
+.vb{flex:1;position:relative;display:flex;flex-direction:column;justify-content:center;gap:5px;padding-left:12px;text-align:left;white-space:nowrap;opacity:.45;transition:opacity .3s;
+  font:700 14px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase}
+.vb::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:1.5px;background:color-mix(in srgb,var(--ink) 30%,transparent);transition:background .3s,width .3s}
+.vb b{font-size:10px;letter-spacing:.22em;opacity:.6}
+.vb:hover,.vb.on{opacity:1}
+.vb.on::before{width:3px;background:var(--sc)}
+.hint{flex:0 0 auto;min-width:0;overflow:hidden;white-space:nowrap;display:flex;align-items:center;gap:8px;font:700 11px/1 var(--cond);letter-spacing:.2em;text-transform:uppercase;opacity:.55;transition:opacity .5s}
+.hint i{font-style:normal;display:inline-block;animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateY(4px)}}
+.stage.orbited .hint{opacity:0}
+@media (max-width:1500px){.hint{display:none}}
+
+/* ---------- sheet views: The Road + Spec sheet (HTML instead of a photo) ---------- */
+.vp.sheet .vcap,.vp.sheet .vshade{display:none}
+.vscroll{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--ink) 30%,transparent) transparent}
+.rbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.28;filter:saturate(.6)}
+.rd-in,.ss{position:relative;padding:74px 56px 56px}
+.rk{font:700 12px/1 var(--cond);letter-spacing:.24em;text-transform:uppercase;opacity:.65}
+.rk b{color:var(--sc);font-weight:800}
+.rd h3,.ss h3{margin:14px 0 6px;font:800 clamp(38px,4vw,76px)/.9 var(--cond);text-transform:uppercase;letter-spacing:-.01em}
+.rd h3 i{font-style:normal;color:var(--sc)}
+.rd h3 span{color:transparent;-webkit-text-stroke:1.5px var(--ink)}
+.rname{font:700 14px/1.3 var(--cond);letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.road-art{display:block;width:100%;height:auto;margin:22px 0 6px;overflow:visible}
+.road-art .rw{fill:none;stroke:color-mix(in srgb,var(--ink) 14%,transparent);stroke-width:16;stroke-linecap:round;stroke-linejoin:round}
+.road-art .ln{fill:none;stroke:var(--sc);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.vshot.go .road-art .ln{animation:draw 2.4s cubic-bezier(.6,0,.3,1) .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.road-art .dc{fill:none;stroke:color-mix(in srgb,var(--ink) 35%,transparent);stroke-width:2}
+.road-art .mt{fill:color-mix(in srgb,var(--ink) 7%,transparent)}
+.road-art .sun{fill:color-mix(in srgb,var(--sc) 55%,transparent)}
+.road-art .lamp{fill:var(--sc);filter:drop-shadow(0 0 6px var(--sc))}
+.road-art .snow{fill:color-mix(in srgb,var(--ink) 30%,transparent)}
+.road-art .cr{fill:var(--sc);stroke:var(--bg);stroke-width:3;filter:drop-shadow(0 0 8px var(--sc))}
+.vshot .rd-in>*,.vshot .ss>*{opacity:0}
+.vshot.go .rd-in>*,.vshot.go .ss>*{animation:rvIn .7s cubic-bezier(.2,.8,.2,1) both}
+.vshot.go .rd-in>*:nth-child(2),.vshot.go .ss>*:nth-child(2){animation-delay:.08s}
+.vshot.go .rd-in>*:nth-child(3),.vshot.go .ss>*:nth-child(3){animation-delay:.16s}
+.vshot.go .rd-in>*:nth-child(4),.vshot.go .ss>*:nth-child(4){animation-delay:.24s}
+.vshot.go .rd-in>*:nth-child(n+5),.vshot.go .ss>*:nth-child(n+5){animation-delay:.34s}
+.lede{max-width:40em;margin-top:14px;font-size:clamp(15px,1.1vw,18px);line-height:1.6;opacity:.88}
+.tl{list-style:none;position:relative;margin:28px 0 26px;padding-left:22px}
+.tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1.5px;background:color-mix(in srgb,var(--ink) 25%,transparent)}
+.tl li{position:relative;display:grid;grid-template-columns:70px 1fr;gap:14px;padding:8px 0;font-size:14.5px;line-height:1.45}
+.tl li::before{content:"";position:absolute;left:-21px;top:13px;width:10px;height:10px;border-radius:50%;background:var(--sc);box-shadow:0 0 0 3px var(--bg)}
+.tl b{font:800 20px/1 var(--cond);letter-spacing:.02em}
+.rstats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:18px 0 26px;padding:18px 0;border-block:1px solid color-mix(in srgb,var(--ink) 18%,transparent)}
+.rstats small,.ss small{display:block;font:600 10px/1 var(--cond);letter-spacing:.22em;text-transform:uppercase;opacity:.55}
+.rstats b{display:block;margin-top:8px;font:800 clamp(20px,1.7vw,30px)/1 var(--cond)}
+.rstats span{display:block;margin-top:5px;font-size:12px;opacity:.6;line-height:1.35}
+.feel{position:relative;margin:0 0 24px;padding-left:22px;border-left:3px solid var(--sc);font:italic 400 clamp(17px,1.35vw,22px)/1.5 var(--sans);max-width:40em}
+.feel b{display:block;margin-bottom:8px;font:700 11px/1 var(--cond);letter-spacing:.24em;text-transform:uppercase;font-style:normal;opacity:.6}
+.rlm{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:22px}
+.rlm div{padding:14px 16px;border-radius:12px;background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.rlm b{display:block;font:800 16px/1.1 var(--cond);text-transform:uppercase;letter-spacing:.04em}
+.rlm span{display:block;margin-top:6px;font-size:13px;line-height:1.45;opacity:.75}
+.rcaut{font-size:12.5px;line-height:1.5;opacity:.55;max-width:48em}
+.rcaut b{font-weight:600}
+/* spec sheet */
+.ss header p{margin-top:8px;font-size:14px;opacity:.7}
+.ss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:26px 34px;margin:28px 0}
+.ss-grid h4,.ss-sw h4{margin-bottom:10px;padding-bottom:8px;border-bottom:1.5px solid var(--sc);font:800 14px/1 var(--cond);letter-spacing:.2em;text-transform:uppercase}
+.ss dl{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:13.5px;line-height:1.35}
+.ss dt{font:600 11px/1.35 var(--cond);letter-spacing:.14em;text-transform:uppercase;opacity:.55;padding-top:2px}
+.ss dd{font-weight:500}
+.ss-sw{margin:6px 0 26px}
+.ss-sw .row{display:flex;flex-wrap:wrap;gap:14px 18px;margin-bottom:22px}
+.sw{display:flex;align-items:center;gap:9px;font:700 13px/1.1 var(--cond);letter-spacing:.06em;text-transform:uppercase}
+.sw i{flex:0 0 auto;width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink) 30%,transparent),inset -5px -7px 10px rgba(0,0,0,.25),inset 4px 5px 8px rgba(255,255,255,.25)}
+.ss-facts{list-style:none;display:grid;gap:10px;margin-bottom:24px}
+.ss-facts li{position:relative;padding-left:22px;font-size:14px;line-height:1.5}
+.ss-facts li::before{content:"";position:absolute;left:0;top:.55em;width:10px;height:1.5px;background:var(--sc)}
+.ss-src{font-size:11px;line-height:1.6;opacity:.5;word-break:break-word}
+.ss-note{font-size:11.5px;opacity:.5;margin-top:-14px;margin-bottom:20px}
+
+/* ---------- intro: the first 1.5 s of every recording ---------- */
+.intro{position:fixed;inset:0;z-index:100;background:#0b0b0c;color:#f3ece0;display:grid;place-items:center;
+  clip-path:inset(0 0 0 0);transition:clip-path .9s cubic-bezier(.75,0,.2,1)}
+.intro.out{clip-path:inset(0 0 100% 0)}
+.intro-in{text-align:center}
+.intro .wm{display:flex;justify-content:center;overflow:hidden;margin-right:-.06em;font:800 clamp(72px,16vw,220px)/.9 var(--cond);letter-spacing:.06em}
+.intro .wm span{display:block;animation:lnIn .9s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i) * 70ms + 100ms)}
+.intro .slash{height:4px;margin:10px auto 0;width:min(70vw,640px);background:#d40000;transform-origin:0 50%;animation:slash .7s cubic-bezier(.7,0,.2,1) .55s both}
+@keyframes slash{from{transform:scaleX(0)}}
+.intro p{margin-top:18px;font:700 clamp(11px,1.1vw,14px)/1 var(--cond);letter-spacing:.34em;text-transform:uppercase;opacity:0;animation:rvIn .7s ease .8s forwards}
+
+/* mobile-only spec legend + numbered dots (hidden on desktop) */
+.legend,.dn{display:none}
+
+/* side controls */
+.count{position:absolute;z-index:30;right:4.2vw;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:14px}
+.count button{width:48px;height:48px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--ink) 30%,transparent);display:grid;place-items:center;transition:background .25s,color .25s,transform .25s}
+.count button:hover{background:var(--ink);color:var(--bg);transform:scale(1.06)}
+.count button svg{width:18px}
+.count .num{font:800 34px/1 var(--cond)}
+.count .num small{display:block;text-align:center;font-size:13px;font-weight:600;opacity:.5;letter-spacing:.1em;margin-top:2px}
+
+/* ---------- mobile / 9:16 reel ---------- */
+/* short desktop screens: keep the copy column inside the viewport */
+@media (min-width:821px) and (max-height:900px){.lab{--lift:calc(var(--lk) * .55)}.route{display:none}h1{font-size:clamp(50px,6.4vw,120px);margin:16px 0}.meta{margin:16px 0 20px}}
+@media (min-width:821px) and (max-height:760px){.meta{display:none}.desc{font-size:14px}}
+
+/* ---------- mobile / 9:16 reel ---------- */
+@media (max-width:820px){
+  :root{--head:58px;--foot:calc(84px + env(safe-area-inset-bottom));--dock:54px;--cw:100vw;--cx:50%;
+    --cy:calc(100svh - var(--foot) - var(--dock) - 104px - 21vw)}
+  .nav,.count,.grain,.shadow{display:none}
+  .ghost{font-size:20vh;top:calc(var(--cy) - 13vh)}
+  .head{padding:0 16px}
+  .book{padding:9px 14px;font-size:12px}
+  .logo{font-size:23px;gap:9px}.logo svg{width:28px;height:28px}.logo small{display:none}
+  .copy{left:16px;right:16px;width:auto;top:calc(var(--head) + 4px);transform:none}
+  .eyebrow{font-size:11px;gap:10px;letter-spacing:.18em}.eyebrow i{flex-basis:24px}
+  h1{font-size:min(14vw,72px);margin:10px 0 10px}
+  .ln:nth-child(2)>span{-webkit-text-stroke-width:1.5px}
+  .desc{font-size:13px;line-height:1.45;max-width:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .meta,.route{display:none}
+  .spec{gap:18px;margin:12px 0 14px}.spec span{font-size:12px;column-gap:7px}.spec i{width:22px;height:22px}.spec small{font-size:8px}
+  .buy{gap:16px}.price{font-size:34px}.cta{padding:13px 18px;font-size:13px;gap:10px}
+  .tach{width:calc(var(--cw) * .46);opacity:.8}
+
+  /* spec callouts → numbered dots on the car + a 2×2 legend under it */
+  .lab .stick,.lab .tx{display:none}
+  .lab .dot{width:18px;height:18px;margin:-9px 0 0 -9px;display:grid;place-items:center;box-shadow:0 0 0 1.5px var(--bg)}
+  .dn{display:block;font:800 10px/1 var(--cond);color:#111}
+  .legend{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;position:absolute;left:4%;right:4%;top:calc(100% + 34px)}
+  .legend span{display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center;font:800 13px/1.05 var(--cond);text-transform:uppercase;letter-spacing:.02em;
+    opacity:0;transform:translateY(6px);transition:opacity .4s,transform .5s cubic-bezier(.2,.8,.2,1)}
+  .legend span.on{opacity:1;transform:none}
+  .legend b{grid-row:span 2;width:16px;height:16px;border-radius:50%;background:var(--sc);color:#111;display:grid;place-items:center;font-size:9.5px}
+  .legend small{font-size:9px;letter-spacing:.16em;opacity:.55;font-weight:600}
+  .scene.out .legend{opacity:0;transition:opacity .25s}
+  .dim{left:4%;right:4%;top:calc(100% + 4px)}
+  .dim .tag{font-size:10.5px;padding:5px 10px}
+  .ph{inset:-3% 2%}.ph span{font-size:8.5px}
+  .p.far,.p.near{filter:none;opacity:1}
+
+  /* dock + fleet strip */
+  .dock{left:0;right:0;bottom:var(--foot);padding:0 16px;gap:12px}
+  .dial{width:44px;height:44px}
+  .vrail{overflow-x:auto;scrollbar-width:none;touch-action:pan-x;height:40px;gap:2px}
+  .vrail::-webkit-scrollbar{display:none}
+  .vb{flex:0 0 auto;padding:0 10px 0 10px;font-size:12.5px}
+  .hint{display:none}
+  .menu{left:0;right:0;padding:0 16px calc(20px + env(safe-area-inset-bottom));display:flex;overflow-x:auto;scrollbar-width:none;gap:20px;scroll-snap-type:x proximity;scroll-padding-inline:16px;touch-action:pan-x}
+  .menu::-webkit-scrollbar{display:none}
+  .mi{flex:0 0 auto;scroll-snap-align:start;padding-top:14px}
+  .mini{width:44px;height:19px}
+  .legal{left:16px;right:16px;text-align:left;font-size:7.5px;letter-spacing:.12em;bottom:calc(env(safe-area-inset-bottom) + 3px)}
+
+  /* views: the panel takes everything between the title block and the dock */
+  .stage.viewing .desc,.stage.viewing .spec{display:none}
+  .views{left:12px;right:12px;top:var(--vtop,46%);bottom:calc(var(--foot) + var(--dock) + 6px)}
+  .vp{border-radius:14px}
+  .vui{inset:12px;font-size:10px}
+  .vui .c{width:16px;height:16px}
+  .vtl{left:24px;top:3px}.vtr{right:24px;top:3px}.vtr b{font-size:22px}.vtr small{display:none}
+  .vcap{left:24px;right:24px;bottom:3px}.vcap b{font-size:26px}.vcap span{font-size:12.5px;margin-top:5px}
+  .vph svg{width:62%}.vph code{font-size:9px;bottom:16%}
+  .rd-in,.ss{padding:46px 20px 28px}
+  .rd h3,.ss h3{font-size:34px}
+  .rstats{grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 18px;padding:14px 0}
+  .rstats b{font-size:21px}
+  .feel{font-size:15px;padding-left:14px}
+  .rlm{grid-template-columns:1fr}
+  .prof text{font-size:22px}.prof text.e{font-size:18px}
+  .ss-grid{grid-template-columns:1fr;gap:20px}
+}
+@media (max-width:820px) and (max-height:760px){.desc{display:none}}
+@media (max-width:820px) and (max-height:660px){.spec{display:none}.legend{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="mb" x="-20%" y="0" width="140%" height="100%"><feGaussianBlur id="mbBlur" stdDeviation="0 0"/></filter></svg>
+
+<div class="intro" id="intro" aria-hidden="true"><div class="intro-in">
+  <div class="wm"></div><div class="slash"></div><p>Ferrari classics · for rent · a concept</p></div></div>
+
+<main class="stage" id="stage">
+  <div class="wipe" id="wipe"></div>
+  <div class="ghost" id="ghost"><div class="ghost-track" id="ghostTrack"></div></div>
+  <div class="road"><div class="road-t" id="road"></div></div>
+  <div class="tach"><svg viewBox="-60 -60 120 120" id="tach" fill="none" stroke="currentColor"></svg></div>
+
+  <header class="head">
+    <a class="logo" href="#" aria-label="ROSSO">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="11" fill="var(--mark)"/><path d="M13 30V10h8a6 6 0 0 1 0 12h-8M20 22l7 8" stroke="var(--mark-ink)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M8 32 32 8" stroke="#d40000" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <span>ROSSO</span><small>FERRARI CLASSICS · RENTAL</small>
+    </a>
+    <nav class="nav"><a href="#" class="on">The Collection</a><a href="#">Drives</a><a href="#">Delivery</a><a href="#">Members</a></nav>
+    <button class="book">WhatsApp
+      <svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </header>
+
+  <section class="copy" id="copy"></section>
+  <div class="scene" id="scene"></div>
+
+  <div class="count">
+    <button id="prev" aria-label="Previous car"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+    <div class="num" id="num">01<small>/06</small></div>
+    <button id="next" aria-label="Next car"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+  </div>
+
+  <div class="views" id="views">
+    <div class="vp" id="vp">
+      <div class="vshots" id="vshots"></div>
+      <i class="vshade"></i><i class="flare" id="flare"></i>
+      <div class="vui" id="vui">
+        <i class="c c1"></i><i class="c c2"></i><i class="c c3"></i><i class="c c4"></i>
+        <span class="vtl" id="vtl"></span>
+        <span class="vtr"><b id="vang">090°</b><small>1/250 · f2.8 · ISO 100</small></span>
+        <div class="vcap" id="vcap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dock" id="dock">
+    <svg class="dial orb" id="dial" viewBox="-50 -50 100 100" aria-label="Camera angle"></svg>
+    <div class="vrail" id="vrail" role="tablist" aria-label="Views"></div>
+    <span class="hint"><i>↓</i> Scroll to orbit the car</span>
+  </div>
+
+  <nav class="menu" id="menu" aria-label="Fleet"></nav>
+  <p class="legal">Concept website · design study only · not affiliated with or endorsed by Ferrari S.p.A. · model names are trademarks of their respective owners</p>
+  <div class="grain"></div>
+</main>
+
+<script>
+/* ============ FLEET DATA (placeholder cars & prices) ============
+   Images (all optional — a drawn stand-in shows until the file exists):
+     img/car-<key>.webp     side profile, facing RIGHT, transparent, 1000:420 (e.g. 1600×672), tyres touching 91% height
+     img/wheel-<key>.webp   optional: one wheel face-on, square, transparent → it spins
+     img/extra-<key>-N.webp the objects that pop out when the car unlocks
+   bands: scanned rear → front; x1 = where the band ends (fraction of width), px/py = spec dot on the car.
+   geo:   override body defaults if your photo differs — wheels:[[cx,r],…] in 0..1000 px, hl/tl = light spots (0..1). */
+const FLEET = [
+  { key:'250-california', body:'sport', model:'250 GT California', name:['California','1961'], tag:'250 GT SWB Spyder · Scaglietti', price:3500, len:'WB 2.40 m',
+    desc:'One of just 56 short-wheelbase Spyders, in Azzurro Metallizzato over beige Connolly leather. Built because America’s West Coast asked Maranello for an open Ferrari; made for the coast road with the roof down.',
+    meta:['3.0 V12 Colombo','280 cv','56 built','Borrani wire'],
+    ext:['Azzurro Metallizzato','#7fa6c9'], int:['Beige Connolly','#d6c19c'],
+    route:['Coast road','Golden hour','roof down'],
+    bg:'#efe6d3', ink:'#16233a', accent:'#16233a', accentInk:'#efe6d3', paint:'#7fa6c9', sc:'#b8893e',
+    bands:[{n:'Tail',v:'Chrome bumpers',x1:.26,px:.08,py:.66},{n:'Cockpit',v:'Beige Connolly',x1:.54,px:.44,py:.5},{n:'Wheels',v:'Borrani wire 16"',x1:.8,px:.785,py:.8},{n:'Engine',v:'3.0 V12 · 280 cv',x1:1,px:.88,py:.64}],
+    extras:['key','glasses','watch','pin'] },
+
+  { key:'testarossa', body:'sport', model:'Testarossa', name:['Testarossa','1984'], tag:'Flat-12 · the poster car', price:1900, len:'L 4.49 m',
+    desc:'Nero outside, Rosso Connolly inside, and those side strakes feeding radiators you never see. The car on every bedroom wall of the 80s; best driven at night, windows down, the flat-12 humming behind you.',
+    meta:['4.9 flat-12','390 cv','290 km/h','7,177 built'],
+    ext:['Nero','#0e0e0f'], int:['Rosso Connolly','#a8171f'],
+    route:['City boulevard','After midnight','windows down'],
+    bg:'#6e0b12', ink:'#f6e7dc', accent:'#0e0e0f', accentInk:'#f6e7dc', paint:'#0e0e0f', sc:'#ff4b3a',
+    bands:[{n:'Tail',v:'Louvred lamps',x1:.26,px:.08,py:.62},{n:'Strakes',v:'Side intakes',x1:.52,px:.36,py:.62},{n:'Interior',v:'Rosso Connolly',x1:.74,px:.56,py:.5},{n:'Engine',v:'4.9 flat-12 · 390 cv',x1:1,px:.88,py:.64}],
+    extras:['glasses','key','watch','pin'] },
+
+  { key:'f40', body:'sport', model:'F40', name:['F40','1987'], tag:'Twin-turbo · the last car Enzo approved', price:4200, len:'L 4.43 m',
+    desc:'Kevlar and carbon over a steel frame, two IHI turbos, no carpets, no radio, pull-cords for door handles. Every one left Maranello in Rosso Corsa. Take it up a mountain early in the morning, when the road is yours.',
+    meta:['2.9 V8 twin-turbo','478 cv','324 km/h','1,311 built'],
+    ext:['Rosso Corsa','#d40000'], int:['Rosso Stoffa Vigogna','#8e1b1f'],
+    route:['Mountain climb','Sunrise','no assists'],
+    bg:'#0b0b0c', ink:'#f3ece0', accent:'#d40000', accentInk:'#ffffff', paint:'#d40000', sc:'#ff3b30',
+    bands:[{n:'Wing',v:'Full-width',x1:.26,px:.08,py:.5},{n:'Engine',v:'Twin-turbo V8',x1:.5,px:.32,py:.5},{n:'Cockpit',v:'Bare Kevlar',x1:.74,px:.56,py:.5},{n:'Output',v:'478 cv · 324 km/h',x1:1,px:.88,py:.64}],
+    extras:['key','bolt','glasses','watch'] },
+
+  { key:'daytona', body:'sport', model:'365 GTB/4 Daytona', name:['Daytona','1968'], tag:'365 GTB/4 · the grand tourer', price:2800, len:'L 4.43 m',
+    desc:'Argento over Rosso leather: a rare, factory-documented combination. A dry-sump V12 under a bonnet that seems to go on forever, and the fastest production car in the world when it launched. Point it at the horizon.',
+    meta:['4.4 V12','352 cv','280 km/h','1,406 built'],
+    ext:['Argento','#b9bdc3'], int:['Rosso Connolly','#9e1b22'],
+    route:['Long sweepers','All afternoon','sixth sense'],
+    bg:'#0e1a33', ink:'#e8ecf5', accent:'#c9a45c', accentInk:'#0e1a33', paint:'#b9bdc3', sc:'#e7c77f',
+    bands:[{n:'Tail',v:'Kamm tail',x1:.26,px:.08,py:.62},{n:'Cabin',v:'Rosso Connolly',x1:.52,px:.42,py:.5},{n:'Bonnet',v:'Six Webers',x1:.78,px:.66,py:.5},{n:'Engine',v:'4.4 V12 · 352 cv',x1:1,px:.88,py:.64}],
+    extras:['key','sun','watch','pin'] },
+
+  { key:'dino', body:'sport', model:'Dino 246 GT', name:['Dino','1969'], tag:'246 GT · named after a son', price:2200, len:'L 4.24 m',
+    desc:'Verde Pino Metallizzato over Nero: small, curvy and badged Dino, not Ferrari. A mid-mounted V6 revving to 7,600 rpm in a car that weighs 1,080 kg. It was made for the narrow road nobody else takes.',
+    meta:['2.4 V6','195 cv','235 km/h','3,761 built'],
+    ext:['Verde Pino Metallizzato','#1f3d2e'], int:['Nero','#161616'],
+    route:['Back road','Late morning','3rd gear'],
+    bg:'#dcc7a2', ink:'#1e2519', accent:'#1f3d2e', accentInk:'#f1e6cf', paint:'#1f3d2e', sc:'#c4521c',
+    bands:[{n:'Tail',v:'Round lamps',x1:.26,px:.08,py:.62},{n:'Engine',v:'2.4 V6 · mid',x1:.5,px:.34,py:.5},{n:'Cabin',v:'Nero Connolly',x1:.74,px:.56,py:.5},{n:'Weight',v:'1,080 kg dry',x1:1,px:.88,py:.64}],
+    extras:['glasses','sun','key','pin'] },
+
+  { key:'enzo', body:'sport', model:'Enzo', name:['Enzo','2002'], tag:'1 of 400 · Formula 1 for the road', price:5000, len:'L 4.70 m',
+    desc:'Giallo Modena, carbon buckets with Rosso inserts, and a wheel with LED shift lights. Named after the founder and offered by invitation only; 400 exist. Take it somewhere high and empty, and let it rev.',
+    meta:['6.0 V12','660 cv','350 km/h','400 built'],
+    ext:['Giallo Modena','#f7c600'], int:['Nero · Rosso inserts','#1a1a1a'],
+    route:['High pass','First light','8,200 rpm'],
+    bg:'#18191c', ink:'#ece8e1', accent:'#f7c600', accentInk:'#18191c', paint:'#f7c600', sc:'#f7c600',
+    bands:[{n:'Aero',v:'Active spoiler',x1:.26,px:.08,py:.6},{n:'Engine',v:'6.0 V12',x1:.5,px:.32,py:.5},{n:'Cockpit',v:'LED shift lights',x1:.74,px:.56,py:.5},{n:'Output',v:'660 cv · 350 km/h',x1:1,px:.88,py:.64}],
+    extras:['key','bolt','watch','glasses'] },
+];
+
+/* ============ CAMERA VIEWS ============
+   View 0 is the side-profile hero above. Every other view is one photo: img/<key>-<view>.webp
+   (1600×1200, full-bleed, backgrounds welcome). Until it exists, a camera diagram stands in.
+   a = orbit angle around the car (top-down, car facing right: 90 = the side we see in the profile). */
+const VIEWS = [
+  { id:'profile', n:'Profile',             short:'Profile', a:90 },
+  { id:'front34', n:'Three-quarter front', short:'¾ Front', a:45 },
+  { id:'face',    n:'The face',            short:'Face',    a:0 },
+  { id:'rear34',  n:'Three-quarter rear',  short:'¾ Rear',  a:225 },
+  { id:'cockpit', n:'Cockpit',             short:'Cockpit', pos:[1,5],   tgt:[40,5],  tag:'INT' },
+  { id:'detail',  n:'Detail',              short:'Detail',  pos:[30,30], tgt:[15,12], tag:'MACRO' },
+  { id:'story',   n:'The story',           short:'Story',   pos:[-46,-24], tgt:[0,0], tag:'STORY', sheet:true },
+  { id:'road',    n:'The road',            short:'The Road',pos:[0,-47],  tgt:[0,0], tag:'ROAD',  sheet:true },
+  { id:'specs',   n:'Spec sheet',          short:'Specs',   pos:[46,-24], tgt:[0,0], tag:'SPEC',  sheet:true },
+];
+const SHOTS = {
+  '250-california':{ front34:'Long bonnet and covered headlamps (37 of the 56 SWB cars had them).', face:'The oval Ferrari mouth and slim chrome bumperettes.',
+    rear34:'A short tail over a live rear axle. Hand-built in steel with aluminium doors, bonnet and boot lid.', cockpit:'Beige Connolly leather, a wood-rim wheel and Veglia dials. No roof, no air conditioning, no regrets.', detail:'Borrani centre-lock wire wheel, 16 inches, with a knock-off spinner.' },
+  'testarossa':{ front34:'Wedge nose, pop-up lamps and 1,976 mm of width.', face:'Pop-ups raised, full-width grille: 1984 in one frame.',
+    rear34:'Louvred tail lamps and the wide hips that sold a million posters.', cockpit:'Rosso Connolly, a polished open-gate shifter, the flat-12 behind your shoulders.', detail:'The side strakes: ducting for side-mounted radiators that became the signature of a decade.' },
+  'f40':{ front34:'NACA ducts, pop-up lamps, bodywork thin enough to see the weave through.', face:'Low nose, three intakes, zero decoration.',
+    rear34:'The full-width wing and the Lexan engine cover. The whole reason.', cockpit:'Red Stoffa Vigogna cloth buckets, bare carbon-Kevlar floor, pull-cord door releases.', detail:'Twin IHI turbos and a 2.9 V8 under a louvred Lexan cover.' },
+  'daytona':{ front34:'A Fioravanti shark nose over a bonnet longer than some cars.', face:'Early cars hid their lamps behind a full-width Plexiglas band.',
+    rear34:'A Kamm tail with four round lamps.', cockpit:'Rosso Connolly with pleated inserts, eight Veglia dials, a wood-rim wheel.', detail:'Cromodora 15-inch alloys with knock-off centres, on Michelin XWX.' },
+  'dino':{ front34:'Curved wings, faired headlamps, barely waist-high at 1,135 mm.', face:'A small oval mouth and big round eyes.',
+    rear34:'Concave rear window between flying buttresses.', cockpit:'Nero Connolly, a dash in anti-glare "mousehair" cloth, Veglia gauges in a row.', detail:'The Dino script. There is no prancing horse anywhere on the car.' },
+  'enzo':{ front34:'A Formula 1 nose, scissor doors, carbon everywhere.', face:'The nose cone of a Grand Prix car between two intakes.',
+    rear34:'Round tail lamps, active spoiler, the V12 on display.', cockpit:'Carbon buckets with Rosso inserts; an F1-style wheel with LED shift lights and a red start button.', detail:'6.0 V12, 660 cv at 7,800 rpm, visible under the rear glass.' },
+};
+
+/* The story: history from the sources in SOURCES.md. Body text is ours; every fact in it is sourced. */
+const STORY = {
+  '250-california':{ era:'1957–1963', title:'The Ferrari America asked for',
+    body:['In the late 1950s Ferrari’s US importer Luigi Chinetti and West Coast dealer John von Neumann wanted something Maranello didn’t build: an open, fast, beautiful car for California. Scaglietti built it by hand in Modena, first on a long wheelbase, then from the 1960 Geneva show on a 200 mm shorter one.',
+      'Only 56 short-wheelbase Californias were made. Six decades later they’re among the most valuable cars on earth. Still, the point of the car is simple: a V12, the roof down and nowhere to be.'],
+    timeline:[['1957','Long-wheelbase prototype; about 50 LWB cars follow'],['1960','SWB unveiled at the Geneva Salon, 2,400 mm wheelbase, disc brakes all round'],['1963','Production ends after 56 SWB cars'],['2008','James Coburn’s black SWB sells for €7.04m, the first car past US$10m at auction'],['2024','The first SWB built, the Geneva show car, sells for US$17.055m']],
+    facts:['37 of the 56 SWB cars wore covered headlamps','The “Ferrari” in Ferris Bueller’s Day Off was a replica, not a real California','A barn-find SWB once owned by Alain Delon sold for €16.3m in 2015'] },
+  'testarossa':{ era:'1984–1991', title:'The poster on every wall',
+    body:['Pininfarina, under Leonardo Fioravanti, needed to cool a flat-12 without filling the cabin with heat. The answer was to move the radiators to the sides and feed them through long strakes. That became the most recognisable shape of the 1980s.',
+      'The name comes from the red-painted cam covers, a nod to the 1950s racers. Ferrari built 7,177 of them. Two, supplied new to a TV show, were repainted white so they would show up at night.'],
+    timeline:[['1984','Unveiled at the Lido in Paris, the night before the Paris Motor Show'],['1986','Single high mirror (“monospecchio”) replaced by two low mirrors'],['1988','Five-bolt wheels replace the single centre nut'],['1991','Succeeded by the 512 TR after 7,177 cars']],
+    facts:['Ferrari’s fastest production road car at launch: about 290 km/h','Two Testarossas starred in Miami Vice, seasons 3 to 5','The car in Sega’s 1986 arcade game Out Run is a Testarossa convertible','Nearly two metres wide: about 15 cm wider than the 512 BBi it replaced'] },
+  'f40':{ era:'1987–1992', title:'The last car Enzo signed off',
+    body:['For Ferrari’s 40th birthday in 1987, Maranello built a racing car you could register: a steel frame bonded to Kevlar and carbon, two turbochargers and nothing that wasn’t necessary. Carpets, door panels and a radio were all left out.',
+      'It was the last new model approved by Enzo Ferrari himself. The plan was about 400 cars. Demand pushed it past 1,300, every one of them delivered in Rosso Corsa.'],
+    timeline:[['1987','Launched for Ferrari’s 40th anniversary'],['1987','The Pirelli P Zero makes its debut as original equipment on the F40'],['1990','Catalytic converter and adjustable suspension offered'],['1992','Production ends at about 1,311 cars, 213 for the US']],
+    facts:['Widely credited as the first production car past 200 mph (324 km/h claimed)','First ~50 cars had sliding Lexan windows','About US$400,000 new, roughly five times a 288 GTO','Brembo brakes with no servo and no ABS'] },
+  'daytona':{ era:'1968–1973', title:'Named after a race it never ran',
+    body:['Ferrari never officially called it Daytona. The press did, after Ferrari’s 1-2-3 finish at the 1967 Daytona 24 Hours, and the name stuck to Leonardo Fioravanti’s shark-nosed grand tourer.',
+      'A front V12 with six Weber carburettors, a rear transaxle for balance, and 280 km/h: when it launched it was the fastest production car in the world. Early cars hid their headlamps behind Plexiglas; American rules brought pop-ups.'],
+    timeline:[['1968','Revealed at the Paris Salon; bodies built by Scaglietti'],['1969','Spider (GTS/4) follows; 122 are built'],['1971','Pop-up headlamps arrive with US sales and become standard'],['1973','Production ends at 1,406 cars']],
+    facts:['Only about 150 right-hand-drive cars were made','15 factory Competizione cars raced','Electric windows and a radio were standard; air conditioning was optional'] },
+  'dino':{ era:'1969–1974', title:'The Ferrari that wasn’t allowed to say Ferrari',
+    body:['Enzo Ferrari’s son Alfredo, “Dino”, championed the V6. He died in 1956, and a decade later his name went on a new, smaller mid-engined car. It carried no prancing horse at all: Ferrari wouldn’t put its badge on anything without a V12.',
+      'The 246 GT was drawn at Pininfarina by Fioravanti and Brovarone and built by Scaglietti, with a transverse 2.4-litre V6 behind the seats. 3,761 were made, and they are loved now in a way Enzo never predicted.'],
+    timeline:[['1969','246 GT replaces the aluminium 206 GT, 60 mm longer'],['1971','M-series moves to five-bolt Cromodora wheels'],['1972','GTS with removable roof panel arrives'],['1974','Production ends: 2,487 GT + 1,274 GTS']],
+    facts:['“Chairs and Flares” option: Daytona seats, flared arches, Campagnolo wheels','Keith Richards bought 246 GT chassis 03354 new','Dash trimmed in anti-glare “mousehair” fabric'] },
+  'enzo':{ era:'2002–2004', title:'Formula 1, by invitation only',
+    body:['At the height of the Schumacher era, Ferrari put its Formula 1 know-how into a road car and named it after the founder. It got a carbon-fibre tub, carbon-ceramic brakes (a first on a Ferrari road car), a six-speed F1 paddle-shift gearbox and a 6.0 V12.',
+      'You couldn’t just buy one; you were invited, with F40 and F50 owners first in line. 399 went to customers. The 400th was given to Pope John Paul II and later sold for charity.'],
+    timeline:[['2002','Unveiled; Pininfarina design led by Ken Okuyama'],['2002','Bridgestone develops the Potenza RE050A Scuderia for it'],['2004','Production ends at 399 + 1'],['2024','Pirelli launches a P Zero Corsa Collezione tyre for the Enzo']],
+    facts:['Standard colours were Rosso Corsa, Giallo Modena and Nero','Fewer than 20 were painted in special colours','Seat backrests and cushions could be sized to fit each owner'] },
+};
+
+/* The road: the kind of road each car was built for, and how it feels. Experiential, not a route. */
+const ROAD = {
+  '250-california':{ type:'coast', born:'the American West Coast', title:['The coast','road'], line:'Sea on one side, sun on the other, nowhere to be.',
+    stats:[['Road','Coastal','two lanes, long views'],['Pace','60–90 km/h','no hurry: that is the point'],['Best hour','Golden hour','sun low over the water'],['Roof','Down','always']],
+    feel:'The V12 barely clears its throat at this speed; you hear the tyres, the gulls, your own passenger laughing. The wood wheel is thin in your hands and the steering is light and alive. Nobody overtakes a California. They slow down to look.',
+    moments:[['The first bend','The nose floats a little, the chrome catches the sun, and you understand why they built only 56.'],['The lay-by','Stop, walk twenty metres away and look back. That’s the photo.'],['The last light','Headlamps on under their covers, the sea turning copper beside you.']] },
+  'testarossa':{ type:'boulevard', born:'the 1980s and the autostrada', title:['The night','boulevard'], line:'Streetlights sliding across black paint.',
+    stats:[['Road','City boulevard','long, wide, lit'],['Pace','Walking to 120','it’s about being seen'],['Best hour','After midnight','empty streets, warm air'],['Windows','Down','let the flat-12 in']],
+    feel:'At 40 km/h it’s a movie. Streetlights ripple down the strakes one by one and the flat-12 hums behind your shoulder blades. Then a gap opens, you pull the metal gate from third to second, and for a moment it’s 1986.',
+    moments:[['The traffic light','Every phone in the next car is already filming.'],['The long straight','Third gear, full throttle, twelve cylinders in stereo.'],['The drop-off','Pop-ups down, engine ticking as it cools. Nobody walks past without stopping.']] },
+  'f40':{ type:'climb', born:'Ferrari’s 40th anniversary', title:['The mountain','climb'], line:'Switchbacks at sunrise, before anyone else is awake.',
+    stats:[['Road','Switchbacks','tight, climbing, empty'],['Pace','Whatever the road allows','no ABS, no servo, no filter'],['Best hour','Sunrise','cool air, turbos love it'],['Assists','None','it is 1987 in there']],
+    feel:'Nothing happens, and then everything happens at once: the turbos arrive at 4,000 rpm and the horizon tilts. You feel every stone through the thin seat. The wastegates chatter on every lift. It’s loud, it’s hot, it smells of fuel and carbon, and it’s the best morning of your life.',
+    moments:[['The first hairpin','Brake early and hard: there’s no servo to help you.'],['The straight between bends','Boost. You’ll laugh out loud; everyone does.'],['The summit','Engine off. Listen to it tick. Then turn around and do it again.']] },
+  'daytona':{ type:'sweepers', born:'the long-distance grand tour', title:['The long','sweepers'], line:'Wide, fast curves across open country, all afternoon.',
+    stats:[['Road','Open sweepers','fast, flowing, far'],['Pace','Cruise at 130','it’s built to go all day'],['Best hour','Afternoon','long shadows, warm engine'],['Gear','Fifth','and leave it there']],
+    feel:'The bonnet stretches out ahead like a runway, and the six Webers breathe in one long, deep chord. Through a fast sweeper the Daytona sits flat and heavy and calm. It’s not a sprint car; it’s a car for crossing a whole country before dinner.',
+    moments:[['Joining the open road','Fourth, fifth, and the V12 settles into its song.'],['The fast left-hander','Balanced by its transaxle, it just goes where you look.'],['The arrival','Four hours later, climb out rested. That is what grand touring means.']] },
+  'dino':{ type:'twisty', born:'a smaller, lighter, mid-engined idea', title:['The back','road'], line:'Narrow, tight, and nobody else on it.',
+    stats:[['Road','Twisty lane','narrow, bumpy, hidden'],['Pace','Momentum','carry speed, don’t brake'],['Best hour','Late morning','dry tarmac, warm V6'],['Gear','Third','the whole way']],
+    feel:'Light, low and talkative, the Dino tells you everything the road is doing through the thin wheel rim. The V6 sings to 7,600 rpm right behind your head. It never feels fast; it feels perfect. Every corner is a small conversation you win.',
+    moments:[['The first S-bend','Turn in on the throttle and feel the middle of the car pivot beneath you.'],['The village','Second gear, windows down: grandmothers wave.'],['The view','Pull over where the road runs out of straight bits. You won’t want to go home.']] },
+  'enzo':{ type:'pass', born:'putting Formula 1 on the road', title:['The high','pass'], line:'The highest, emptiest road you can find, at first light.',
+    stats:[['Road','Alpine pass','hairpins to the summit'],['Pace','Controlled','carbon-ceramics do the rest'],['Best hour','First light','empty, cold, clear'],['Redline','8,200 rpm','use it']],
+    feel:'The V12 pulls from nothing and keeps pulling. At 8,000 rpm the shift lights flicker across the wheel, you flick a paddle, and 150 ms later it does it again, echoing off the rock. It’s the closest thing to a Grand Prix car with a number plate.',
+    moments:[['The tunnel','Paddle down twice. You will never forget the sound.'],['The switchbacks','The nose bites, the carbon brakes don’t fade, the doors point at the sky when you stop.'],['The summit','Above the clouds, with one of 400. Take the photo.']] },
+};
+
+/* Spec sheets: verified figures (see SOURCES.md for disagreements between sources). */
+const SPEC = {
+  '250-california':{ years:'SWB 1960–1963', car:'Ferrari 250 GT SWB California Spyder', built:'56 built (plus ~50 LWB, 1958–60)', design:'Scaglietti, Modena, from Pinin Farina themes',
+    sections:[['Engine',[['Layout','Front V12, 60°, Colombo'],['Code','Tipo 168'],['Capacity','2,953 cc'],['Valves','24, SOHC per bank'],['Induction','3 × Weber twin-choke'],['Power','280 cv @ 7,000 rpm (official)']]],
+      ['Performance',[['Top speed','250–270 km/h (official range)'],['Gearbox','4-speed manual, overdrive from 1960'],['Drive','Rear, live axle']]],
+      ['Chassis',[['Frame','Tubular steel, type 539'],['Body','Steel; aluminium doors, bonnet, boot lid'],['Front','Unequal A-arms, coil springs, Koni'],['Rear','Live axle, leaf springs, Koni'],['Brakes','Dunlop discs all round, servo'],['Wheelbase','2,400 mm'],['Weight','≈1,100 kg dry']]],
+      ['Wheels & tyres',[['Wheels','Borrani RW3687 wire, 6.0 × 16, centre-lock'],['Original','Pirelli Stella Bianca 6.00-16'],['Today','Pirelli Cinturato CA67 185VR16']]]],
+    interiors:[['Rosso','#9e1b22'],['Beige VM 3218','#d6c19c'],['Blu VM 3087','#243a66'],['Nero','#161616'],['Tan','#a8743e']],
+    colours:[['Rosso','#b3121b'],['Nero','#0e0e0f'],['Grigio Conchiglia','#c9c3b5'],['Blu Scuro','#1b2946'],['Blu Medio','#2f5190'],['Azzurro Metallizzato','#7fa6c9']],
+    sources:['https://www.ferrari.com/en-EN/auto/250-california','https://www.borrani.com/ferrari-wheels/250-gt-california.html','https://rmsothebys.com/auctions/mo24/lots/r0112-1960-ferrari-250-gt-swb-california-spider-by-scaglietti/','https://www.goodingco.com/lot/1961-ferrari-250-gt-swb-california-spider-1/','https://en.wikipedia.org/wiki/Ferrari_250_GT_California_Spyder','https://www.thehenryford.org/collections/explore/articles/ferris-buellers-faux-ferrari-a-replica-with-real-history'] },
+  'testarossa':{ years:'1984–1991', car:'Ferrari Testarossa', built:'7,177 built', design:'Pininfarina, under Leonardo Fioravanti',
+    sections:[['Engine',[['Layout','Mid, 180° flat-12'],['Code','F113 A'],['Capacity','4,943 cc'],['Valves','48, DOHC per bank'],['Induction','Bosch KE-Jetronic'],['Power','390 cv @ 6,300 rpm (EU)'],['Torque','490 Nm @ 4,500 rpm']]],
+      ['Performance',[['0–100 km/h','5.8 s'],['Top speed','290 km/h'],['Gearbox','5-speed manual, open gate'],['Drive','Rear']]],
+      ['Chassis',[['Frame','Tubular steel space frame'],['Body','Aluminium; steel doors and roof'],['Suspension','Double wishbones, coils; twin rear dampers per side'],['Brakes','Ventilated discs, servo'],['L × W × H','4,485 × 1,976 × 1,130 mm'],['Wheelbase','2,550 mm'],['Weight','1,506 kg dry']]],
+      ['Wheels & tyres',[['1984–86','Single-nut TRX 415 mm; Michelin TRX 240/45 · 280/45'],['1986–88','16" single-nut; Goodyear Eagle 225/50 · 255/50 VR16'],['From 6/1988','Five-bolt 16" (OZ / Speedline)'],['Today','Pirelli P Zero Collezione 225/50 · 255/50 ZR16']]]],
+    interiors:[['Rosso','#a8171f'],['Blu','#1f3160'],['Grigio','#7d7f82'],['Crema','#e8dcc2'],['Beige','#cdb694'],['Nero','#161616']],
+    colours:[['Rosso Corsa','#d40000'],['Nero','#0e0e0f'],['Bianco','#f2f0ea'],['Giallo','#f5c400'],['Argento Metallizzato','#b9bdc3'],['Blu Sera Metallizzato','#1c2a4a']],
+    sources:['https://www.ferrari.com/en-EN/auto/testarossa','https://www.red-headed.com/testarossa_versions.html','https://www.red-headed.com/testarossa_colours.html','https://rmsothebys.com/auctions/pa17/lots/r181-1984-ferrari-testarossa-monospecchio/','https://www.longstonetyres.co.uk/classic-car-tyres/ferrari/testarossa.html','https://en.wikipedia.org/wiki/Ferrari_Testarossa','https://en.wikipedia.org/wiki/Cars_in_Miami_Vice'] },
+  'f40':{ years:'1987–1992', car:'Ferrari F40', built:'≈1,311 built (213 US)', design:'Pininfarina: Pietro Camardella under Aldo Brovarone; engineering Nicola Materazzi',
+    sections:[['Engine',[['Layout','Mid, 90° V8, dry sump'],['Code','F120A'],['Capacity','2,936 cc'],['Valves','32, DOHC per bank'],['Induction','Twin IHI turbos, 1.1 bar, intercooled'],['Power','478 cv @ 7,000 rpm'],['Torque','577 Nm @ 4,000 rpm']]],
+      ['Performance',[['0–100 km/h','4.7 s (Sport Auto test, 1988)'],['Top speed','324 km/h (claimed)'],['Gearbox','5-speed manual'],['Drive','Rear']]],
+      ['Chassis',[['Frame','Tubular steel with bonded composites'],['Body','Kevlar & carbon; Lexan glazing'],['Suspension','Double wishbones, coils, all round'],['Brakes','Brembo 330 mm, no servo, no ABS'],['L × W × H','4,430 × 1,970 × 1,124 mm'],['Wheelbase','2,450 mm'],['Weight','1,100 kg dry']]],
+      ['Wheels & tyres',[['Wheels','Speedline 17" two-piece, 8J / 13J'],['Original','Pirelli P Zero 245/40 ZR17 · 335/35 ZR17 (its OE debut)'],['Also delivered','Bridgestone Potenza RE71, same sizes'],['Today','Pirelli P Zero Collezione, same sizes']]]],
+    interiors:[['Rosso Stoffa Vigogna','#8e1b1f']],
+    colours:[['Rosso Corsa (every car)','#d40000']],
+    sources:['https://en.wikipedia.org/wiki/Ferrari_F40','https://rmsothebys.com/auctions/mo26/lots/r0049-1991-ferrari-f40/','https://www.pirelli.com/tyres/en-ww/car/collection/product/p-zero','https://www.longstonetyres.co.uk/classic-car-tyres/ferrari/f40.html','https://www.classicandsportscar.com/features/extreme-machine-inside-story-ferrari-f40','https://zeperfs.com/en/fiche506-ferrari-f40.htm'] },
+  'daytona':{ years:'1968–1973', car:'Ferrari 365 GTB/4 “Daytona”', built:'1,406 built (1,284 Berlinetta + 122 Spider)', design:'Leonardo Fioravanti at Pininfarina; bodies by Scaglietti',
+    sections:[['Engine',[['Layout','Front-mid 60° V12, dry sump'],['Code','Tipo 251'],['Capacity','4,390 cc'],['Valves','24, four cams'],['Induction','6 × Weber 40 DCN'],['Power','352 cv @ 7,500 rpm'],['Torque','431 Nm @ 5,500 rpm']]],
+      ['Performance',[['0–60 mph','≈5.4 s (period tests)'],['Top speed','280 km/h'],['Gearbox','5-speed rear transaxle'],['Drive','Rear, ≈50/50 balance']]],
+      ['Chassis',[['Frame','Tubular steel'],['Body','Steel; aluminium bonnet, boot lid, doors'],['Suspension','Wishbones, coils, anti-roll bars'],['Brakes','Ventilated discs, servo'],['L × W × H','4,425 × 1,760 × 1,245 mm'],['Wheelbase','2,400 mm'],['Weight','1,200 kg dry']]],
+      ['Wheels & tyres',[['Standard','Cromodora 7.5 × 15 alloys, knock-off'],['Option','Borrani RW4075 wire, 7.5 × 15'],['Original','Michelin XWX 215/70 VR15'],['Today','Michelin XWX 215/70 VR15']]]],
+    interiors:[['Nero','#161616'],['Pelle Beige','#cdb694'],['Rosso VM 3171','#9e1b22'],['Nuvola','#9a9a98'],['Cream','#e8dcc2']],
+    colours:[['Rosso Chiaro','#c8141c'],['Giallo Fly','#f2c200'],['Nero','#0e0e0f'],['Argento','#b9bdc3'],['Blu Dino','#2a4d8f'],['Verde Pino Metallizzato','#1f3d2e']],
+    sources:['https://en.wikipedia.org/wiki/Ferrari_Daytona','https://rmsothebys.com/auctions/lf23/lots/r0043-1969-ferrari-365-gtb4-daytona-berlinetta-by-scaglietti/','https://cars.bonhams.com/auction/29332/lot/243/1972-ferrari-365-gtb4-daytona-berlinetta-chassis-no-16043/','https://www.borrani.com/ferrari-wheels/365-gtb-4-daytona.html','https://radical-mag.com/2024/10/22/ferrari-365-gtb-4-daytona-die-farben/'] },
+  'dino':{ years:'1969–1974', car:'Dino 246 GT', built:'3,761 built (2,487 GT + 1,274 GTS)', design:'Pininfarina (Fioravanti, Brovarone); bodies by Scaglietti',
+    sections:[['Engine',[['Layout','Mid, transverse 65° V6'],['Code','Tipo 135 CS'],['Capacity','2,419 cc'],['Valves','12, DOHC per bank'],['Induction','3 × Weber 40 DCNF'],['Power','195 cv @ 7,600 rpm'],['Torque','226 Nm @ 5,500 rpm']]],
+      ['Performance',[['0–60 mph','7.9 s (Road & Track, 1972)'],['Top speed','235 km/h'],['Gearbox','5-speed manual transaxle'],['Drive','Rear']]],
+      ['Chassis',[['Frame','Tubular steel, Tipo 607'],['Body','Steel, aluminium front lid'],['Suspension','Double wishbones, coils, all round'],['Brakes','Ventilated discs, servo'],['L × W × H','4,235 × 1,700 × 1,135 mm'],['Wheelbase','2,340 mm'],['Weight','1,080 kg dry']]],
+      ['Wheels & tyres',[['L-series','Centre-lock Cromodora alloys'],['M/E-series','Cromodora 6.5J × 14, five-bolt'],['Flares option','Campagnolo 14" alloys'],['Original & today','Michelin XWX 205/70 VR14']]]],
+    interiors:[['Nero (vinyl / Connolly)','#161616']],
+    colours:[['Giallo Fly','#f2c200'],['Rosso Dino','#c41a1a'],['Azzurro Dino','#6fa3d0'],['Verde Pino Met.','#1f3d2e'],['Marrone Dino Met.','#5a3a26'],['Viola Met.','#4b2a4f']],
+    sources:['https://www.ferrari.com/en-EN/auto/dino-246-gt','https://en.wikipedia.org/wiki/Dino_206_GT_and_246_GT','https://dinouk.com/technical_colours_ferrari.html','https://rmsothebys.com/auctions/mc18/lots/r0063-1971-ferrari-dino-246-gt-by-scaglietti/','https://www.longstonetyres.co.uk/205-70wr14-michelin-xwx.html'] },
+  'enzo':{ years:'2002–2004', car:'Enzo Ferrari', built:'400 built (399 + 1)', design:'Pininfarina, styling led by Ken Okuyama',
+    sections:[['Engine',[['Layout','Mid-rear 65° V12'],['Code','F140 B'],['Capacity','5,999 cc'],['Valves','48, variable timing'],['Induction','Natural, Bosch Motronic ME7'],['Power','660 cv @ 7,800 rpm'],['Torque','657 Nm @ 5,500 rpm'],['Redline','8,200 rpm']]],
+      ['Performance',[['0–100 km/h','3.65 s (official)'],['Top speed','350+ km/h'],['Gearbox','6-speed F1 paddle, 150 ms'],['Drive','Rear']]],
+      ['Chassis',[['Tub','Carbon-fibre & honeycomb monocoque'],['Body','Carbon composite'],['Suspension','Push-rod wishbones, adaptive dampers'],['Brakes','Brembo carbon-ceramic 380 mm (a Ferrari road-car first)'],['L × W × H','4,702 × 2,035 × 1,147 mm'],['Wheelbase','2,650 mm'],['Weight','1,255 kg dry']]],
+      ['Wheels & tyres',[['Wheels','BBS forged 19", centre-lock, 9J / 13J'],['Original','Bridgestone Potenza RE050A Scuderia 245/35 · 345/35 ZR19'],['Today','Pirelli P Zero Corsa Collezione, same sizes']]]],
+    interiors:[['Nero','#161616'],['Nero · Rosso inserts','#9e1b22'],['Cuoio (one-off)','#8a5a34']],
+    colours:[['Rosso Corsa','#d40000'],['Giallo Modena','#f7c600'],['Nero','#0e0e0f'],['Rosso Scuderia','#e0261b'],['Argento Nürburgring','#b3b6ba'],['Bianco Avus (one car)','#f1f0ec']],
+    sources:['https://www.ferrari.com/en-EN/auto/enzo-ferrari','https://en.wikipedia.org/wiki/Ferrari_Enzo','https://www.web-cars.com/enzo/specifications.html','https://rmsothebys.com/auctions/az13/lots/r185-2003-ferrari-enzo/','https://press.pirelli.com/pirelli-a-new-p-zero-from-the-collezione-range-for-the-ferrari-enzo/'] },
+};
+
+/* stand-in bodies (viewBox 1000×420, ground at y=382). Replaced by the real photo when it exists. */
+const BODIES = {
+  hatch:   { B:338, xR:120, top:'M120,338 L112,250 C110,215 125,175 160,160 L300,122 C330,112 350,110 380,110 L560,110 C610,110 650,140 700,190 L840,212 C880,220 900,245 902,280 L905,338',
+             glass:'M175,172 L305,134 C330,126 350,124 375,124 L548,124 C588,124 622,150 660,192 L190,196 Z', gt:124, gb:196, door:470, wheels:[[250,58],[745,58]], hl:[.875,.57], tl:[.12,.54] },
+  sedan:   { B:336, xR:60, top:'M60,336 L58,282 C58,258 80,246 125,242 L285,228 C330,175 385,140 470,138 L610,138 C675,138 725,172 775,218 L895,234 C935,242 955,262 955,292 L952,336',
+             glass:'M300,226 C340,182 390,152 470,150 L605,150 C660,150 700,178 740,218 Z', gt:150, gb:222, door:520, wheels:[[235,60],[775,60]], hl:[.925,.61], tl:[.07,.63] },
+  suv:     { B:334, xR:60, top:'M60,334 L58,212 C58,192 72,180 98,178 L232,168 L298,92 C308,82 320,80 336,80 L698,80 C722,80 738,88 752,102 L832,172 L910,186 C938,192 952,212 952,240 L950,334',
+             glass:'M248,166 L306,102 C312,95 320,93 330,93 L690,93 C708,93 718,98 728,108 L790,166 Z', gt:93, gb:166, door:510, wheels:[[235,68],[770,68]], hl:[.925,.5], tl:[.075,.47] },
+  sport:   { B:330, xR:55, top:'M55,330 L52,292 C52,272 70,262 110,258 L300,240 C370,182 450,160 545,158 C630,158 690,185 745,225 L890,245 C935,252 958,272 958,300 L955,330',
+             glass:'M320,238 C385,192 455,172 540,170 C610,170 660,194 705,230 Z', gt:0, gb:236, door:500, wheels:[[225,58],[785,58]], hl:[.935,.64], tl:[.065,.66] },
+  fastback:{ B:334, xR:60, top:'M60,334 L58,280 C58,258 78,246 120,240 L250,222 C330,168 410,138 520,136 C620,136 700,170 780,222 L900,236 C938,244 955,264 955,292 L952,334',
+             glass:'M270,220 C340,176 420,150 520,148 C605,148 670,176 730,216 Z', gt:150, gb:218, door:500, wheels:[[235,60],[770,60]], hl:[.925,.6], tl:[.075,.62] },
+  x4:      { B:324, xR:60, rack:true, top:'M60,324 L58,206 C58,188 72,176 98,174 L240,166 L300,96 C310,86 320,84 336,84 L690,84 C712,84 726,92 740,104 L818,166 L912,180 C940,186 954,206 954,232 L952,324',
+             glass:'M254,164 L308,106 C314,99 322,97 332,97 L682,97 C698,97 708,102 718,112 L776,164 Z', gt:97, gb:164, door:510, wheels:[[235,74],[770,74]], hl:[.925,.48], tl:[.075,.45] },
+};
+const geoOf = (f) => ({ ...BODIES[f.body], ...(f.geo || {}) });
+
+function bodyPath(g){
+  let d = g.top;
+  [...g.wheels].sort((a,b) => b[0] - a[0]).forEach(([cx,r]) => {
+    const R = r + 10, cy = 382 - r, dx = Math.sqrt(R*R - (g.B - cy) ** 2).toFixed(1);
+    d += ` L${cx + +dx},${g.B} A${R},${R} 0 1 0 ${cx - dx},${g.B}`;
+  });
+  return d + ` L${g.xR},${g.B} Z`;
+}
+
+function carSVG(f, mode){
+  const g = geoOf(f), body = bodyPath(g), id = `${f.key}-${mode}`, bp = mode === 'empty';
+  const wheels = g.wheels.map(([cx,r]) => {
+    const cy = 382 - r, spokes = [0,72,144,216,288].map(a => {
+      const t = a * Math.PI / 180;
+      return `M${cx},${cy} L${(cx + Math.cos(t) * r * .58).toFixed(1)},${(cy + Math.sin(t) * r * .58).toFixed(1)}`; }).join(' ');
+    return bp
+      ? `<g class="wh" style="transform-origin:${cx}px ${cy}px"><circle cx="${cx}" cy="${cy}" r="${r}"/><circle cx="${cx}" cy="${cy}" r="${r*.62}"/><path d="${spokes}"/></g>`
+      : `<g class="wh" style="transform-origin:${cx}px ${cy}px"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#141414"/><circle cx="${cx}" cy="${cy}" r="${r*.64}" fill="#c9cdd3"/>
+         <path d="${spokes}" stroke="#6d7279" stroke-width="${r*.13}" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="${r*.15}" fill="#44484e"/></g>`;
+  }).join('');
+  const pillar = g.gt ? `M${g.door},${g.gt - 4} V${g.gb + 2}` : '';
+  const rack = g.rack ? `<path d="M320,84 V64 M670,84 V64 M300,64 H690" stroke-width="10" stroke-linecap="round" ${bp ? '' : 'stroke="#2a2a2a"'}/>` : '';
+  if (bp) return `<svg viewBox="0 0 1000 420" fill="none" stroke="currentColor" stroke-width="2.2" opacity=".5">
+      <path d="${body}"/><path d="${g.glass}" stroke-dasharray="7 6"/><path d="M${g.door},${g.gb} V${g.B - 8}"/>${rack}${wheels}</svg>`;
+  return `<svg viewBox="0 0 1000 420">
+      <defs><linearGradient id="sh-${id}" x1="0" y1="0" x2="0" y2="1"><stop offset=".45" stop-opacity="0"/><stop offset="1" stop-opacity=".3"/></linearGradient>
+        <linearGradient id="gl-${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+      ${rack}<path d="${body}" fill="${f.paint}"/><path d="${body}" fill="url(#sh-${id})"/>
+      <path d="${g.glass}" fill="#18212d"/><path d="${g.glass}" fill="url(#gl-${id})"/>
+      <path d="${pillar}" stroke="${f.paint}" stroke-width="16"/>
+      <path d="M${g.door},${g.gb + 4} V${g.B - 8}" stroke="rgba(0,0,0,.2)" stroke-width="3"/>
+      <path d="M${g.xR + 30},${g.gb + 18} H${940 - (g.xR - 60)}" stroke="rgba(255,255,255,.28)" stroke-width="3" stroke-linecap="round"/>
+      ${wheels}</svg>`;
+}
+const thumbSVG = (f) => { const g = geoOf(f);
+  return `<svg viewBox="0 0 1000 420"><path d="${bodyPath(g)}" fill="currentColor"/>${g.wheels.map(([cx,r]) => `<circle cx="${cx}" cy="${382-r}" r="${r}" fill="currentColor"/>`).join('')}</svg>`; };
+
+const ICONS = {
+  key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/>',
+  bag:'<rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V4h6v3M9 11v5M15 11v5"/>',
+  pin:'<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  glasses:'<circle cx="7" cy="14" r="3.5"/><circle cx="17" cy="14" r="3.5"/><path d="M10.5 14h3M3.5 13 5 7M20.5 13 19 7"/>',
+  wifi:'<path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/>',
+  seat:'<path d="M8 3h4l-1 9h6l2 8H9z"/><path d="M5 21h14"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  fuel:'<rect x="4" y="3" width="10" height="18" rx="1.5"/><path d="M4 10h10M14 7l4 3v8a2 2 0 0 0 4 0V9l-3-3"/>',
+  watch:'<circle cx="12" cy="12" r="6"/><path d="M9 6.5 10 2h4l1 4.5M9 17.5 10 22h4l1-4.5M12 9.5V12l1.8 1.2"/>',
+  plane:'<path d="M10.5 21 12 14l-7-2 1-2 7 .5L16 4a1.5 1.5 0 0 1 2.5 1.2L16.5 12l4.5 3-1 2-5-1-2 6z"/>',
+  bottle:'<path d="M10 2h4M10.5 2v5.5C8.5 9 8 10.5 8 12.5V21a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-8.5c0-2-.5-3.5-2.5-5V2M8 15h8"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+};
+const LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg>';
+
+/* slots around the car: [x%, y%, size vmin, depth] */
+const SLOTS = [[44,13,7,.6],[97,27,11,1.3],[97,64,6,.4],[58,9,5,.3],[88,11,6,.5],[42,72,5,.3]];
+const SLOTS_MOBILE = [[93,48,8,.6],[7,53,7,.5]];
+
+/* ============ TIMING ============ */
+const Q = new URLSearchParams(location.search), REEL = Q.has('reel');
+const T = { arrive:1250, scan0:1450, step:520, leave:720, auto: REEL ? 11500 : 8600 };
+const stage = document.getElementById('stage'), scene = document.getElementById('scene'), copy = document.getElementById('copy');
+const wipe = document.getElementById('wipe'), ghostEl = document.getElementById('ghost'), ghostTrack = document.getElementById('ghostTrack');
+const menu = document.getElementById('menu'), num = document.getElementById('num'), mbBlur = document.getElementById('mbBlur');
+stage.style.setProperty('--auto', T.auto + 'ms');
+if (REEL) stage.classList.add('reel', 'clean');
+if (Q.has('clean')) stage.classList.add('clean');
+
+/* images: fetched per car only when needed; a missing file just leaves the stand-in */
+const mobile = matchMedia('(max-width:820px)');
+const cache = {};
+function load(src){
+  return new Promise(res => {
+    const im = new Image(); im.src = src;
+    const done = () => res();
+    setTimeout(done, 4000);
+    im.decode ? im.decode().then(done, done) : (im.onload = im.onerror = done);
+  });
+}
+function ready(i){
+  const f = FLEET[i];
+  return cache[i] || (cache[i] = Promise.all([load(`img/car-${f.key}.webp`), load(`img/wheel-${f.key}.webp`),
+    ...f.extras.map((_, k) => load(`img/extra-${f.key}-${k+1}.webp`))]));
+}
+
+let idx = 0, busy = false, timers = [], travel = 1;
+const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+const pad = (n) => String(n).padStart(2, '0');
+
+function applyTheme(f){
+  const r = stage.style;
+  r.setProperty('--bg', f.bg); r.setProperty('--ink', f.ink); r.setProperty('--accent', f.accent);
+  r.setProperty('--accent-ink', f.accentInk); r.setProperty('--mark', f.ink); r.setProperty('--mark-ink', f.bg); r.setProperty('--sc', f.sc);
+  document.body.style.background = f.bg;
+  document.querySelector('meta[name=theme-color]').content = f.bg;
+}
+
+/* ---- fleet strip ---- */
+FLEET.forEach((f, i) => {
+  const b = document.createElement('button');
+  b.className = 'mi';
+  b.innerHTML = `<i class="bar"><i></i></i><span class="mini">${thumbSVG(f)}</span><span><span class="n">${pad(i+1)}</span><span class="nm">${f.model}</span><span class="pr">from $${f.price.toLocaleString('en-US')} / day</span></span>`;
+  b.addEventListener('click', () => go(i));
+  ['pointerenter','touchstart'].forEach(ev => b.addEventListener(ev, () => ready(i), {passive:true}));
+  b.querySelector('.bar i').addEventListener('animationend', () => { if (i === idx && (view === 0 || REEL)) go((idx + 1) % FLEET.length, 1); });
+  menu.appendChild(b);
+});
+
+/* ---- copy ---- */
+function renderCopy(f, i){
+  const t0 = 120, digits = [...f.price.toLocaleString('en-US')];
+  copy.className = 'copy';
+  copy.innerHTML = `
+    <div class="eyebrow rv" style="--d:${t0}"><b>${pad(i+1)}</b><i></i><span>${f.tag}</span></div>
+    <h1>${f.name.map((w,j)=>`<span class="ln"><span style="--d:${t0 + 90 + j*110}">${w}</span></span>`).join('')}</h1>
+    <p class="desc rv" style="--d:${t0 + 380}">${f.desc}</p>
+    <div class="meta rv" style="--d:${t0 + 470}">${f.meta.map(m=>`<span>${m}</span>`).join('')}</div>
+    <div class="spec rv" style="--d:${t0 + 500}">
+      <span><i style="background:${f.ext[1]}"></i><small>Exterior</small>${f.ext[0]}</span>
+      <span><i style="background:${f.int[1]}"></i><small>Interior</small>${f.int[0]}</span></div>
+    <div class="route rv" style="--d:${t0 + 540}"><b>${f.route[0]}</b><i><em></em></i><b>${f.route[1]}</b><span>${f.route[2]}</span></div>
+    <div class="buy rv" style="--d:${t0 + 580}">
+      <div class="price"><small>from $</small>${digits.map((d,j)=>d === ',' ? '<span>,</span>' : `<span class="dg"><span style="--n:${d};--d:${t0 + 600 + j*140}">${[...Array(20)].map((_,k)=>k%10).join('<br>')}</span></span>`).join('')}<em>/ day</em></div>
+      <button class="cta">Reserve the keys <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>`;
+}
+
+/* ---- the car: drives in as a blueprint, gets scanned into reality, unlocks ---- */
+let car = null;
+function layerArt(f, mode){
+  const g = geoOf(f);
+  const wimgs = g.wheels.map(([cx,r]) => `<img class="wimg" src="img/wheel-${f.key}.webp" alt="" style="left:${cx/10}%;top:${(382-r)/4.2}%;width:${r/5}%" onerror="this.remove()">`).join('');
+  return `<div class="art">${carSVG(f, mode)}<img class="photo" src="img/car-${f.key}.webp" alt="${mode === 'full' ? 'Ferrari ' + f.model : ''}"
+    onload="this.parentNode.classList.add('real');this.closest('.car-pos').classList.add('real')" onerror="this.remove()">${wimgs}</div>`;
+}
+
+function renderScene(f){
+  const g = geoOf(f), bands = f.bands;
+  const lamps = `<i class="beam" style="--lx:${g.hl[0]};--ly:${g.hl[1]}"></i><i class="lamp h" style="--lx:${g.hl[0]};--ly:${g.hl[1]}"></i><i class="lamp t" style="--lx:${g.tl[0]};--ly:${g.tl[1]}"></i>`;
+  const labels = `<div class="labels">${bands.map((b,k)=>`
+      <div class="lab${b.px > .7 ? ' r' : ''}" style="--px:${b.px};--py:${b.py};--lk:${k % 2 ? .42 : .18};--k:${k};--c:${f.sc}">
+        <i class="stick"></i><div class="tx"><b>${b.v}</b><small><em>${pad(k+1)}</em>${b.n}</small></div><i class="dot"><span class="dn">${k+1}</span></i></div>`).join('')}</div>
+    <div class="legend">${bands.map((b,k)=>`<span><b>${k+1}</b>${b.v}<small>${b.n}</small></span>`).join('')}</div>`;
+
+  scene.className = 'scene';
+  scene.innerHTML = `
+    <div class="car-pos lit${travel < 0 ? ' rev' : ''}" id="car">
+      <div class="car-drive" id="drive">
+        <div class="trail"><i></i><i></i><i></i><i></i></div>
+        <div class="shadow"></div>
+        <div class="car-pitch" id="pitch">
+          <div class="grid"></div>
+          <div class="ph"><span>img/car-${f.key}.webp · 1600×672 · side profile facing right · transparent</span></div>
+          <div class="shot">
+            <div class="layer empty">${layerArt(f,'empty')}</div>
+            <div class="layer full" id="full">${layerArt(f,'full')}</div>
+          </div>
+          <i class="scan" id="scan"></i>
+          ${lamps}${labels}
+          <div class="dim"><i></i><span class="tag"><span class="ln0">${f.len}</span><span class="ul">${LOCK} Unlocked · ready</span></span></div>
+        </div>
+      </div>
+    </div>`;
+  car = document.getElementById('car');
+  const drive = document.getElementById('drive'), pitch = document.getElementById('pitch'), full = document.getElementById('full');
+
+  /* arrive: from off-screen, braking hard, nose dips */
+  drive.animate([{transform:`translateX(${-travel * 125}vw)`},{transform:'none'}], {duration:T.arrive, easing:'cubic-bezier(.12,.72,.22,1)'});
+  tweenSpeed(0, T.arrive, p => 1 - (1 - p) ** 1.6);
+  later(() => pitch.animate([{rotate:'0deg'},{rotate:`${travel * 1.8}deg`, offset:.35},{rotate:`${travel * -.5}deg`, offset:.7},{rotate:'0deg'}],
+    {duration:750, easing:'ease-out'}), T.arrive * .72);
+
+  /* extras fly out from the car once it's unlocked */
+  const done = T.scan0 + bands.length * T.step + 120;
+  const r = car.getBoundingClientRect(), cX = (r.left + r.width/2) / innerWidth * 100, cY = (r.top + r.height/2) / innerHeight * 100;
+  scene.insertAdjacentHTML('afterbegin', (mobile.matches ? SLOTS_MOBILE : SLOTS).map(([x,y,s,d], k) => {
+    const n = k % f.extras.length, cls = d >= 1.2 ? 'near' : d <= .35 ? 'far' : '';
+    return `<div class="p ${cls}" style="--x:${x}%;--y:${y}%;--s:${s};--d:${d};--z:${d>=1.2?20:1}">
+      <div class="p-in" style="--fx:${cX - x}vw;--fy:${cY - y}vh;--t:${done + 250 + k*60}">
+        <div class="p-art" style="--r:${(k*47)%60 - 30}deg;--du:${3.2 + (k%4)*.7}s">
+          <span class="chip"><svg viewBox="0 0 24 24">${ICONS[f.extras[n]]}</svg></span>
+          <img src="img/extra-${f.key}-${n+1}.webp" alt="" decoding="async" onload="this.parentNode.classList.add('real')" onerror="this.remove()"></div></div></div>`;
+  }).join(''));
+
+  /* the scan: blueprint → real, one band at a time, rear to front */
+  const set = (k, v) => full.style.setProperty(k, v), scan = document.getElementById('scan');
+  later(() => car.classList.add('scanning', 'measured'), T.scan0 - 250);
+  later(() => car.classList.remove('lit'), T.scan0);
+  bands.forEach((b, k) => later(() => {
+    [full, scan].forEach(el => { el.style.setProperty('--rt', T.step); el.style.setProperty('--rv', b.x1); });
+    car.querySelectorAll('.lab')[k].classList.add('on');
+    car.querySelectorAll('.legend span')[k].classList.add('on');
+  }, T.scan0 + k * T.step));
+  later(() => {                                   // unlock: double flash, bounce, tag flips
+    car.classList.remove('scanning'); car.classList.add('unlock', 'clink', 'open'); revBlip();
+  }, done);
+  /* the reel shows the camera orbit on its own */
+  if (REEL) [[1, 1300], [4, 2900], [7, 4500]].forEach(([v, t]) => later(() => setView(v), done + t));
+}
+
+/* ============ CAMERA VIEWS ============ */
+const views = document.getElementById('views'), vp = document.getElementById('vp'), vshots = document.getElementById('vshots');
+const vui = document.getElementById('vui'), vtl = document.getElementById('vtl'), vang = document.getElementById('vang'), vcap = document.getElementById('vcap');
+const flareEl = document.getElementById('flare'), dial = document.getElementById('dial'), vrail = document.getElementById('vrail');
+let view = 0, vbusy = false;
+const EASE = 'cubic-bezier(.7,0,.25,1)';
+const camPos = (k) => { const V = VIEWS[k];
+  if (V.a != null) { const r = V.a * Math.PI / 180; return { x:Math.cos(r) * 42, y:Math.sin(r) * 42, tx:0, ty:0 }; }
+  return { x:V.pos[0], y:V.pos[1], tx:V.tgt[0], ty:V.tgt[1] }; };
+
+/* top-down car + orbit ring; `pick` adds the clickable camera marks (dial), `k` draws one fixed camera (placeholder diagram) */
+function orbitSVG(pick, k){
+  const top = `<circle r="42" class="ring"/><rect x="-25" y="-12" width="50" height="24" rx="10" class="body"/>
+    <path d="M5,-10 Q11,0 5,10 M-13,-9 Q-16.5,0 -13,9" class="gl"/>
+    ${[[-15,-12],[15,-12],[-15,12],[15,12]].map(([x,y]) => `<rect x="${x-5}" y="${y-2}" width="10" height="4" rx="1.6" class="ty"/>`).join('')}`;
+  const marks = pick ? VIEWS.map((_, j) => { const p = camPos(j);
+    return `<g class="vm" data-v="${j}"><circle cx="${p.x}" cy="${p.y}" r="9" fill="transparent"/><circle cx="${p.x}" cy="${p.y}" r="2.6" class="mk"/></g>`; }).join('') : '';
+  let cam = '<g class="cam"><path d="M0,0 L17,-7 L17,7 Z" class="cone"/><circle r="4.4" class="cd"/></g>';
+  if (k != null) { const p = camPos(k), d = Math.atan2(p.ty - p.y, p.tx - p.x) * 180 / Math.PI;
+    cam = cam.replace('<g class="cam">', `<g class="cam" transform="translate(${p.x} ${p.y}) rotate(${d})">`); }
+  return top + marks + cam;
+}
+dial.innerHTML = orbitSVG(true);
+const camG = dial.querySelector('.cam');
+dial.querySelectorAll('.vm').forEach(m => m.addEventListener('click', () => setView(+m.dataset.v)));
+vrail.innerHTML = VIEWS.map((V, k) => `<button class="vb${k ? '' : ' on'}" role="tab"><b>${pad(k+1)}</b>${V.short}</button>`).join('');
+[...vrail.children].forEach((b, k) => b.addEventListener('click', () => setView(k)));
+
+/* the camera glides around the dial: along the ring between orbit angles, straight in for cockpit/detail */
+let cam = { k:0, a:90, ...camPos(0) }, camTok = 0;
+const deg3 = (a) => String(Math.round(((a % 360) + 360) % 360)).padStart(3, '0') + '°';
+function drawCam(){
+  const d = Math.atan2(cam.ty - cam.y, cam.tx - cam.x) * 180 / Math.PI;
+  camG.setAttribute('transform', `translate(${cam.x.toFixed(2)} ${cam.y.toFixed(2)}) rotate(${d.toFixed(1)})`);
+  const V = VIEWS[cam.k]; vang.textContent = V.a != null ? deg3(cam.a) : V.tag;
+}
+function camTo(k){
+  const from = { ...cam }, to = camPos(k), V = VIEWS[k], ring = V.a != null && VIEWS[from.k].a != null;
+  const da = ring ? ((((V.a - from.a) % 360) + 540) % 360) - 180 : 0, t0 = performance.now(), tok = ++camTok;
+  cam.k = k; if (!ring && V.a != null) cam.a = V.a;
+  (function f(now){
+    if (tok !== camTok) return;
+    const p = Math.min(1, (now - t0) / 900), e = p < .5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2;
+    if (ring) { cam.a = from.a + da * e; const r = cam.a * Math.PI / 180; cam.x = Math.cos(r) * 42; cam.y = Math.sin(r) * 42; cam.tx = cam.ty = 0; }
+    else ['x','y','tx','ty'].forEach(q => cam[q] = from[q] + (to[q] - from[q]) * e);
+    drawCam(); if (p < 1) requestAnimationFrame(f);
+  })(t0);
+}
+drawCam();
+
+/* ---- the three chapters: The story · The road · Spec sheet ---- */
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+/* each road archetype is drawn, not mapped: the shape of the road tells you how it drives */
+function roadArt(type){
+  const W = 1000; let d = '', deco = '';
+  const wave = (y, a, n, ph = 0) => { let s = `M0,${y}`; for (let i = 1; i <= n; i++) { const x = i * W / n; s += ` Q${x - W / n / 2},${y + (i % 2 ? -a : a) + ph} ${x},${y}`; } return s; };
+  if (type === 'coast') {
+    d = 'M10,170 C160,95 300,215 470,150 S760,85 990,140';
+    deco = [230, 255, 280].map((y, i) => `<path d="${wave(y, 5, 24, i)}" class="dc" opacity="${.5 - i * .12}"/>`).join('')
+      + '<path d="M0,60 C120,40 220,90 330,50 L330,0 L0,0 Z" class="mt"/><circle cx="860" cy="55" r="26" class="sun"/>';
+  } else if (type === 'boulevard') {
+    d = 'M10,200 L990,200';
+    deco = [...Array(12)].map((_, i) => { const x = 40 + i * 84; return `<path d="M${x},200 V120 h14" class="dc"/><circle cx="${x + 16}" cy="122" r="5" class="lamp"/>`; }).join('')
+      + [...Array(14)].map((_, i) => `<rect x="${i * 72}" y="${40 + (i * 37) % 50}" width="${48 + (i * 13) % 20}" height="${120 - (i * 37) % 50}" class="mt"/>`).join('');
+  } else if (type === 'climb' || type === 'pass') {
+    const n = type === 'pass' ? 6 : 5, yB = 280, yT = type === 'pass' ? 40 : 70, st = (yB - yT) / n;
+    let x = 80; d = `M20,${yB}`;
+    for (let i = 0; i < n; i++) { const y = yB - i * st, y2 = y - st, R = i % 2 === 0, x1 = R ? 900 - i * 40 : 100 + i * 40;
+      d += ` L${x1},${y} Q${R ? x1 + 60 : x1 - 60},${(y + y2) / 2} ${x1},${y2}`; x = x1; }
+    d += ` L${type === 'pass' ? 500 : 980},${yT}`;
+    deco = `<path d="M0,300 L${type === 'pass' ? '160,120 280,170 500,20 700,150 820,90 1000,300' : '200,140 420,60 640,120 860,40 1000,300'} Z" class="mt"/>`
+      + (type === 'pass' ? '<path d="M455,60 L500,20 548,62 520,55 500,70 478,56 Z" class="snow"/><path d="M500,20 V-10 l22,8 -22,8" class="dc"/>' : '');
+  } else if (type === 'sweepers') {
+    d = 'M10,220 C200,90 380,90 520,180 S820,280 990,120';
+    deco = '<path d="M0,150 C150,90 300,130 450,95 S760,60 1000,110 L1000,0 0,0 Z" class="mt"/><path d="M0,170 C200,130 380,165 560,130 S840,100 1000,150" class="dc" opacity=".35"/>';
+  } else {   // twisty
+    d = 'M10,180'; for (let i = 1; i <= 12; i++) d += ` Q${i * 82 - 41},${180 + (i % 2 ? -70 : 70) * (0.6 + (i % 3) * .2)} ${i * 82},180`;
+    deco = [...Array(22)].map((_, i) => `<circle cx="${(i * 97) % 1000}" cy="${60 + (i * 53) % 220}" r="${6 + (i % 4) * 3}" class="mt"/>`).join('');
+  }
+  return `<svg class="road-art" viewBox="0 -20 1000 330" aria-hidden="true">${deco}<path d="${d}" class="rw" pathLength="1"/><path d="${d}" class="ln" pathLength="1"/>
+    <circle r="8" class="cr"><animateMotion dur="7s" repeatCount="indefinite" rotate="auto" path="${d}"/></circle></svg>`;
+}
+const SHEETS = {
+  story(f){
+    const S = STORY[f.key]; if (!S) return '';
+    return `<div class="vscroll"><div class="ss">
+      <p class="rk">The story · <b>${esc(S.era)}</b></p><h3>${esc(S.title)}</h3>
+      ${S.body.map(p => `<p class="lede">${p}</p>`).join('')}
+      <ol class="tl">${S.timeline.map(([y, t]) => `<li><b>${esc(y)}</b><span>${t}</span></li>`).join('')}</ol>
+      <ul class="ss-facts">${S.facts.map(x => `<li>${x}</li>`).join('')}</ul></div></div>`;
+  },
+  road(f){
+    const R = ROAD[f.key]; if (!R) return '';
+    return `<div class="vscroll"><img class="rbg" src="img/${f.key}-road.webp" alt="" onerror="this.remove()"><div class="rd rd-in">
+      <p class="rk">Built for · <b>${esc(R.born)}</b></p>
+      <h3>${esc(R.title[0])} <span>${esc(R.title[1])}</span></h3>
+      <p class="rname">${esc(R.line)}</p>
+      ${roadArt(R.type)}
+      <div class="rstats">${R.stats.map(([k, v, s]) => `<div><small>${esc(k)}</small><b>${esc(v)}</b>${s ? `<span>${esc(s)}</span>` : ''}</div>`).join('')}</div>
+      <blockquote class="feel"><b>How it feels</b>${R.feel}</blockquote>
+      <div class="rlm">${R.moments.map(([t, s]) => `<div><b>${esc(t)}</b><span>${s}</span></div>`).join('')}</div></div></div>`;
+  },
+  specs(f){
+    const S = SPEC[f.key]; if (!S) return '';
+    const dl = (rows) => `<dl>${rows.filter(r => r[1] != null && r[1] !== '').map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`;
+    const sw = (list) => `<div class="row">${list.map(([n, hex]) => `<span class="sw"><i style="background:${hex}"></i>${esc(n)}</span>`).join('')}</div>`;
+    return `<div class="vscroll"><div class="ss">
+      <header><p class="rk">Spec sheet · <b>${esc(S.years)}</b></p><h3>${esc(S.car)}</h3><p>${esc(S.built)} · ${esc(S.design)}</p></header>
+      <div class="ss-grid">${S.sections.map(([t, rows]) => `<section><h4>${esc(t)}</h4>${dl(rows)}</section>`).join('')}</div>
+      <div class="ss-sw"><h4>Original interiors</h4>${sw(S.interiors)}<h4>Period colours</h4>${sw(S.colours)}</div>
+      <p class="ss-note">Swatches are approximate screen tones of the period colour names.</p>
+      <p class="ss-src">Sources: ${S.sources.map(u => esc(u.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])).filter((v, i, a) => a.indexOf(v) === i).join(' · ')}</p></div></div>`;
+  },
+};
+
+function shotHTML(f, k){
+  const V = VIEWS[k];
+  if (V.sheet) return `<div class="vshot real sheet">${SHEETS[V.id](f)}</div>`;
+  return `<div class="vshot"><div class="vph"><svg class="orb" viewBox="-50 -50 100 100">${orbitSVG(false, k)}</svg><code>img/${f.key}-${V.id}.webp · 1600×1200 · ${V.n}</code></div>
+    <img src="img/${f.key}-${V.id}.webp" alt="Ferrari ${f.model}, ${V.n.toLowerCase()}" decoding="async"
+      onload="const s=this.parentNode;s.classList.add('real');if(!s.nextElementSibling)s.closest('.vp').classList.add('photo')" onerror="this.remove()"></div>`;
+}
+/* chapters render HTML, not a photo: hide the photo caption, then start their draw-in animations */
+function sheetMode(k){
+  vp.classList.toggle('sheet', !!VIEWS[k].sheet);
+  const el = vshots.lastElementChild; requestAnimationFrame(() => requestAnimationFrame(() => el && el.classList.add('go')));
+}
+function setCaption(k){
+  const f = FLEET[idx], V = VIEWS[k];
+  vtl.innerHTML = `<i></i>Cam ${pad(k+1)} · ${V.short}`;
+  vcap.innerHTML = `<b>${V.n}</b><span>${(SHOTS[f.key] || {})[V.id] || ''}</span>`;
+  vcap.animate([{opacity:0, transform:'translateY(16px)'}, {opacity:1, transform:'none'}], {duration:650, delay:300, easing:'cubic-bezier(.2,.8,.2,1)', fill:'backwards'});
+}
+function sweep(d){
+  flareEl.animate([{left: d > 0 ? '-30%' : '104%', opacity:0}, {opacity:1, offset:.45}, {left: d > 0 ? '104%' : '-30%', opacity:0}], {duration:950, easing:'cubic-bezier(.6,0,.3,1)'});
+  vui.classList.remove('pulse'); void vui.offsetWidth; vui.classList.add('pulse');
+}
+const rectOf = (el, s = 1) => { const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  return { left:cx - r.width / s / 2, right:cx + r.width / s / 2, top:cy - r.height / s / 2, bottom:cy + r.height / s / 2 }; };
+const insetTo = (c, p) => `inset(${Math.max(0, c.top - p.top)}px ${Math.max(0, p.right - c.right)}px ${Math.max(0, p.bottom - c.bottom)}px ${Math.max(0, c.left - p.left)}px round 12px)`;
+function placePanel(){
+  if (!mobile.matches) { views.style.removeProperty('--vtop'); return; }
+  const b = copy.querySelector('.buy'); views.style.setProperty('--vtop', (b ? b.getBoundingClientRect().bottom + 12 : innerHeight * .4) + 'px');
+}
+
+/* 0 → n: the photo grows out of the car's own silhouette box while the car dissolves into it */
+function enterViews(k){
+  const f = FLEET[idx], carBox = car ? rectOf(car.querySelector('.car-pitch')) : null;
+  stage.classList.add('viewing', 'orbited'); if (!REEL) stage.classList.add('hold');
+  placePanel();
+  vp.getAnimations().forEach(a => a.cancel());
+  vp.classList.remove('photo'); vshots.innerHTML = shotHTML(f, k); setCaption(k); sheetMode(k);
+  const p = vp.getBoundingClientRect();
+  vp.animate([{clipPath: carBox ? insetTo(carBox, p) : 'inset(50% round 12px)'}, {clipPath:'inset(0px 0px 0px 0px round 18px)'}], {duration:950, easing:EASE});
+  vshots.firstElementChild.animate([{transform:'scale(1.3)', filter:'brightness(1.5) saturate(0)'}, {transform:'none', filter:'none'}], {duration:1200, easing:'cubic-bezier(.2,.7,.2,1)'});
+  vui.animate([{opacity:0}, {opacity:1}], {duration:500, delay:450, fill:'backwards'});
+  sweep(1);
+  VIEWS.forEach((V, j) => j && !V.sheet && load(`img/${f.key}-${V.id}.webp`));   // warm the rest of the orbit (story/specs are drawn from data)
+  load(`img/${f.key}-road.webp`);
+}
+/* n → n: the camera orbits — old frame swings away in 3D, new one sweeps in behind a lens flare */
+function swapShot(from, k){
+  const f = FLEET[idx], d = k > from ? 1 : -1, old = vshots.lastElementChild;
+  vp.classList.remove('photo');
+  vshots.insertAdjacentHTML('beforeend', shotHTML(f, k));
+  const nw = vshots.lastElementChild;
+  if (nw.classList.contains('real') && !VIEWS[k].sheet) vp.classList.add('photo');
+  sheetMode(k);
+  if (old) old.animate([{transform:'none', filter:'none', opacity:1},
+      {transform:`translateX(${-d * 24}%) rotateY(${d * 32}deg) scale(.86)`, filter:'brightness(.35) blur(8px)', opacity:0}],
+    {duration:950, easing:EASE, fill:'forwards'}).onfinish = () => old.remove();
+  nw.animate([{transform:`translateX(${d * 34}%) rotateY(${-d * 32}deg) scale(1.12)`, clipPath: d > 0 ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)', filter:'brightness(1.5)'},
+      {transform:'none', clipPath:'inset(0% 0% 0% 0%)', filter:'none'}], {duration:950, easing:EASE});
+  setCaption(k); sweep(d);
+}
+/* n → 0: the frame shrinks back into the car's silhouette as the car re-materialises */
+function exitViews(){
+  const p = vp.getBoundingClientRect(), carBox = car ? rectOf(car.querySelector('.car-pitch'), 1.12) : null;
+  views.classList.add('keep'); stage.classList.remove('viewing', 'hold');
+  vp.animate([{clipPath:'inset(0px 0px 0px 0px round 18px)', opacity:1}, {clipPath: carBox ? insetTo(carBox, p) : 'inset(50% round 12px)', opacity:0}],
+    {duration:800, easing:EASE, fill:'forwards'}).onfinish = () => { if (view === 0) { views.classList.remove('keep'); vshots.innerHTML = ''; vp.getAnimations().forEach(a => a.cancel()); } };
+}
+function setRail(k){
+  [...vrail.children].forEach((b, j) => b.classList.toggle('on', j === k));
+  const b = vrail.children[k]; if (mobile.matches) vrail.scrollTo({ left: b.offsetLeft - 60, behavior:'smooth' });
+}
+function setView(k){
+  if (busy || vbusy || k === view || k < 0 || k >= VIEWS.length || !car) return false;
+  vbusy = true; setTimeout(() => vbusy = false, 820);
+  const from = view; view = k;
+  setRail(k); camTo(k);
+  if (from === 0) enterViews(k); else if (k === 0) exitViews(); else swapShot(from, k);
+  return true;
+}
+/* drop out of the views instantly (used when switching cars) */
+function resetViews(){
+  if (view === 0) return;
+  view = 0; setRail(0); camTo(0);
+  views.classList.add('keep'); stage.classList.remove('viewing', 'hold');
+  vp.animate([{opacity:1}, {opacity:0}], {duration:380, fill:'forwards'}).onfinish = () => {
+    views.classList.remove('keep'); vshots.innerHTML = ''; vp.getAnimations().forEach(a => a.cancel()); };
+}
+
+function renderGhost(f){
+  ghostTrack.innerHTML = Array(4).fill(`<span>${f.name[0]}</span>`).join('');
+  ghostEl.classList.remove('out','in'); void ghostEl.offsetWidth; ghostEl.classList.add('in');
+}
+
+function setMenu(i){
+  [...menu.children].forEach((b, j) => {
+    b.classList.toggle('on', j === i);
+    const bar = b.querySelector('.bar i'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
+  });
+  num.innerHTML = `${pad(i+1)}<small>/${pad(FLEET.length)}</small>`;
+  if (mobile.matches) { const b = menu.children[i]; menu.scrollTo({ left: b.offsetLeft - 16, behavior: 'smooth' }); }
+}
+
+let showToken = 0;
+async function show(i){
+  const f = FLEET[i], token = ++showToken;
+  timers.forEach(clearTimeout); timers = [];
+  applyTheme(f); renderCopy(f, i); renderGhost(f); setMenu(i);
+  history.replaceState(null, '', location.search + '#' + (i + 1));
+  await ready(i);
+  if (token !== showToken) return;
+  renderScene(f);
+  const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1500));
+  later(() => idle(() => ready((i + 1) % FLEET.length)), 4000);
+}
+
+/* transition: the car floors it out of frame; the next colour is painted behind it in chevron lanes */
+function go(i, dir){
+  if (busy || i === idx) return;
+  dir = dir || (i > idx ? 1 : -1);
+  timers.forEach(clearTimeout); timers = [];
+  resetViews();
+  busy = true; travel = dir;
+  const f = FLEET[i];
+  ready(i);
+  scene.classList.add('out'); copy.classList.add('out'); ghostEl.classList.add('out');
+
+  if (car) {
+    car.classList.remove('unlock','clink'); car.classList.add('lit'); car.classList.toggle('rev', dir < 0);
+    const drive = car.querySelector('.car-drive'), pitch = car.querySelector('.car-pitch');
+    pitch.animate([{rotate:'0deg'},{rotate:`${dir * -1.6}deg`}], {duration:260, easing:'ease-out', fill:'forwards'});
+    drive.animate([{transform:'none'},{transform:`translateX(${dir * 130}vw)`}], {duration:T.leave, delay:80, easing:'cubic-bezier(.55,0,.9,.35)', fill:'forwards'});
+  }
+  tweenSpeed(1, T.leave, p => p * p);
+
+  const N = 7, cr = car ? car.getBoundingClientRect() : {top:innerHeight/2, height:0};
+  const k0 = Math.min(N - 1, Math.floor((cr.top + cr.height * .6) / innerHeight * N));
+  wipe.innerHTML = Array(N).fill(`<i style="background:${f.bg};transform-origin:${dir > 0 ? 'left' : 'right'}"></i>`).join('');
+  [...wipe.children].forEach((l, k) => l.animate([{transform:'scaleX(0)'},{transform:'scaleX(1)'}],
+    {duration:560, delay:200 + Math.abs(k - k0) * 55, easing:'cubic-bezier(.7,0,.25,1)', fill:'forwards'}));
+
+  setTimeout(() => { idx = i; show(i); }, 900);
+  setTimeout(() => { wipe.innerHTML = ''; }, 1050);
+  setTimeout(() => { busy = false; }, 1400);
+}
+
+/* ---- controls: scroll / swipe up-down / ↑↓ orbit the camera (and roll on to the next car after the last view);
+        swipe left-right / ←→ / the fleet strip change car ---- */
+const step = (d) => go((idx + d + FLEET.length) % FLEET.length, d);
+function orbit(d){
+  if (busy) return;
+  const k = view + d;
+  if (k >= VIEWS.length) step(1);
+  else if (k < 0) step(-1);
+  else setView(k);
+}
+document.getElementById('next').onclick = () => step(1);
+document.getElementById('prev').onclick = () => step(-1);
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') orbit(1);
+  if (e.key === 'ArrowUp') orbit(-1);
+  if (e.key === 'ArrowRight') step(1);
+  if (e.key === 'ArrowLeft') step(-1);
+});
+let wheelLock = 0, innerScrollAt = 0;
+document.addEventListener('scroll', e => { if (e.target.classList && e.target.classList.contains('vscroll')) innerScrollAt = Date.now(); }, true);
+addEventListener('wheel', e => {
+  /* inside a chapter, the browser scrolls it before we even see the event: only orbit on once it has
+     come to rest at its end (no movement since the last wheel, no scroll in the last 450 ms) */
+  const sc = e.target.closest && e.target.closest('.vscroll');
+  if (sc) {
+    const prev = +(sc.dataset.st || 0); sc.dataset.st = sc.scrollTop;
+    const more = e.deltaY > 0 ? sc.scrollTop + sc.clientHeight < sc.scrollHeight - 2 : sc.scrollTop > 0;
+    if (more || sc.scrollTop !== prev || Date.now() - innerScrollAt < 450) { wheelLock = Date.now() + 450; return; }
+  }
+  if (Math.abs(e.deltaY) < 24 || Date.now() < wheelLock) return;
+  const d = e.deltaY > 0 ? 1 : -1, carChange = view + d < 0 || view + d >= VIEWS.length;
+  wheelLock = Date.now() + (carChange ? 1500 : 950); orbit(d);
+}, {passive:true});
+let t0x = null, t0y = 0, tsc = null, tsTop = 0;
+addEventListener('touchstart', e => {
+  t0x = menu.contains(e.target) || vrail.contains(e.target) ? null : e.touches[0].clientX; t0y = e.touches[0].clientY;
+  tsc = e.target.closest && e.target.closest('.vscroll'); tsTop = tsc ? tsc.scrollTop : 0;
+}, {passive:true});
+addEventListener('touchend', e => {
+  if (t0x == null) return;
+  const dx = e.changedTouches[0].clientX - t0x, dy = e.changedTouches[0].clientY - t0y; t0x = null;
+  if (tsc && Math.abs(tsc.scrollTop - tsTop) > 2) return;          // the chapter scrolled; don't orbit
+  if (tsc && Math.abs(dy) > Math.abs(dx) && (dy < 0 ? tsc.scrollTop + tsc.clientHeight < tsc.scrollHeight - 2 : tsc.scrollTop > 0)) return;
+  if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) orbit(dy < 0 ? 1 : -1);
+  else if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+});
+addEventListener('resize', () => { if (view) placePanel(); });
+[copy, menu].forEach(el => {
+  el.addEventListener('mouseenter', () => stage.classList.add('paused'));
+  el.addEventListener('mouseleave', () => stage.classList.remove('paused'));
+});
+
+/* ---- one frame loop: speed drives wheels, road, marquee, motion blur, speed trail; plus mouse parallax ---- */
+const road = document.getElementById('road').animate([{transform:'translateX(0)'},{transform:'translateX(-50%)'}], {duration:900, iterations:Infinity});
+const ghostAnim = ghostTrack.animate([{transform:'translateX(0)'},{transform:'translateX(-50%)'}], {duration:38000, iterations:Infinity});
+const tach = document.getElementById('tach');
+const ang = (v) => 135 + v * 27;                       // 0..10 ×1000 rpm over a 270° sweep
+const pol = (v, r) => { const a = ang(v) * Math.PI / 180; return `${(Math.cos(a) * r).toFixed(2)},${(Math.sin(a) * r).toFixed(2)}`; };
+tach.innerHTML = `<circle r="52" stroke-width=".5"/>`
+  + `<path d="M${pol(0,47)} A47,47 0 1 1 ${pol(10,47)}" stroke-width=".8"/>`
+  + `<path class="red" d="M${pol(8.5,45)} A45,45 0 0 1 ${pol(10,45)}" stroke-width="2.6"/>`
+  + [...Array(41)].map((_, k) => { const v = k / 4, big = k % 4 === 0;
+      return `<path d="M${pol(v, big ? 39 : 42)} L${pol(v, 47)}" stroke-width="${big ? 1.4 : .5}"${v >= 8.5 ? ' class="red"' : ''}/>`; }).join('')
+  + [...Array(11)].map((_, v) => { const [x, y] = pol(v, 32).split(',');
+      return `<text x="${x}" y="${y}" font-size="7.5" text-anchor="middle" dominant-baseline="central" stroke="none"${v >= 9 ? ' class="red" fill="color-mix(in srgb,#e10600 55%,transparent)"' : ''}>${v}</text>`; }).join('')
+  + `<text y="16" font-size="4" text-anchor="middle" stroke="none" letter-spacing=".6">RPM × 1000</text>`
+  + `<text y="27" font-size="9" text-anchor="middle" stroke="none" id="kmh">0</text><text y="33.5" font-size="3.2" text-anchor="middle" stroke="none" letter-spacing=".5">KM/H</text>`
+  + `<g class="needle"><path d="M-6,0 L44,0" stroke="#e10600" stroke-width="1.6" stroke-linecap="round"/></g><circle r="4" fill="currentColor" stroke="none"/>`;
+const needle = tach.querySelector('.needle'), kmh = document.getElementById('kmh');
+let rpm = 1, blip = 0;
+function revBlip(){ const t0 = performance.now();
+  (function b(now){ const p = (now - t0) / 1100; blip = p < .25 ? p / .25 : Math.max(0, 1 - (p - .25) / .75) ** 2; if (p < 1) requestAnimationFrame(b); else blip = 0; })(t0); }
+let spd = 1, tw = null, wa = 0, mx = 0, my = 0, cx = 0, cy = 0;
+function tweenSpeed(to, ms, ease){ tw = { from:spd, to, t0:performance.now(), ms, ease }; }
+/* only touch the DOM when a value actually changed: writing custom properties on .stage every frame
+   restyles the whole page, which is what made phones stutter */
+let lastSpd = '', lastNa = '', lastKmh = -1, lastCar = null;
+function frame(now){
+  if (tw) { const p = Math.min(1, (now - tw.t0) / tw.ms); spd = tw.from + (tw.to - tw.from) * tw.ease(p); if (p >= 1) tw = null; }
+  const s = spd.toFixed(3);
+  if (s !== lastSpd || car !== lastCar) {
+    lastSpd = s; lastCar = car;
+    road.playbackRate = spd * travel;
+    ghostAnim.playbackRate = travel * (1 + spd * 16);
+    if (car) {
+      car.style.setProperty('--spd', s);
+      const drive = car.firstElementChild;
+      if (spd > .03 && !mobile.matches) { mbBlur.setAttribute('stdDeviation', `${(spd * 14).toFixed(1)} 0`); drive.style.filter = 'url(#mb)'; }
+      else if (drive.style.filter) drive.style.filter = '';
+    }
+  }
+  if (car && spd > .002) { wa += spd * travel * 26; car.style.setProperty('--wa', wa.toFixed(1) + 'deg'); }
+  rpm += ((.9 + spd * 7.2 + blip * 8.4) - rpm) * .16;
+  const na = ang(Math.min(rpm, 9.9)).toFixed(1);
+  if (na !== lastNa) { lastNa = na; needle.style.setProperty('--na', na + 'deg'); }
+  const kh = Math.round(spd * 290);
+  if (kh !== lastKmh) { lastKmh = kh; kmh.textContent = kh; }
+  if (Math.abs(mx - cx) + Math.abs(my - cy) > .0005) {
+    cx += (mx - cx) * .07; cy += (my - cy) * .07;
+    stage.style.setProperty('--mx', cx.toFixed(4)); stage.style.setProperty('--my', cy.toFixed(4));
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
+  mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1;
+});
+
+/* ---- boot (supports #1..#6 deep links, ?reel=1 for the Instagram loop, ?clean=1 hides slot labels, ?nointro=1) ---- */
+const h = parseInt(location.hash.slice(1), 10);
+idx = (h >= 1 && h <= FLEET.length) ? h - 1 : 0;
+const intro = document.getElementById('intro');
+intro.querySelector('.wm').innerHTML = [...'ROSSO'].map((c, i) => `<span style="--i:${i}">${c}</span>`).join('');
+if (Q.has('nointro')) { intro.remove(); show(idx); }
+else {
+  setTimeout(() => show(idx), 1150);                        // the first car is already driving in as the curtain lifts
+  setTimeout(() => intro.classList.add('out'), 1450);
+  setTimeout(() => intro.remove(), 2500);
+}
+</script>
+</body>
+</html>
