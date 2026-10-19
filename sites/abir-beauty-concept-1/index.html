@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F3D33">
+<title>Abir Beauty — Lashes</title>
+<meta name="description" content="Abir Beauty — the most beautiful designs of lashes, from Lebanon. Gold Series, Half & Mix, press-on clusters and signature styles. Order on WhatsApp.">
+<link rel="icon" href="img/emblem.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#F6F1EA; --cream:#FBF8F3; --paper:#EFE7DC;
+  --green:#0F3D33; --green-2:#0B2F28; --gold:#C9A24D; --gold-2:#E2C47A;
+  --ink:#141917; --mute:#6B6F6C; --line:rgba(15,61,51,.14);
+  --serif:"Cormorant Garamond",Georgia,serif; --sans:"Manrope",system-ui,sans-serif;
+  --gut:clamp(16px,4vw,56px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ivory);color:var(--ink);font-family:var(--sans);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,.serif{font-family:var(--serif);font-weight:300;line-height:.98;letter-spacing:-.01em}
+.eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--green);font-weight:500}
+.eyebrow.gold{color:var(--gold)}
+.num{font-family:var(--serif);font-weight:300;font-size:clamp(56px,9vw,128px);line-height:.8;color:var(--green);opacity:.18}
+.rule{height:1px;background:var(--line)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;background:var(--green);color:#fff;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;transition:background .3s,transform .3s}
+.btn:hover{background:var(--green-2);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--green);box-shadow:inset 0 0 0 1px var(--green)}
+.btn svg{width:16px;height:16px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px var(--gut);background:rgba(246,241,234,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .mark img{height:26px;width:auto}
+.top nav{display:none;gap:34px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:500}
+.top nav a{position:relative;padding:6px 0}
+.top nav a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--gold);transition:width .3s}
+.top nav a:hover::after{width:100%}
+.top .btn{padding:11px 16px}
+@media(min-width:900px){.top nav{display:flex}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;display:grid;grid-template-columns:1fr;min-height:calc(100svh - 56px)}
+.hero .copy{padding:clamp(40px,7vw,96px) var(--gut) 40px;display:flex;flex-direction:column;justify-content:center;gap:26px;position:relative;z-index:2}
+.hero h1{font-size:clamp(56px,10.5vw,152px);color:var(--green);max-width:9ch}
+.hero h1 em{font-style:italic;font-weight:300;color:var(--gold)}
+.hero p{max-width:40ch;font-size:clamp(15px,1.3vw,18px);color:var(--mute)}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.hero .plate{position:relative;min-height:62vw;overflow:hidden}
+.hero .plate img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:opacity .9s ease,transform 8s linear;transform:scale(1.02)}
+.hero .plate img.bg.off{opacity:0}
+.hero .plate .float{position:absolute;left:var(--gut);bottom:-14px;width:min(38%,300px);aspect-ratio:4/5;box-shadow:0 30px 60px -20px rgba(0,0,0,.45);border:6px solid var(--ivory);z-index:3;opacity:0;transform:translateY(24px);transition:opacity .8s .3s,transform .8s .3s}
+.hero.in .plate .float{opacity:1;transform:none}
+.hero .plate .float img{width:100%;height:100%;object-fit:cover}
+.hero .emblem{position:absolute;right:var(--gut);top:clamp(16px,3vw,40px);width:clamp(110px,14vw,190px);z-index:3;filter:drop-shadow(0 10px 18px rgba(0,0,0,.25))}
+.hero .vert{position:absolute;right:var(--gut);bottom:96px;z-index:3;writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:#fff;opacity:.85}
+@media(min-width:900px){
+  .hero{grid-template-columns:1.05fr 1fr}
+  .hero .plate{min-height:0}
+  .hero .copy{padding-right:clamp(24px,4vw,64px)}
+  .hero .plate .float{left:-60px;bottom:64px;width:min(34%,320px)}
+}
+
+/* index strip under hero */
+.index{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.index a{padding:22px var(--gut);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:8px;transition:background .3s;position:relative}
+.index a:nth-child(2n){border-right:0}
+.index a:nth-child(n+3){border-top:1px solid var(--line)}
+.index a:hover{background:var(--cream)}
+.index .n{font-family:var(--serif);font-size:13px;letter-spacing:.2em;color:var(--gold)}
+.index .t{font-family:var(--serif);font-size:clamp(22px,2.4vw,32px);line-height:1;color:var(--green)}
+.index .s{font-size:12px;color:var(--mute)}
+@media(min-width:900px){
+  .index{grid-template-columns:repeat(5,1fr)}
+  .index a{border-right:1px solid var(--line)!important;border-top:0!important}
+  .index a:last-child{border-right:0!important}
+}
+
+/* ---------- marquee ---------- */
+.marq{background:var(--green);color:var(--gold-2);overflow:hidden;padding:16px 0;border-top:1px solid rgba(201,162,77,.3);border-bottom:1px solid rgba(201,162,77,.3)}
+.marq .track{display:flex;gap:0;width:max-content;animation:mq 38s linear infinite}
+.marq span{font-family:var(--serif);font-size:clamp(20px,2.6vw,34px);font-weight:300;letter-spacing:.06em;padding:0 28px;white-space:nowrap}
+.marq span i{font-style:normal;color:rgba(255,255,255,.35);padding-left:28px}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ---------- sections ---------- */
+section.sec{padding:clamp(64px,9vw,140px) 0}
+.wrap{padding:0 var(--gut)}
+.head{display:grid;gap:14px;align-items:end;margin-bottom:clamp(28px,4vw,56px)}
+.head h2{font-size:clamp(40px,6.5vw,96px);color:var(--green)}
+.head h2 em{font-style:italic;color:var(--gold)}
+.head p{max-width:46ch;color:var(--mute)}
+@media(min-width:900px){.head{grid-template-columns:1fr auto;gap:40px}.head p{text-align:right}}
+
+/* gold strip (snap scroll) */
+.strip{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 var(--gut) 24px;scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.card{flex:0 0 clamp(230px,30vw,360px);scroll-snap-align:start;position:relative;background:var(--cream);border:1px solid var(--line);overflow:hidden}
+.card .ph{aspect-ratio:4/5;overflow:hidden;background:var(--paper)}
+.card .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.card:hover .ph img{transform:scale(1.06)}
+.card .meta{padding:16px 18px 18px;display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line)}
+.card .meta b{font-family:var(--serif);font-weight:400;font-size:22px;color:var(--green)}
+.card .meta small{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.card .tag{position:absolute;top:14px;left:14px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;background:var(--green);color:var(--gold-2);padding:6px 10px}
+.strip-nav{display:flex;gap:8px;justify-content:flex-end;padding:0 var(--gut)}
+.strip-nav button{width:44px;height:44px;border-radius:50%;border:1px solid var(--green);background:transparent;color:var(--green);cursor:pointer;display:grid;place-items:center;transition:background .3s,color .3s}
+.strip-nav button:hover{background:var(--green);color:#fff}
+
+/* editorial rows */
+.row{display:grid;gap:28px;align-items:center;padding:clamp(40px,6vw,96px) var(--gut);border-top:1px solid var(--line)}
+.row .txt{display:flex;flex-direction:column;gap:18px}
+.row h3{font-size:clamp(36px,5vw,72px);color:var(--green)}
+.row h3 em{font-style:italic;color:var(--gold)}
+.row p{color:var(--mute);max-width:44ch}
+.row .pics{display:grid;gap:14px;grid-template-columns:1fr 1fr;align-items:start}
+.row .pics figure{overflow:hidden;background:var(--paper)}
+.row .pics img{width:100%;height:100%;object-fit:cover;aspect-ratio:4/5;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.row .pics figure:hover img{transform:scale(1.05)}
+.row .pics figure:nth-child(2){margin-top:14%}
+.row .pics figure.wide{grid-column:1/-1;margin-top:0}
+.row .pics figure.wide img{aspect-ratio:16/10}
+.row ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.row li{font-size:11px;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--line);padding:8px 12px;color:var(--green)}
+@media(min-width:900px){
+  .row{grid-template-columns:5fr 7fr;gap:clamp(32px,6vw,96px)}
+  .row.flip .txt{order:2}
+  .row.flip .pics{order:1}
+}
+
+/* names grid */
+.names{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.names figure{position:relative;overflow:hidden;background:var(--paper)}
+.names img{width:100%;aspect-ratio:3/4;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.names figure:hover img{transform:scale(1.05)}
+.names figcaption{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;background:linear-gradient(transparent,rgba(15,61,51,.75));color:#fff;font-family:var(--serif);font-size:26px;display:flex;justify-content:space-between;align-items:baseline}
+.names figcaption small{font-family:var(--sans);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-2)}
+@media(min-width:900px){.names{grid-template-columns:repeat(4,1fr)}.names figure:nth-child(even){margin-top:40px}}
+
+/* glam master (dark) */
+.glam{background:var(--green);color:#fff;position:relative;overflow:hidden}
+.glam .grid{display:grid;gap:36px;align-items:center;padding:clamp(64px,9vw,140px) var(--gut)}
+.glam h2{font-size:clamp(44px,7vw,110px);color:#fff}
+.glam h2 em{font-style:italic;color:var(--gold)}
+.glam p{color:rgba(255,255,255,.7);max-width:44ch}
+.glam .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:10px;border-top:1px solid rgba(201,162,77,.3);padding-top:22px}
+.glam .stats b{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(34px,4vw,56px);color:var(--gold-2);line-height:1}
+.glam .stats span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.glam .shot{position:relative}
+.glam .shot img{width:100%;aspect-ratio:1;object-fit:cover}
+.glam .shot .second{position:absolute;right:-6%;bottom:-10%;width:42%;border:6px solid var(--green);box-shadow:0 30px 50px -20px rgba(0,0,0,.6)}
+.glam .bigword{position:absolute;left:0;right:0;bottom:-.1em;font-family:var(--serif);font-size:clamp(90px,19vw,300px);line-height:.8;color:rgba(255,255,255,.04);white-space:nowrap;pointer-events:none;letter-spacing:-.02em;padding-left:var(--gut)}
+@media(min-width:900px){.glam .grid{grid-template-columns:1fr 1fr;gap:clamp(40px,7vw,120px)}}
+
+/* order */
+.order .steps{display:grid;gap:0;border-top:1px solid var(--line)}
+.order .step{display:grid;grid-template-columns:72px 1fr;gap:14px;padding:26px 0;border-bottom:1px solid var(--line)}
+.order .step b{font-family:var(--serif);font-weight:300;font-size:44px;color:var(--gold);line-height:.9}
+.order .step h4{font-family:var(--serif);font-weight:400;font-size:26px;color:var(--green);margin-bottom:6px}
+.order .step p{color:var(--mute)}
+.order .side{display:flex;flex-direction:column;gap:18px;justify-content:center}
+@media(min-width:900px){.order .two{display:grid;grid-template-columns:7fr 5fr;gap:clamp(40px,7vw,120px)}}
+
+/* footer */
+footer{background:var(--green-2);color:rgba(255,255,255,.7);padding:clamp(48px,7vw,96px) var(--gut) 28px}
+footer .fg{display:grid;gap:28px}
+footer .emb{width:150px}
+footer .word{font-family:var(--serif);font-size:30px;letter-spacing:.14em;color:#fff;font-weight:300}
+footer .word small{display:block;font-family:var(--serif);font-style:italic;letter-spacing:.02em;color:var(--gold);font-size:22px;margin-top:-4px}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+footer ul a:hover{color:var(--gold-2)}
+footer .base{margin-top:40px;padding-top:18px;border-top:1px solid rgba(201,162,77,.25);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+@media(min-width:900px){footer .fg{grid-template-columns:2fr 1fr 1fr 1fr}}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.rv[data-d="1"]{transition-delay:.12s}.rv[data-d="2"]{transition-delay:.24s}.rv[data-d="3"]{transition-delay:.36s}
+
+/* whatsapp float */
+.wa{position:fixed;right:18px;bottom:18px;z-index:60;width:54px;height:54px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 14px 30px -8px rgba(0,0,0,.4);transition:transform .3s}
+.wa:hover{transform:scale(1.06)}
+.wa svg{width:28px;height:28px;fill:#fff}
+
+/* ---------- mobile ---------- */
+.menu-btn{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:50%;background:transparent;cursor:pointer;color:var(--green)}
+.menu-btn svg{width:18px;height:18px}
+.top .btn.sm{display:none}
+.sheet{position:fixed;inset:0;z-index:70;background:var(--green);color:#fff;display:flex;flex-direction:column;padding:18px var(--gut) 28px;transform:translateY(-100%);transition:transform .5s cubic-bezier(.7,0,.2,1)}
+.sheet.open{transform:none}
+.sheet .bar{display:flex;justify-content:space-between;align-items:center}
+.sheet .bar img{height:24px;filter:brightness(0) invert(1)}
+.sheet .close{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;display:grid;place-items:center}
+.sheet nav{display:flex;flex-direction:column;margin-top:30px;flex:1}
+.sheet nav a{font-family:var(--serif);font-size:clamp(34px,9vw,44px);padding:12px 0;border-bottom:1px solid rgba(201,162,77,.25);display:flex;justify-content:space-between;align-items:baseline;opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s}
+.sheet.open nav a{opacity:1;transform:none}
+.sheet nav a:nth-child(1){transition-delay:.1s}.sheet nav a:nth-child(2){transition-delay:.16s}.sheet nav a:nth-child(3){transition-delay:.22s}.sheet nav a:nth-child(4){transition-delay:.28s}.sheet nav a:nth-child(5){transition-delay:.34s}
+.sheet nav a small{font-family:var(--sans);font-size:11px;letter-spacing:.24em;color:var(--gold)}
+.sheet .foot{display:flex;gap:10px;margin-top:20px}
+.sheet .foot .btn{flex:1;justify-content:center;background:var(--gold);color:var(--green)}
+.sheet .foot .btn.ghost{background:transparent;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+body.locked{overflow:hidden}
+@media(min-width:900px){.menu-btn{display:none}}
+@media(max-width:899px){
+  .top{padding:10px 16px}
+  .top .btn.lg{display:none}
+  .top .btn.sm{display:inline-flex;padding:10px 14px;font-size:11px}
+  .top .right{display:flex;gap:8px;align-items:center}
+  /* hero: photo first, then copy */
+  .hero{display:flex;flex-direction:column;min-height:0}
+  .hero .plate{order:0;min-height:0;height:112vw;max-height:70svh}
+  .hero .copy{order:1;padding:34px 16px 36px;gap:18px}
+  .hero h1{font-size:clamp(50px,15.5vw,72px);max-width:none}
+  .hero p{font-size:15px}
+  .hero .cta{gap:10px}
+  .hero .cta .btn{flex:1 1 100%;justify-content:center;padding:15px 12px;font-size:11px}
+  .hero h1 em{display:block}
+  .hero .plate .float{left:16px;bottom:18px;width:40%;border-width:4px}
+  .hero .emblem{width:92px;right:14px;top:14px}
+  .hero .vert{display:none}
+  /* index: horizontal snap tiles */
+  .index{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-bottom:1px solid var(--line)}
+  .index::-webkit-scrollbar{display:none}
+  .index a{flex:0 0 58vw;scroll-snap-align:start;padding:18px 16px;border-top:0!important;border-right:1px solid var(--line)!important}
+  .index .t{font-size:24px}
+  .marq{padding:12px 0}
+  section.sec{padding:56px 0}
+  .head{margin-bottom:24px;gap:10px}
+  .head h2{font-size:clamp(38px,11vw,52px)}
+  .card{flex-basis:72vw}
+  .strip{gap:12px;padding-bottom:16px}
+  .strip-nav{display:none}
+  .row{padding:56px 16px;gap:22px}
+  .row .num{font-size:64px}
+  .row h3{font-size:clamp(34px,10vw,46px)}
+  .row .pics{gap:10px}
+  .row .pics figure:nth-child(2){margin-top:12%}
+  .row .pics figure.wide img{aspect-ratio:4/3}
+  .row .btn{align-self:flex-start}
+  .names{gap:10px}
+  .names figcaption{font-size:20px;padding:10px 12px}
+  .names figcaption small{font-size:9px}
+  .glam .grid{padding:56px 16px 72px;gap:28px}
+  .glam .shot{margin-right:0}
+  .glam .shot .second{right:0;bottom:-8%;width:44%;border-width:4px}
+  .glam h2{font-size:clamp(44px,13vw,64px)}
+  .glam .stats{gap:10px}
+  .glam .stats b{font-size:34px}
+  .glam .stats span{font-size:9px;letter-spacing:.14em}
+  .glam .bigword{font-size:30vw}
+  .order .step{grid-template-columns:40px 1fr;gap:10px;padding:20px 0}
+  .order .step b{font-size:32px}
+  .order .step h4{font-size:22px}
+  .order .side{margin-top:36px;align-items:stretch}
+  .order .side img{align-self:center}
+  footer{padding:48px 16px 24px}
+  footer .fg{grid-template-columns:1fr 1fr;gap:22px}
+  footer .fg > div{grid-column:1/-1}
+  footer .base{flex-direction:column;gap:6px}
+  .wa{right:14px;bottom:14px;width:50px;height:50px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="mark" href="#top"><img src="img/logo-wordmark.png" alt="Abir Beauty"></a>
+  <nav>
+    <a href="#gold">Gold Series</a>
+    <a href="#half">Half &amp; Mix</a>
+    <a href="#names">Signatures</a>
+    <a href="#press">Press-On</a>
+    <a href="#tools">Tools</a>
+  </nav>
+  <div class="right">
+    <a class="btn lg" href="#order" data-wa>Order on WhatsApp</a>
+    <a class="btn sm" href="#order" data-wa>Order</a>
+    <button class="menu-btn" aria-label="Menu" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
+  </div>
+</header>
+
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div class="bar"><img src="img/logo-wordmark.png" alt=""><button class="close" id="menuClose" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
+  <nav>
+    <a href="#gold">Gold Series<small>01</small></a>
+    <a href="#half">Half &amp; Mix<small>02</small></a>
+    <a href="#names">Signatures<small>03</small></a>
+    <a href="#press">Press-On<small>04</small></a>
+    <a href="#tools">Tools<small>05</small></a>
+  </nav>
+  <div class="foot">
+    <a class="btn" href="#order" data-wa>WhatsApp</a>
+    <a class="btn ghost" href="https://www.instagram.com/abirlashes" target="_blank" rel="noopener">Instagram</a>
+  </div>
+</div>
+
+<section class="hero" id="top">
+  <div class="copy">
+    <span class="eyebrow rv">Lebanon · Lash designs since day one</span>
+    <h1 class="rv" data-d="1">Every lash has <em>a story.</em></h1>
+    <p class="rv" data-d="2">Hand-finished strip lashes in thirteen Gold cuts, soft half &amp; mix sets, day-hold press-on clusters and four signature styles named after the women who wear them.</p>
+    <div class="cta rv" data-d="3">
+      <a class="btn" href="#gold">Explore the collection</a>
+      <a class="btn ghost" href="#order" data-wa>Order on WhatsApp</a>
+    </div>
+  </div>
+  <div class="plate">
+    <img src="img/editorial-story.webp" alt="Abir Beauty lash tray" id="plateA" class="bg" fetchpriority="high">
+    <img src="img/mix-1.webp" alt="" id="plateB" class="bg off">
+    <img class="emblem" src="img/emblem.png" alt="">
+    <figure class="float"><img src="img/gold-11.webp" alt="Gold 11 lashes"></figure>
+    <span class="vert">@abirlashes</span>
+  </div>
+</section>
+
+<nav class="index" aria-label="Collections">
+  <a href="#gold" data-pic="img/gold-7.webp"><span class="n">01</span><span class="t">Gold Series</span><span class="s">13 cuts · 4 pairs per tray</span></a>
+  <a href="#half" data-pic="img/half-mix-3.webp"><span class="n">02</span><span class="t">Half &amp; Mix</span><span class="s">Soft outer-corner sets</span></a>
+  <a href="#names" data-pic="img/sea.webp"><span class="n">03</span><span class="t">Signatures</span><span class="s">Amar · Lana · Ela · Sea</span></a>
+  <a href="#press" data-pic="img/press-on-clusters.webp"><span class="n">04</span><span class="t">Press-On</span><span class="s">Day-hold clusters</span></a>
+  <a href="#tools" data-pic="img/blenders.webp"><span class="n">05</span><span class="t">Tools</span><span class="s">Blenders · puffs · bond</span></a>
+</nav>
+
+<div class="marq" aria-hidden="true">
+  <div class="track">
+    <span>Gold Series<i>·</i></span><span>Half &amp; Mix<i>·</i></span><span>Press-On Clusters<i>·</i></span><span>Amar<i>·</i></span><span>Lana<i>·</i></span><span>Ela<i>·</i></span><span>Sea<i>·</i></span><span>Glam Master<i>·</i></span>
+    <span>Gold Series<i>·</i></span><span>Half &amp; Mix<i>·</i></span><span>Press-On Clusters<i>·</i></span><span>Amar<i>·</i></span><span>Lana<i>·</i></span><span>Ela<i>·</i></span><span>Sea<i>·</i></span><span>Glam Master<i>·</i></span>
+  </div>
+</div>
+
+<!-- 01 GOLD -->
+<section class="sec" id="gold">
+  <div class="wrap head">
+    <div class="rv">
+      <span class="eyebrow">01 — The Gold Series</span>
+      <h2>Thirteen cuts, <em>one signature.</em></h2>
+    </div>
+    <p class="rv" data-d="1">From the natural Gold 1 to the full-drama Gold 13. Each tray holds four pairs of the same cut so one tray carries you through the month.</p>
+  </div>
+  <div class="strip" id="goldStrip">
+    <article class="card"><div class="ph"><img src="img/gold-1.webp" alt="Gold 1" loading="lazy"></div><div class="meta"><b>Gold 1</b><small>Natural</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-2.webp" alt="Gold 2" loading="lazy"></div><div class="meta"><b>Gold 2</b><small>Wispy</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-3.webp" alt="Gold 3" loading="lazy"></div><div class="meta"><b>Gold 3</b><small>Everyday</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-4.webp" alt="Gold 4" loading="lazy"></div><div class="meta"><b>Gold 4</b><small>Soft volume</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-5.webp" alt="Gold 5" loading="lazy"></div><div class="meta"><b>Gold 5</b><small>Light</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-6.webp" alt="Gold 6" loading="lazy"></div><div class="meta"><b>Gold 6</b><small>Fluffy</small></div></article>
+    <article class="card"><span class="tag">Best seller</span><div class="ph"><img src="img/gold-7.webp" alt="Gold 7" loading="lazy"></div><div class="meta"><b>Gold 7</b><small>Volume</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-8-dark.webp" alt="Gold 8" loading="lazy"></div><div class="meta"><b>Gold 8</b><small>Cat eye</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-9.webp" alt="Gold 9" loading="lazy"></div><div class="meta"><b>Gold 9</b><small>Doll</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-10.webp" alt="Gold 10" loading="lazy"></div><div class="meta"><b>Gold 10</b><small>Glam</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-11.webp" alt="Gold 11" loading="lazy"></div><div class="meta"><b>Gold 11</b><small>Wispy volume</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-12.webp" alt="Gold 12" loading="lazy"></div><div class="meta"><b>Gold 12</b><small>Full</small></div></article>
+    <article class="card"><div class="ph"><img src="img/gold-13.webp" alt="Gold 13" loading="lazy"></div><div class="meta"><b>Gold 13</b><small>Drama</small></div></article>
+  </div>
+  <div class="strip-nav">
+    <button aria-label="Previous" data-dir="-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button aria-label="Next" data-dir="1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+</section>
+
+<!-- 02 HALF & MIX -->
+<section class="row" id="half">
+  <div class="txt rv">
+    <span class="num">02</span>
+    <span class="eyebrow">Half &amp; Mix</span>
+    <h3>Lift the corner, <em>keep it soft.</em></h3>
+    <p>Half lashes sit on the outer third of the eye for a lifted, cat-eye line that still reads natural. Mix trays pair two cuts so you can layer or alternate.</p>
+    <ul><li>Half Mix 3</li><li>Mix 1</li><li>4 pairs per tray</li></ul>
+    <a class="btn ghost" href="#order" data-wa>Ask for Half &amp; Mix</a>
+  </div>
+  <div class="pics rv" data-d="1">
+    <figure><img src="img/half-mix-3.webp" alt="Half Mix 3" loading="lazy"></figure>
+    <figure><img src="img/mix-1.webp" alt="Mix 1" loading="lazy"></figure>
+  </div>
+</section>
+
+<!-- 03 SIGNATURES -->
+<section class="sec" id="names">
+  <div class="wrap head">
+    <div class="rv">
+      <span class="eyebrow">03 — Signature styles</span>
+      <h2>Named, <em>not numbered.</em></h2>
+    </div>
+    <p class="rv" data-d="1">Four cuts that earned a name of their own. Each one was designed with a client in mind and kept because everyone else asked for it.</p>
+  </div>
+  <div class="wrap names rv" data-d="1">
+    <figure><img src="img/amar.webp" alt="Amar" loading="lazy"><figcaption>Amar<small>Fluffy</small></figcaption></figure>
+    <figure><img src="img/lana.webp" alt="Lana" loading="lazy"><figcaption>Lana<small>Wispy</small></figcaption></figure>
+    <figure><img src="img/ela.webp" alt="Ela" loading="lazy"><figcaption>Ela<small>Natural</small></figcaption></figure>
+    <figure><img src="img/sea.webp" alt="Sea" loading="lazy"><figcaption>Sea<small>Volume</small></figcaption></figure>
+  </div>
+</section>
+
+<!-- 04 PRESS-ON -->
+<section class="row flip" id="press">
+  <div class="txt rv">
+    <span class="num">04</span>
+    <span class="eyebrow">Press-On clusters</span>
+    <h3>Extensions, <em>at home.</em></h3>
+    <p>Individual clusters you press along the lash line in minutes. Day-hold formula, no salon, no glue on the lid, and they lift off clean at night.</p>
+    <ul><li>Day hold</li><li>Graded lengths</li><li>Starter kit</li></ul>
+    <a class="btn ghost" href="#order" data-wa>Ask for Press-On</a>
+  </div>
+  <div class="pics rv" data-d="1">
+    <figure class="wide"><img src="img/press-on-kit.webp" alt="Press-on cluster kit" loading="lazy"></figure>
+    <figure><img src="img/press-on-clusters.webp" alt="Press-on clusters" loading="lazy"></figure>
+    <figure><img src="img/press-on-dayhold.webp" alt="Day hold clusters" loading="lazy"></figure>
+  </div>
+</section>
+
+<!-- 05 TOOLS -->
+<section class="row" id="tools">
+  <div class="txt rv">
+    <span class="num">05</span>
+    <span class="eyebrow">Tools</span>
+    <h3>Everything <em>around the eye.</em></h3>
+    <p>Blending sponges in three cuts, velvet powder puffs and our lash bond. Small things that make the lashes sit right.</p>
+    <ul><li>Blenders</li><li>Puffs</li><li>Lash bond</li></ul>
+    <a class="btn ghost" href="#order" data-wa>Ask for tools</a>
+  </div>
+  <div class="pics rv" data-d="1">
+    <figure><img src="img/blenders.webp" alt="Blending sponges" loading="lazy"></figure>
+    <figure><img src="img/lash-bond.webp" alt="Lash bond" loading="lazy"></figure>
+    <figure class="wide"><img src="img/puffs.webp" alt="Powder puffs" loading="lazy"></figure>
+  </div>
+</section>
+
+<!-- GLAM MASTER -->
+<section class="glam">
+  <div class="grid">
+    <div class="shot rv">
+      <img src="img/glam-master-box.webp" alt="Glam Master box" loading="lazy">
+      <img class="second" src="img/gold-10.webp" alt="" loading="lazy">
+    </div>
+    <div class="rv" data-d="1">
+      <span class="eyebrow gold">The box</span>
+      <h2 style="margin:12px 0 18px">Glam <em>Master.</em></h2>
+      <p>Every tray ships in the Glam Master box: emerald or ivory, gold foil, a window on the lashes. Made to sit on a vanity, not in a drawer.</p>
+      <div class="stats">
+        <div><b>4</b><span>Pairs per tray</span></div>
+        <div><b>13</b><span>Gold cuts</span></div>
+        <div><b>9k+</b><span>On Instagram</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="bigword">ABIRLASHES</div>
+</section>
+
+<!-- ORDER -->
+<section class="sec order" id="order">
+  <div class="wrap two">
+    <div>
+      <div class="head" style="grid-template-columns:1fr">
+        <div class="rv"><span class="eyebrow">How to order</span><h2>Three messages <em>away.</em></h2></div>
+      </div>
+      <div class="steps rv" data-d="1">
+        <div class="step"><b>1</b><div><h4>Pick your cut</h4><p>Gold number, a signature name, half &amp; mix or press-on. Screenshot it if it's easier.</p></div></div>
+        <div class="step"><b>2</b><div><h4>Message us on WhatsApp</h4><p>Tell us the cut, how many trays, and your area. We confirm availability the same day.</p></div></div>
+        <div class="step"><b>3</b><div><h4>Delivery across Lebanon</h4><p>Cash on delivery to your door. Beirut usually next day, other regions 2–3 days.</p></div></div>
+      </div>
+    </div>
+    <div class="side rv" data-d="2">
+      <img src="img/logo-full.png" alt="Abir Beauty lashes" style="width:min(100%,360px)">
+      <a class="btn" href="#" data-wa>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.9 11.9 0 0 0 12 0C5.4 0 .1 5.3.1 11.9c0 2.1.6 4.1 1.6 5.9L0 24l6.4-1.7a11.9 11.9 0 0 0 5.6 1.4c6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.2-3.4-8.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4A9.8 9.8 0 0 1 2.1 12C2.1 6.5 6.5 2 12 2c2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.5-4.5 9.9-9.9 9.9zm5.4-7.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5.3-.5c.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4z"/></svg>
+        Order on WhatsApp
+      </a>
+      <a class="btn ghost" href="https://www.instagram.com/abirlashes" target="_blank" rel="noopener">Follow @abirlashes</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fg">
+    <div>
+      <img class="emb" src="img/emblem.png" alt="">
+      <div class="word" style="margin-top:12px">ABIR BEAUTY<small>lashes</small></div>
+    </div>
+    <ul><li><a href="#gold">Gold Series</a></li><li><a href="#half">Half &amp; Mix</a></li><li><a href="#names">Signatures</a></li><li><a href="#press">Press-On</a></li><li><a href="#tools">Tools</a></li></ul>
+    <ul><li><a href="#" data-wa>WhatsApp</a></li><li><a href="https://www.instagram.com/abirlashes" target="_blank" rel="noopener">Instagram</a></li><li><a href="#order">Delivery</a></li></ul>
+    <ul><li>Lebanon</li><li>Cash on delivery</li><li>Same-day reply</li></ul>
+  </div>
+  <div class="base"><span>© <span id="yr"></span> Abir Beauty</span><span>Most beautiful designs of lashes</span></div>
+</footer>
+
+<a class="wa" href="#" data-wa aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M20.5 3.5A11.9 11.9 0 0 0 12 0C5.4 0 .1 5.3.1 11.9c0 2.1.6 4.1 1.6 5.9L0 24l6.4-1.7a11.9 11.9 0 0 0 5.6 1.4c6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.2-3.4-8.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4A9.8 9.8 0 0 1 2.1 12C2.1 6.5 6.5 2 12 2c2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.5-4.5 9.9-9.9 9.9zm5.4-7.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5.3-.5c.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4z"/></svg></a>
+
+<script>
+// WhatsApp number: set once here (international format, digits only). Empty = links fall back to Instagram DM.
+const WA_NUMBER = '';
+const WA_TEXT = encodeURIComponent('Hi Abir Beauty, I would like to order: ');
+document.querySelectorAll('[data-wa]').forEach(a=>{
+  a.href = WA_NUMBER ? `https://wa.me/${WA_NUMBER}?text=${WA_TEXT}` : 'https://www.instagram.com/abirlashes';
+  a.target='_blank'; a.rel='noopener';
+});
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+// reveal
+const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+requestAnimationFrame(()=>document.querySelector('.hero').classList.add('in'));
+
+// index hover swaps the hero plate
+const A=document.getElementById('plateA'), B=document.getElementById('plateB'); let front=A;
+document.querySelectorAll('.index a').forEach(a=>a.addEventListener('mouseenter',()=>{
+  const src=a.dataset.pic; const back = front===A?B:A;
+  if(front.getAttribute('src').endsWith(src.split('/').pop())) return;
+  back.src=src; back.classList.remove('off'); front.classList.add('off'); front=back;
+}));
+
+// mobile menu
+const sheet=document.getElementById('sheet');
+const openM=()=>{sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');document.body.classList.add('locked')};
+const closeM=()=>{sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true');document.body.classList.remove('locked')};
+document.getElementById('menuBtn').addEventListener('click',openM);
+document.getElementById('menuClose').addEventListener('click',closeM);
+sheet.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeM));
+
+// gold strip arrows
+const strip=document.getElementById('goldStrip');
+document.querySelectorAll('.strip-nav button').forEach(b=>b.addEventListener('click',()=>{
+  strip.scrollBy({left: +b.dataset.dir * (strip.querySelector('.card').offsetWidth+16)*2, behavior:'smooth'});
+}));
+</script>
+</body>
+</html>
